@@ -39,6 +39,7 @@ Referensi pemilik: tangkapan layar GIS gelap dengan panel kiri mengapung, kanvas
 | `--color-warning` | `#F59E0B` | Menunggu persetujuan | Teks gelap di atas kuning |
 | `--color-success` | `#10B981` | Disetujui, selesai | Teks gelap di atas hijau |
 | `--color-info` | `#60A5FA` | Petunjuk, tautan | ≈ 5,9:1 di `surface` |
+| `--color-violet` | `#A78BFA` | Status "Sudah diperiksa" | ≈ 7,1:1 di `surface` |
 
 > **Aturan tombol:** latar tombol utama memakai `--color-primary` (`#2563EB`), bukan `--color-accent`. Aksen biru terang hanya untuk garis, ikon, dan fokus agar kontras teks tetap lolos 4,5:1.
 

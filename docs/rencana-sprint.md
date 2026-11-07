@@ -7,7 +7,7 @@
 | Tahap | Nama | Status | Bukti |
 | :--- | :--- | :--- | :--- |
 | `D1` | Perencanaan & Desain | ✅ Selesai — 2026-11-07 | `docs/prd/prd.md`, `docs/desain/design.md`, `AGENTS.md`, `docs/adr/0001..0003`, `SiAlokasi.figcraft` (9 board) |
-| `M1` | Pondasi + UI Matang + Seed Bersih | ⏳ Belum dimulai | — |
+| `M1` | Pondasi + UI Matang + Seed Bersih | ✅ Selesai — 2026-11-08 | `docs/bukti/m1.md`, `apps/web`, `apps/api`, `packages/shared` |
 | `M2` | Akun Semua Peran & Data Master | ⏳ Belum dimulai | — |
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ⏳ Belum dimulai | — |
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ⏳ Belum dimulai | — |
@@ -54,6 +54,28 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 - Tidak ada `window.alert/confirm/prompt`.
 
 **Commit:** `feat(shared): ...` → `feat(api): ...` → `feat(web): ...` → `docs(m1): ...`
+
+---
+
+## M1 — Pondasi + UI Matang + Seed Bersih (Selesai 2026-11-08)
+
+**Hasil:**
+- Monorepo npm workspaces: `packages/shared`, `apps/api`, `apps/web`.
+- `packages/shared`: tipe domain, skema Zod, alur status, Haversine, format angka/jarak/tanggal — **36 unit test lulus**.
+- `apps/api`: Fastify + Prisma, migrasi awal seluruh entitas PRD §6.1, seed bersih, `ClockService`, `verify-m1` (18 pemeriksaan lulus).
+- `apps/web`: token `@theme`, 6 komponen wajib (Modal/Confirm/Prompt, Toast, Skeleton, EmptyState, Field, AppHeader/BottomNav), halaman `/ui`, beranda pondasi, halaman 404.
+- Skrip: `db:start`, `db:stop`, `db:status`, `db:migrate`, `db:seed`, `db:studio`, `demo:reset`, `dev`, `build`, `test`, `verify:m1`.
+- Bukti: `docs/bukti/m1.md` + 11 tangkapan layar di `docs/bukti/m1/`.
+
+**Kriteria selesai:**
+- [x] `npm run build` dan `npm test` lulus bersih.
+- [x] `npm run db:seed` → 10 bantuan, 8 kecamatan, 3 posko, 3 akun, 0 laporan.
+- [x] `/ui` menampilkan 6 komponen; tidak ada teks <16 px dan target sentuh <44 px.
+- [x] Tidak ada `window.alert/confirm/prompt` dan tidak ada hex lepas di halaman.
+- [x] Uji 360/390/768/1366/1920 px tanpa gulir horizontal.
+- [x] Reset demo kembali ke 0 transaksi dalam < 1 detik.
+
+**Catatan:** `FR-04` baru selesai sebagian (ClockService + reset). Tombol majukan waktu lewat `/dev` adalah bagian M4 sesuai PRD §10.
 
 ---
 
@@ -169,3 +191,9 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 ## Catatan Sesi Berikutnya
 
 Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
+
+**Titik mulai M2 (Akun & Data Master):**
+1. Tambah tabel `Session` + `OtpCode` (tabel OTP sudah ada) dan modul auth cookie httpOnly.
+2. Terapkan kode demo `123456` saat `DEMO_MODE=true`, lalu RBAC di server (403 untuk peran salah).
+3. Bangun halaman masuk `A1`, aktivasi `A2`, dan halaman admin `D1`–`D5` memakai komponen dari `/ui`.
+4. Pastikan menonaktifkan jenis bantuan tidak menghapus laporan lama; tulis `verify-m2.ts` dan `docs/bukti/m2.md`.

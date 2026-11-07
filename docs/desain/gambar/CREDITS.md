@@ -7,7 +7,7 @@ Semua aset yang dipakai aplikasi wajib tercatat di sini beserta lisensinya.
 | Aset | Sumber | Lisensi | Catatan |
 | :--- | :--- | :--- | :--- |
 | Ikon antarmuka | [Lucide](https://lucide.dev) | ISC | Dapat dipakai bebas, termasuk komersial |
-| Ikon jenis bantuan (10 buah) | Turunan Lucide yang disesuaikan | ISC | Disimpan di `apps/web/src/assets/icons/aid/` |
+| Ikon jenis bantuan (10 buah) | Lucide langsung | ISC | Nama ikon disimpan di kolom `icon` data master, dirender oleh web |
 
 Daftar ikon bantuan: tenda keluarga, air bersih, makanan siap saji, obat & P3K, selimut, sanitasi, susu bayi, pembalut, genset, tenda pleton.
 
@@ -18,7 +18,7 @@ Daftar ikon bantuan: tenda keluarga, air bersih, makanan siap saji, obat & P3K, 
 | Plus Jakarta Sans | Google Fonts / Tokotype | SIL Open Font License 1.1 |
 | IBM Plex Mono | IBM / Google Fonts | SIL Open Font License 1.1 |
 
-Font disimpan lokal dalam format `woff2` di `apps/web/src/assets/fonts/` agar tampilan tetap sama tanpa internet.
+Font dimuat lokal lewat paket `@fontsource` (`@fontsource-variable/plus-jakarta-sans`, `@fontsource/ibm-plex-mono`) dan ikut dibundel saat build, sehingga tampilan tetap sama tanpa internet.
 
 ## Peta & Data Geografis
 
