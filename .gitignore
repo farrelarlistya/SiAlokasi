@@ -1,0 +1,36 @@
+# Aturan proyek (lokal, jangan pernah di-push)
+AGENTS.md
+
+# Berkas desain mentah
+*.figcraft
+
+# Rahasia & konfigurasi lokal
+.env
+.env.*
+!.env.example
+
+# Dependensi & hasil build
+node_modules/
+dist/
+build/
+.vite/
+coverage/
+
+# Berkas sementara
+storage/
+*.log
+tmp/
+
+# Sistem operasi & editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+
+# Database lokal
+*.db
+*.sqlite
+*.sqlite3
+pgdata/
