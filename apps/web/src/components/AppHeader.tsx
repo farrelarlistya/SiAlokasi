@@ -1,0 +1,66 @@
+import { ROLE_LABEL, type Role } from "@sialokasi/shared";
+import { MapPin } from "lucide-react";
+import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
+import { cn } from "../lib/cn";
+
+type AppHeaderUser = {
+  name: string;
+  role: Role;
+};
+
+type AppHeaderProps = {
+  actions?: ReactNode;
+  user?: AppHeaderUser | null;
+  className?: string;
+  /** inline dipakai di halaman pemeriksaan komponen. */
+  variant?: "sticky" | "inline";
+};
+
+export function AppHeader({ actions, user, className, variant = "sticky" }: AppHeaderProps) {
+  return (
+    <header
+      className={cn(
+        "z-30 border-b border-border bg-canvas/85 backdrop-blur",
+        variant === "sticky" ? "sticky top-0" : "relative",
+        className,
+      )}
+    >
+      <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-3 px-4 py-2 sm:px-6">
+        <Link
+          to="/"
+          className="flex min-h-11 items-center gap-3 rounded-md pr-2 transition-colors hover:bg-hover/60"
+        >
+          <span
+            aria-hidden="true"
+            className="grid h-11 w-11 place-items-center rounded-md border border-accent/40 bg-accent/15 text-info"
+          >
+            <MapPin className="h-6 w-6" />
+          </span>
+          <span className="flex min-w-0 flex-col leading-tight">
+            <span className="text-base font-semibold text-text">SiAlokasi</span>
+            <span className="hidden text-base text-text-muted sm:block">
+              Ruang kendali tanggap darurat
+            </span>
+          </span>
+        </Link>
+
+        <div className="flex min-w-0 items-center gap-2">
+          {actions}
+
+          {user ? (
+            <div className="hidden items-center gap-2 rounded-md border border-border bg-surface px-3 py-1.5 sm:flex">
+              <span className="grid h-9 w-9 place-items-center rounded-full bg-accent/15 text-base font-semibold text-info">
+                {user.name.slice(0, 1)}
+              </span>
+              <span className="flex min-w-0 flex-col leading-tight">
+                <span className="truncate text-base font-medium text-text">{user.name}</span>
+                <span className="text-base text-text-muted">{ROLE_LABEL[user.role]}</span>
+              </span>
+            </div>
+          ) : null}
+        </div>
+      </div>
+    </header>
+  );
+}

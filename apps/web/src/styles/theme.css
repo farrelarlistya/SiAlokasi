@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "@fontsource-variable/plus-jakarta-sans";
+@import "@fontsource/ibm-plex-mono/latin-400.css";
+@import "@fontsource/ibm-plex-mono/latin-500.css";
+
+@theme {
+  /* Permukaan & teks */
+  --color-canvas: #0b0d11;
+  --color-surface: #14171d;
+  --color-elevated: #1b1f27;
+  --color-hover: #232833;
+  --color-border: #2a2f3a;
+  --color-text: #f5f7fa;
+  --color-text-muted: #a8b0bd;
+  --color-text-disabled: #6e7683;
+
+  /* Aksen & status */
+  --color-accent: #3b82f6;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-info: #60a5fa;
+  --color-violet: #a78bfa;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-success: #10b981;
+
+  /* Kanvas peta */
+  --color-map-land: #f3eedd;
+  --color-map-built: #ede6d2;
+  --color-map-park: #dde8c8;
+  --color-map-water: #cfe3ea;
+  --color-map-road: #ffffff;
+  --color-map-road-edge: #d8cfb4;
+  --color-map-boundary: #c9bf9f;
+
+  /* Tipografi */
+  --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Bentuk & bayangan */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-full: 999px;
+  --shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.45);
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-canvas);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    line-height: 26px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-info);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    color: var(--color-text);
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-canvas);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-text-disabled);
+  }
+}
+
+@layer components {
+  .skeleton {
+    background-image: linear-gradient(
+      90deg,
+      var(--color-elevated) 25%,
+      var(--color-hover) 50%,
+      var(--color-elevated) 75%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.6s linear infinite;
+  }
+
+  .map-canvas {
+    background-color: var(--color-map-land);
+  }
+
+  .overlay-enter {
+    animation: overlay-in 150ms ease-out;
+  }
+
+  .panel-enter {
+    animation: panel-in 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .toast-enter {
+    animation: toast-in 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes panel-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .skeleton {
+    animation: none;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
