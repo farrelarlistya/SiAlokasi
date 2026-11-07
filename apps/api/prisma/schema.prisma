@@ -1,0 +1,295 @@
+// Skema database SiAlokasi — mengikuti PRD §6.1.
+// Uang tidak dipakai di aplikasi ini; semua kuantitas bantuan adalah integer.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  PETUGAS
+  PIMPINAN
+  ADMIN
+}
+
+enum IncidentStatus {
+  BARU
+  DIPERIKSA
+  MENUNGGU_PERSETUJUAN
+  DISETUJUI
+  SELESAI
+  DITOLAK
+  DIBATALKAN
+}
+
+enum DisasterType {
+  BANJIR
+  KEBAKARAN
+  GEMPA
+  ANGIN
+  LAINNYA
+}
+
+enum DamageLevel {
+  RINGAN
+  SEDANG
+  BERAT
+}
+
+enum RoadAccess {
+  TERBUKA
+  TERBATAS
+  TERPUTUS
+}
+
+enum WeatherCondition {
+  CERAH
+  HUJAN
+  EKSTREM
+}
+
+enum DensityLevel {
+  RENDAH
+  SEDANG
+  TINGGI
+}
+
+enum DecisionType {
+  APPROVE
+  REJECT
+}
+
+enum PermitStatus {
+  TERBIT
+  DICETAK
+  SELESAI
+  DIBATALKAN
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  role      Role
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  incidents   Incident[]   @relation("IncidentReporter")
+  incidentLogs IncidentLog[] @relation("IncidentLogActor")
+  decisions   Decision[]   @relation("DecisionDecider")
+  permits     Permit[]     @relation("PermitIssuer")
+  auditLogs   AuditLog[]   @relation("AuditActor")
+  otpCodes    OtpCode[]
+
+  @@map("users")
+}
+
+model OtpCode {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("otp_codes")
+}
+
+model Region {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  poskos    Posko[]
+  incidents Incident[]
+
+  @@map("regions")
+}
+
+model Posko {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  regionId  String
+  region    Region   @relation(fields: [regionId], references: [id])
+  lat       Float
+  lng       Float
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  stocks  Stock[]
+  permits Permit[]
+
+  @@map("poskos")
+}
+
+model AidItem {
+  id                String   @id @default(cuid())
+  name              String   @unique
+  unit              String
+  icon              String
+  standardPerPerson Float    @default(0)
+  isActive          Boolean  @default(true)
+  sortOrder         Int      @default(0)
+  createdAt         DateTime @default(now())
+
+  recommendationItems RecommendationItem[]
+  stocks              Stock[]
+
+  @@map("aid_items")
+}
+
+model Incident {
+  id           String         @id @default(cuid())
+  code         String         @unique
+  title        String
+  disasterType DisasterType
+  lat          Float
+  lng          Float
+  radiusM      Int
+  regionId     String?
+  region       Region?        @relation(fields: [regionId], references: [id])
+  occurredAt   DateTime
+  status       IncidentStatus @default(BARU)
+  reporterId   String
+  reporter     User           @relation("IncidentReporter", fields: [reporterId], references: [id])
+
+  affectedPeople    Int
+  damageLevel       DamageLevel
+  vulnerableBabies  Int         @default(0)
+  vulnerableElderly Int         @default(0)
+  vulnerablePregnant Int        @default(0)
+  vulnerableDisabled Int        @default(0)
+  handlingDays      Int
+  roadAccess        RoadAccess
+  weather           WeatherCondition
+  density           DensityLevel
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  logs            IncidentLog[]
+  recommendations Recommendation[]
+  permits         Permit[]
+
+  @@index([status, occurredAt])
+  @@map("incidents")
+}
+
+model IncidentLog {
+  id         String          @id @default(cuid())
+  incidentId String
+  incident   Incident        @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  fromStatus IncidentStatus?
+  toStatus   IncidentStatus
+  actorId    String?
+  actor      User?           @relation("IncidentLogActor", fields: [actorId], references: [id])
+  note       String?
+  createdAt  DateTime        @default(now())
+
+  @@index([incidentId, createdAt])
+  @@map("incident_logs")
+}
+
+model Recommendation {
+  id           String   @id @default(cuid())
+  incidentId   String
+  incident     Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  modelVersion String
+  totalPeople  Int
+  isActive     Boolean  @default(true)
+  generatedAt  DateTime @default(now())
+
+  items     RecommendationItem[]
+  decisions Decision[]
+
+  @@index([incidentId, isActive])
+  @@map("recommendations")
+}
+
+model RecommendationItem {
+  id               String         @id @default(cuid())
+  recommendationId String
+  recommendation   Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  aidItemId        String
+  aidItem          AidItem        @relation(fields: [aidItemId], references: [id])
+  baseQty          Int
+  finalQty         Int
+  unit             String
+  reason           String
+
+  @@unique([recommendationId, aidItemId])
+  @@map("recommendation_items")
+}
+
+model Decision {
+  id               String         @id @default(cuid())
+  recommendationId String
+  recommendation   Recommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  deciderId        String
+  decider          User           @relation("DecisionDecider", fields: [deciderId], references: [id])
+  decision         DecisionType
+  reason           String
+  decidedAt        DateTime       @default(now())
+
+  @@map("decisions")
+}
+
+model Permit {
+  id         String       @id @default(cuid())
+  number     String       @unique
+  incidentId String
+  incident   Incident     @relation(fields: [incidentId], references: [id])
+  poskoId    String
+  posko      Posko        @relation(fields: [poskoId], references: [id])
+  issuedById String
+  issuedBy   User         @relation("PermitIssuer", fields: [issuedById], references: [id])
+  issuedAt   DateTime     @default(now())
+  validUntil DateTime?
+  status     PermitStatus @default(TERBIT)
+
+  @@index([incidentId])
+  @@map("permits")
+}
+
+model Stock {
+  id        String   @id @default(cuid())
+  poskoId   String
+  posko     Posko    @relation(fields: [poskoId], references: [id])
+  aidItemId String
+  aidItem   AidItem  @relation(fields: [aidItemId], references: [id])
+  qty       Int      @default(0)
+  updatedAt DateTime @updatedAt
+
+  @@unique([poskoId, aidItemId])
+  @@map("stocks")
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  entity    String
+  entityId  String
+  action    String
+  actorId   String?
+  actor     User?    @relation("AuditActor", fields: [actorId], references: [id])
+  before    Json?
+  after     Json?
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@map("audit_logs")
+}
+
+model DemoClock {
+  id            Int      @id @default(1)
+  offsetMinutes Int      @default(0)
+  updatedAt     DateTime @updatedAt
+
+  @@map("demo_clock")
+}
