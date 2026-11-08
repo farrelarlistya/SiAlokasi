@@ -8,8 +8,14 @@ import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { CreateIncidentPage } from "./pages/petugas/CreateIncidentPage";
+import { IncidentFactorsPage } from "./pages/petugas/IncidentFactorsPage";
 import { PetugasDashboardPage } from "./pages/petugas/PetugasDashboardPage";
+import { SubmitIncidentPage } from "./pages/petugas/SubmitIncidentPage";
+import { PermitPage } from "./pages/pimpinan/PermitPage";
 import { PimpinanDashboardPage } from "./pages/pimpinan/PimpinanDashboardPage";
+import { PimpinanReviewPage } from "./pages/pimpinan/PimpinanReviewPage";
+import { TrackingPage } from "./pages/public/TrackingPage";
 import { StockPage } from "./pages/shared/StockPage";
 import { UiKitPage } from "./pages/UiKitPage";
 
@@ -26,6 +32,7 @@ export function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/masuk" element={<LoginPage />} />
         <Route path="/daftar" element={<RegisterPage />} />
+        <Route path="/lacak" element={<TrackingPage />} />
         <Route path="/ui" element={<UiKitPage />} />
 
         <Route
@@ -36,12 +43,52 @@ export function App() {
             </RequireRole>
           }
         />
+        <Route
+          path="/petugas/laporan/baru"
+          element={
+            <RequireRole roles={["PETUGAS"]}>
+              <CreateIncidentPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/petugas/laporan/:id"
+          element={
+            <RequireRole roles={["PETUGAS"]}>
+              <IncidentFactorsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/petugas/laporan/:id/ajukan"
+          element={
+            <RequireRole roles={["PETUGAS"]}>
+              <SubmitIncidentPage />
+            </RequireRole>
+          }
+        />
 
         <Route
           path="/pimpinan"
           element={
             <RequireRole roles={["PIMPINAN"]}>
               <PimpinanDashboardPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/pimpinan/laporan/:id"
+          element={
+            <RequireRole roles={["PIMPINAN"]}>
+              <PimpinanReviewPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/pimpinan/izin/:id"
+          element={
+            <RequireRole roles={["PIMPINAN"]}>
+              <PermitPage />
             </RequireRole>
           }
         />

@@ -6,9 +6,11 @@ import {
 } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
 import {
+  ArrowRight,
   ClipboardCheck,
   FileCheck2,
   MapPinned,
+  Package,
   RefreshCw,
   Users,
   Warehouse,
@@ -91,18 +93,19 @@ export function PimpinanDashboardPage() {
             hint="Laporan yang sudah diajukan petugas."
           />
           <StatCard
-            label="Laporan aktif"
-            value={summary.data?.summary.activeCount}
-            loading={summary.isPending}
-            icon={MapPinned}
-            tone="info"
-            hint="Belum selesai atau belum dibatalkan."
-          />
-          <StatCard
             label="Jiwa terdampak"
             value={summary.data?.summary.affectedPeople}
             loading={summary.isPending}
             icon={Users}
+            hint="Dari laporan yang masih berjalan."
+          />
+          <StatCard
+            label="Bantuan menunggu"
+            value={summary.data?.summary.waitingAidTotal}
+            loading={summary.isPending}
+            icon={Package}
+            tone="info"
+            hint="Total baris bantuan pada antrian keputusan."
           />
           <StatCard
             label="Izin terbit hari ini"
@@ -132,7 +135,7 @@ export function PimpinanDashboardPage() {
       ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-        <section className="overflow-hidden rounded-lg border border-border bg-surface">
+        <section className="min-w-0 overflow-hidden rounded-lg border border-border bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
             <div>
               <h2 className="text-[22px] font-semibold leading-[30px]">Peta kejadian aktif</h2>
@@ -165,7 +168,7 @@ export function PimpinanDashboardPage() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-border bg-surface">
+        <section className="min-w-0 rounded-lg border border-border bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
             <div>
               <h2 className="text-[22px] font-semibold leading-[30px]">Antrian keputusan</h2>
@@ -191,33 +194,44 @@ export function PimpinanDashboardPage() {
                 icon={<ClipboardCheck />}
                 title="Belum ada laporan yang menunggu keputusan."
                 description="Saat petugas mengajukan laporan, laporan itu muncul di sini lengkap dengan peta dan rincian bantuannya."
+                action={
+                  <Link to="/" className={buttonStyles("secondary", "md")}>
+                    Lihat peta kejadian
+                  </Link>
+                }
               />
             ) : (
               <ul className="space-y-3">
                 {queue.map((incident) => (
-                  <li
-                    key={incident.id}
-                    className="rounded-md border border-border bg-elevated p-4"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <p className="text-base font-semibold text-text">{incident.title}</p>
-                        <p className="mt-1 text-base text-text-muted">
-                          {DISASTER_LABEL[incident.disasterType as keyof typeof DISASTER_LABEL] ??
-                            incident.disasterType}{" "}
-                          · {incident.region?.name ?? "Kecamatan belum diisi"}
-                        </p>
+                  <li key={incident.id}>
+                    <Link
+                      to={`/pimpinan/laporan/${incident.id}`}
+                      className="block rounded-md border border-border bg-elevated p-4 transition-colors hover:border-accent hover:bg-hover"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="text-base font-semibold text-text">{incident.title}</p>
+                          <p className="mt-1 text-base text-text-muted">
+                            {DISASTER_LABEL[incident.disasterType as keyof typeof DISASTER_LABEL] ??
+                              incident.disasterType}{" "}
+                            · {incident.region?.name ?? "Kecamatan belum diisi"}
+                          </p>
+                        </div>
+                        <StatusChip status={incident.status} />
                       </div>
-                      <StatusChip status={incident.status} />
-                    </div>
-                    <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-text-muted">
-                      <span className="font-mono text-info">{incident.code}</span>
-                      <span>{formatNumber(incident.affectedPeople)} jiwa</span>
-                      <span>Radius {formatDistance(incident.radiusM)}</span>
-                    </p>
-                    <p className="mt-2 text-base text-text-muted">
-                      Diajukan {formatDateTime(incident.occurredAt)} oleh {incident.reporter.name}
-                    </p>
+                      <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-text-muted">
+                        <span className="font-mono text-info">{incident.code}</span>
+                        <span>{formatNumber(incident.affectedPeople)} jiwa</span>
+                        <span>Radius {formatDistance(incident.radiusM)}</span>
+                      </p>
+                      <p className="mt-2 text-base text-text-muted">
+                        Diajukan {formatDateTime(incident.occurredAt)} oleh {incident.reporter.name}
+                      </p>
+                      <span className="mt-3 inline-flex min-h-11 items-center gap-2 text-base font-medium text-info">
+                        Tinjau laporan
+                        <ArrowRight aria-hidden="true" className="h-5 w-5" />
+                      </span>
+                    </Link>
                   </li>
                 ))}
               </ul>

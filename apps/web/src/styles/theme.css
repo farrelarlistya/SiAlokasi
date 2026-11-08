@@ -24,6 +24,12 @@
   --color-warning: #f59e0b;
   --color-success: #10b981;
 
+  /* Kertas dokumen izin */
+  --color-paper: #ffffff;
+  --color-ink: #111827;
+  --color-ink-muted: #4b5563;
+  --color-paper-border: #d1d5db;
+
   /* Kanvas peta */
   --color-map-land: #f3eedd;
   --color-map-built: #ede6d2;
@@ -267,6 +273,63 @@
   fill-opacity: 0.16;
   stroke: var(--color-success);
   stroke-width: 2;
+}
+
+.map-incident-pin {
+  display: grid;
+  place-items: center;
+}
+
+.map-incident-pin__dot {
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-full);
+  background: var(--color-danger);
+  border: 3px solid var(--color-text);
+  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-danger) 25%, transparent);
+}
+
+.print-document {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+@page {
+  size: A4;
+  margin: 16mm;
+}
+
+@media print {
+  body {
+    background: var(--color-paper) !important;
+    color: var(--color-ink) !important;
+  }
+
+  header,
+  nav,
+  .print-hidden {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  .print-document {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .print-document * {
+    color: var(--color-ink) !important;
+    border-color: var(--color-paper-border) !important;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

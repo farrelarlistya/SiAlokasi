@@ -1,11 +1,22 @@
 import type {
+  AdjustRecommendationItemInput,
+  AidItemInput,
   AuthMeResponse,
+  DecisionInput,
+  IncidentDetailView,
+  IncidentDraftInput,
+  IncidentFactorsInput,
+  IncidentPatchInput,
+  IncidentStatus,
   LoginResponse,
   MutationResponse,
+  PimpinanIncidentDetailView,
+  PoskoInput,
+  PublicIncidentTracking,
+  RegionInput,
   RequestCodeResponse,
   Role,
 } from "@sialokasi/shared";
-import type { AidItemInput, IncidentStatus, PoskoInput, RegionInput } from "@sialokasi/shared";
 
 export type HealthResponse = {
   ok: boolean;
@@ -178,6 +189,7 @@ export type PimpinanSummary = {
     affectedPeople: number;
     permitsToday: number;
     lowStockCount: number;
+    waitingAidTotal: number;
   };
   queue: {
     id: string;
@@ -193,6 +205,31 @@ export type PimpinanSummary = {
     region: { name: string } | null;
     reporter: { name: string };
   }[];
+};
+
+export type PetugasIncidentList = {
+  incidents: {
+    id: string;
+    code: string;
+    title: string;
+    disasterType: string;
+    status: IncidentStatus;
+    occurredAt: string;
+    affectedPeople: number;
+    radiusM: number;
+    region: { name: string } | null;
+  }[];
+  total: number;
+};
+
+export type IncidentMutation = {
+  data: IncidentDetailView;
+  message: string;
+};
+
+export type PimpinanIncidentMutation = {
+  data: PimpinanIncidentDetailView;
+  message: string;
 };
 
 export class ApiError extends Error {
@@ -285,7 +322,42 @@ export const api = {
     ),
 
   petugasDashboard: () => request<PetugasDashboard>("/api/petugas/dashboard"),
+  petugasIncidents: () => request<PetugasIncidentList>("/api/petugas/incidents"),
+  petugasIncident: (id: string) =>
+    request<{ data: IncidentDetailView }>(`/api/petugas/incidents/${id}`),
+  createIncident: (body: IncidentDraftInput) =>
+    request<IncidentMutation>("/api/petugas/incidents", { method: "POST", body }),
+  updateIncident: (id: string, body: IncidentPatchInput) =>
+    request<IncidentMutation>(`/api/petugas/incidents/${id}`, { method: "PATCH", body }),
+  estimateIncident: (id: string, body: IncidentFactorsInput) =>
+    request<IncidentMutation>(`/api/petugas/incidents/${id}/factors`, {
+      method: "POST",
+      body,
+    }),
+  submitIncident: (id: string) =>
+    request<IncidentMutation>(`/api/petugas/incidents/${id}/submit`, { method: "POST" }),
+
   pimpinanSummary: () => request<PimpinanSummary>("/api/pimpinan/summary"),
+  pimpinanIncident: (id: string) =>
+    request<{ data: PimpinanIncidentDetailView }>(`/api/pimpinan/incidents/${id}`),
+  adjustIncidentItem: (id: string, itemId: string, body: AdjustRecommendationItemInput) =>
+    request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/items/${itemId}`, {
+      method: "PATCH",
+      body,
+    }),
+  decideIncident: (id: string, body: DecisionInput) =>
+    request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/decision`, {
+      method: "POST",
+      body,
+    }),
+  completeIncident: (id: string) =>
+    request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/complete`, {
+      method: "POST",
+    }),
+
+  publicTracking: (code: string) =>
+    request<PublicIncidentTracking>(`/api/public/incidents/${encodeURIComponent(code)}`),
+
   stockSummary: () => request<StockSummary>("/api/stock/summary"),
 
   adminSummary: () => request<AdminSummaryResponse>("/api/admin/summary"),

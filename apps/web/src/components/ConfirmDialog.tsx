@@ -1,4 +1,4 @@
-import { AlertTriangle } from "lucide-react";
+import { AlertTriangle, Info } from "lucide-react";
 import { Button } from "./Button";
 import { Modal } from "./Modal";
 
@@ -48,10 +48,22 @@ export function ConfirmDialog({
         </>
       }
     >
-      <div className="flex items-start gap-3 rounded-md border border-danger/30 bg-danger/10 p-4">
-        <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-danger" />
+      <div
+        className={
+          tone === "danger"
+            ? "flex items-start gap-3 rounded-md border border-danger/30 bg-danger/10 p-4"
+            : "flex items-start gap-3 rounded-md border border-info/30 bg-info/10 p-4"
+        }
+      >
+        {tone === "danger" ? (
+          <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-danger" />
+        ) : (
+          <Info aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-info" />
+        )}
         <p className="text-base text-text">
-          Tindakan ini tidak bisa dibatalkan. Pastikan data sudah diperiksa sebelum melanjutkan.
+          {tone === "danger"
+            ? "Tindakan ini tidak bisa dibatalkan. Pastikan data sudah diperiksa sebelum melanjutkan."
+            : "Pastikan data sudah diperiksa. Setelah disimpan, tindakan ini tidak bisa dibatalkan."}
         </p>
       </div>
     </Modal>

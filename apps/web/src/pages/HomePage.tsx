@@ -68,6 +68,9 @@ export function HomePage() {
         user={user ? { name: user.name, role: user.role } : null}
         actions={
           <div className="flex items-center gap-2">
+            <Link to="/lacak" className={buttonStyles("secondary", "md")}>
+              Lacak
+            </Link>
             {user ? (
               <Link to={homePathForRole(user.role)} className={buttonStyles("primary", "md")}>
                 Dasbor
@@ -325,7 +328,14 @@ export function HomePage() {
                 <dl className="mt-3 space-y-2 text-base">
                   <div className="flex justify-between gap-3">
                     <dt className="text-text-muted">Kode lacak</dt>
-                    <dd className="font-mono text-info">{selected.code}</dd>
+                    <dd>
+                      <Link
+                        to={`/lacak?kode=${encodeURIComponent(selected.code)}`}
+                        className="font-mono text-info underline-offset-4 hover:underline"
+                      >
+                        {selected.code}
+                      </Link>
+                    </dd>
                   </div>
                   <div className="flex justify-between gap-3">
                     <dt className="text-text-muted">Waktu kejadian</dt>
@@ -345,6 +355,15 @@ export function HomePage() {
                     </dd>
                   </div>
                 </dl>
+                <div className="mt-4">
+                  <Link
+                    to={`/lacak?kode=${encodeURIComponent(selected.code)}`}
+                    className={buttonStyles("primary", "md")}
+                  >
+                    Lacak laporan ini
+                    <ArrowRight aria-hidden="true" className="h-5 w-5" />
+                  </Link>
+                </div>
                 <p className="mt-3 border-t border-border pt-3 text-base text-text-muted">
                   Data pribadi pelapor tidak ditampilkan.
                 </p>

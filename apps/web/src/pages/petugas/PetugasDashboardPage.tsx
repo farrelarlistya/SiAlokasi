@@ -1,6 +1,7 @@
 import { formatDateTime, formatNumber } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
 import {
+  ArrowRight,
   ClipboardList,
   Clock3,
   FilePlus2,
@@ -35,10 +36,16 @@ export function PetugasDashboardPage() {
         title={`Selamat datang, ${firstName}`}
         description="Pantau laporan yang Anda buat dan status terbarunya di satu tempat."
         actions={
-          <Link to="/" className={buttonStyles("secondary", "md")}>
-            <MapPinned aria-hidden="true" className="h-5 w-5" />
-            Lihat peta publik
-          </Link>
+          <>
+            <Link to="/" className={buttonStyles("secondary", "md")}>
+              <MapPinned aria-hidden="true" className="h-5 w-5" />
+              Lihat peta publik
+            </Link>
+            <Link to="/petugas/laporan/baru" className={buttonStyles("primary", "md")}>
+              <FilePlus2 aria-hidden="true" className="h-5 w-5" />
+              Buat laporan
+            </Link>
+          </>
         }
       />
 
@@ -128,8 +135,9 @@ export function PetugasDashboardPage() {
                 title="Belum ada laporan dari akun Anda."
                 description="Laporan yang Anda buat akan muncul di sini lengkap dengan status dan waktu kejadiannya."
                 action={
-                  <Link to="/" className={buttonStyles("secondary", "md")}>
-                    Lihat peta kejadian
+                  <Link to="/petugas/laporan/baru" className={buttonStyles("primary", "md")}>
+                    <FilePlus2 aria-hidden="true" className="h-5 w-5" />
+                    Buat laporan pertama
                   </Link>
                 }
               />
@@ -139,7 +147,12 @@ export function PetugasDashboardPage() {
                   <li key={incident.id} className="flex flex-col gap-2 py-4 first:pt-0 last:pb-0">
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-base font-semibold text-text">{incident.title}</p>
+                        <Link
+                          to={`/petugas/laporan/${incident.id}`}
+                          className="inline-flex min-h-11 items-center text-base font-semibold text-text underline-offset-4 hover:text-info hover:underline"
+                        >
+                          {incident.title}
+                        </Link>
                         <p className="mt-1 text-base text-text-muted">
                           {incident.region?.name ?? "Kecamatan belum diisi"} ·{" "}
                           {formatDateTime(incident.occurredAt)}
@@ -147,10 +160,19 @@ export function PetugasDashboardPage() {
                       </div>
                       <StatusChip status={incident.status} />
                     </div>
-                    <p className="flex flex-wrap gap-x-4 gap-y-1 text-base text-text-muted">
-                      <span className="font-mono text-info">{incident.code}</span>
-                      <span>{formatNumber(incident.affectedPeople)} jiwa terdampak</span>
-                    </p>
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <p className="flex flex-wrap gap-x-4 gap-y-1 text-base text-text-muted">
+                        <span className="font-mono text-info">{incident.code}</span>
+                        <span>{formatNumber(incident.affectedPeople)} jiwa terdampak</span>
+                      </p>
+                      <Link
+                        to={`/petugas/laporan/${incident.id}`}
+                        className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-info underline-offset-4 hover:underline"
+                      >
+                        Buka laporan
+                        <ArrowRight aria-hidden="true" className="h-5 w-5" />
+                      </Link>
+                    </div>
                   </li>
                 ))}
               </ul>

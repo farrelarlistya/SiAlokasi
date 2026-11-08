@@ -1,4 +1,5 @@
 import {
+  FilePlus2,
   House,
   LayoutDashboard,
   LogOut,
@@ -39,6 +40,7 @@ function navItemsForRole(role: "PETUGAS" | "PIMPINAN" | "ADMIN"): NavItem[] {
 
   return [
     { label: "Dasbor", to: "/petugas", icon: LayoutDashboard, mobile: true },
+    { label: "Buat laporan", to: "/petugas/laporan/baru", icon: FilePlus2, mobile: true },
     { label: "Peta publik", to: "/", icon: House, mobile: true },
   ];
 }
