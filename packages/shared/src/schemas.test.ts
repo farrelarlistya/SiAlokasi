@@ -1,9 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
+  adjustRecommendationItemSchema,
   aidItemInputSchema,
+  decisionInputSchema,
   emailSchema,
+  incidentDraftSchema,
   incidentFactorsSchema,
   incidentFormSchema,
+  incidentPatchSchema,
   poskoInputSchema,
   publicIncidentFilterSchema,
   registerPetugasSchema,
@@ -79,6 +83,7 @@ describe("incidentFormSchema", () => {
       lat: -7.33,
       lng: 112.78,
       radiusM: 1_200,
+      regionId: "region_rungkut",
     });
     expect(result.success).toBe(true);
   });
@@ -92,6 +97,7 @@ describe("incidentFormSchema", () => {
       lat: -7.33,
       lng: 112.78,
       radiusM: 50,
+      regionId: "region_rungkut",
     });
     expect(result.success).toBe(false);
   });
@@ -105,8 +111,86 @@ describe("incidentFormSchema", () => {
       lat: -7.33,
       lng: 112.78,
       radiusM: 1_200,
+      regionId: "region_rungkut",
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe("incidentDraftSchema", () => {
+  const draft = {
+    title: "Banjir di Wonokromo",
+    disasterType: "BANJIR" as const,
+    occurredAt: "2026-11-08T04:30:00.000Z",
+    lat: -7.3,
+    lng: 112.74,
+    radiusM: 1_200,
+    regionId: "region_wonokromo",
+  };
+
+  it("mewajibkan kecamatan terdampak", () => {
+    expect(incidentDraftSchema.safeParse({ ...draft, regionId: "" }).success).toBe(false);
+  });
+
+  it("menolak titik di luar Kota Surabaya", () => {
+    const result = incidentDraftSchema.safeParse({ ...draft, lat: -6.2, lng: 106.8 });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toContain("Kota Surabaya");
+    }
+  });
+
+  it("mengizinkan penyuntingan sebagian selama draf masih baru", () => {
+    expect(incidentPatchSchema.safeParse({ title: "Judul baru yang jelas" }).success).toBe(true);
+    expect(incidentPatchSchema.safeParse({ radiusM: 50 }).success).toBe(false);
+  });
+});
+
+describe("adjustRecommendationItemSchema", () => {
+  it("mewajibkan alasan yang bisa dipahami", () => {
+    expect(
+      adjustRecommendationItemSchema.safeParse({ finalQty: 120, reason: "ok" }).success,
+    ).toBe(false);
+    expect(
+      adjustRecommendationItemSchema.safeParse({
+        finalQty: 120,
+        reason: "Stok posko lain lebih dekat",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("menolak jumlah negatif atau desimal", () => {
+    expect(
+      adjustRecommendationItemSchema.safeParse({
+        finalQty: -1,
+        reason: "Koreksi jumlah bantuan",
+      }).success,
+    ).toBe(false);
+    expect(
+      adjustRecommendationItemSchema.safeParse({
+        finalQty: 1.5,
+        reason: "Koreksi jumlah bantuan",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("decisionInputSchema", () => {
+  it("mewajibkan posko saat menyetujui", () => {
+    expect(decisionInputSchema.safeParse({ decision: "APPROVE" }).success).toBe(false);
+    expect(
+      decisionInputSchema.safeParse({ decision: "APPROVE", poskoId: "posko_balai_kota" }).success,
+    ).toBe(true);
+  });
+
+  it("mewajibkan alasan saat menolak", () => {
+    expect(decisionInputSchema.safeParse({ decision: "REJECT" }).success).toBe(false);
+    expect(
+      decisionInputSchema.safeParse({
+        decision: "REJECT",
+        reason: "Lokasi belum bisa dipastikan",
+      }).success,
+    ).toBe(true);
   });
 });
 

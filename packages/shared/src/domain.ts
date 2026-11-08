@@ -99,6 +99,13 @@ export const AID_ICON_LABEL: Record<AidIconName, string> = {
   thermometer: "Pemantauan suhu",
 };
 
+export const DECISION_TYPES = ["APPROVE", "REJECT"] as const;
+export type DecisionType = (typeof DECISION_TYPES)[number];
+export const DECISION_LABEL: Record<DecisionType, string> = {
+  APPROVE: "Disetujui",
+  REJECT: "Ditolak",
+};
+
 export const DISASTER_TYPES = ["BANJIR", "KEBAKARAN", "GEMPA", "ANGIN", "LAINNYA"] as const;
 export type DisasterType = (typeof DISASTER_TYPES)[number];
 export const disasterTypeSchema = z.enum(DISASTER_TYPES);

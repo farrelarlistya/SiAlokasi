@@ -103,6 +103,12 @@ export function formatRelativeTime(value: Date | string | number, nowMs: number 
   return `${Math.round(months / 12)} tahun lalu`;
 }
 
+/** Versi teknis diubah menjadi label ramah, contoh sialokasi-ridge-1.1.0 → Versi 1.1. */
+export function formatModelVersion(version: string): string {
+  const match = version.match(/(\d+\.\d+)/);
+  return match ? `Versi ${match[1]}` : "Versi terbaru";
+}
+
 export function maskEmail(email: string): string {
   const [local, domain] = email.split("@");
   if (!local || !domain) return email;

@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatDateTime, formatDistance, formatNumber, formatRelativeTime } from "./format";
+import {
+  formatDate,
+  formatDateTime,
+  formatDistance,
+  formatModelVersion,
+  formatNumber,
+  formatRelativeTime,
+} from "./format";
 
 const NOW = Date.parse("2026-11-08T10:00:00.000Z");
 
@@ -31,6 +38,13 @@ describe("format tanggal", () => {
     const date = "2026-11-08T03:42:00.000Z";
     expect(formatDate(date)).toContain("2026");
     expect(formatDateTime(date)).toMatch(/10[:.]42/);
+  });
+});
+
+describe("format versi perhitungan", () => {
+  it("mengubah versi teknis menjadi label ramah", () => {
+    expect(formatModelVersion("sialokasi-ridge-1.1.0")).toBe("Versi 1.1");
+    expect(formatModelVersion("tanpa-angka")).toBe("Versi terbaru");
   });
 });
 

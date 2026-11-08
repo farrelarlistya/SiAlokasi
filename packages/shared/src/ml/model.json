@@ -1,0 +1,163 @@
+{
+  "modelVersion": "sialokasi-ridge-1.1.0",
+  "trainedAt": "2026-11-08",
+  "sampleCount": 4000,
+  "features": [
+    "damage",
+    "road",
+    "weather",
+    "density"
+  ],
+  "items": [
+    {
+      "aidItemId": "aid_tenda_keluarga",
+      "name": "Tenda keluarga",
+      "unit": "unit",
+      "baseKind": "perPerson",
+      "min": 0,
+      "max": 2000,
+      "intercept": 1.00123839,
+      "coefficients": [
+        0.09852638,
+        0.00010482,
+        0.01980201,
+        0.00034333
+      ]
+    },
+    {
+      "aidItemId": "aid_air_bersih",
+      "name": "Air bersih",
+      "unit": "liter",
+      "baseKind": "perPersonDay",
+      "min": 0,
+      "max": 25000000,
+      "intercept": 1.00288903,
+      "coefficients": [
+        -0.00016456,
+        0.09771184,
+        0.07814035,
+        0.00085599
+      ]
+    },
+    {
+      "aidItemId": "aid_makanan_siap_saji",
+      "name": "Makanan siap saji",
+      "unit": "paket",
+      "baseKind": "perPersonDay",
+      "min": 0,
+      "max": 5000000,
+      "intercept": 1.00301274,
+      "coefficients": [
+        0.00043085,
+        0.09819781,
+        0.07879781,
+        -0.00033863
+      ]
+    },
+    {
+      "aidItemId": "aid_obat_p3k",
+      "name": "Obat & P3K",
+      "unit": "kit",
+      "baseKind": "perPerson",
+      "min": 0,
+      "max": 1500,
+      "intercept": 1.0005578,
+      "coefficients": [
+        0.0984938,
+        0.00011146,
+        0.0493535,
+        0.00166189
+      ]
+    },
+    {
+      "aidItemId": "aid_selimut",
+      "name": "Selimut",
+      "unit": "lembar",
+      "baseKind": "perPerson",
+      "min": 0,
+      "max": 40000,
+      "intercept": 1.00375246,
+      "coefficients": [
+        -0.00057302,
+        -0.00090397,
+        0.0792941,
+        0.03925891
+      ]
+    },
+    {
+      "aidItemId": "aid_sanitasi",
+      "name": "Sanitasi (toilet portabel)",
+      "unit": "unit",
+      "baseKind": "perPersonPlusElderly",
+      "min": 0,
+      "max": 400,
+      "intercept": 1.00105367,
+      "coefficients": [
+        0.0008872,
+        -0.00046166,
+        0.00009742,
+        0.09879265
+      ]
+    },
+    {
+      "aidItemId": "aid_susu_bayi",
+      "name": "Susu bayi",
+      "unit": "kaleng",
+      "baseKind": "perBabyDay",
+      "min": 0,
+      "max": 200000,
+      "intercept": 1.00139382,
+      "coefficients": [
+        -0.00019332,
+        0.04874084,
+        0.00025324,
+        -0.00000599
+      ]
+    },
+    {
+      "aidItemId": "aid_pembalut",
+      "name": "Pembalut",
+      "unit": "paket",
+      "baseKind": "perPersonPlusPregnant",
+      "min": 0,
+      "max": 8000,
+      "intercept": 1.00098814,
+      "coefficients": [
+        0.00007589,
+        0.00002103,
+        -0.0001055,
+        0.03925869
+      ]
+    },
+    {
+      "aidItemId": "aid_genset",
+      "name": "Genset",
+      "unit": "unit",
+      "baseKind": "perPerson",
+      "min": 0,
+      "max": 200,
+      "intercept": 0.99473956,
+      "coefficients": [
+        0.00363934,
+        0.14770722,
+        0.09926639,
+        0.00138377
+      ]
+    },
+    {
+      "aidItemId": "aid_tenda_pleton",
+      "name": "Tenda pleton",
+      "unit": "unit",
+      "baseKind": "perPerson",
+      "min": 0,
+      "max": 300,
+      "intercept": 0.99979538,
+      "coefficients": [
+        0.10086432,
+        -0.0003217,
+        -0.00038199,
+        -0.00168185
+      ]
+    }
+  ]
+}

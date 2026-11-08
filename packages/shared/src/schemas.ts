@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   AID_ICON_NAMES,
   DAMAGE_LEVELS,
+  DECISION_TYPES,
   DENSITY_LEVELS,
   DISASTER_TYPES,
   FACTOR_LIMITS,
@@ -139,7 +140,7 @@ function checkVulnerableTotal(data: FactorData, ctx: z.RefinementCtx): void {
 export const incidentFactorsSchema = z.object(factorFields).superRefine(checkVulnerableTotal);
 export type IncidentFactorsInput = z.infer<typeof incidentFactorsSchema>;
 
-export const incidentDraftSchema = z.object({
+const incidentDraftFields = {
   title: requiredText("Judul laporan", 5, 120),
   disasterType: z.enum(DISASTER_TYPES, { required_error: "Pilih jenis bencana." }),
   occurredAt: z
@@ -149,15 +150,96 @@ export const incidentDraftSchema = z.object({
   lat: latitudeSchema,
   lng: longitudeSchema,
   radiusM: radiusSchema,
-  regionId: z.string().trim().min(1, "Pilih kecamatan terdampak.").optional(),
+  regionId: z
+    .string({ required_error: "Pilih kecamatan terdampak." })
+    .trim()
+    .min(1, "Pilih kecamatan terdampak."),
+};
+
+function checkIncidentInsideSurabaya(
+  value: { lat?: number; lng?: number },
+  ctx: z.RefinementCtx,
+): void {
+  if (value.lat === undefined || value.lng === undefined) return;
+
+  const inside =
+    value.lat >= SURABAYA_BOUNDS.minLat &&
+    value.lat <= SURABAYA_BOUNDS.maxLat &&
+    value.lng >= SURABAYA_BOUNDS.minLng &&
+    value.lng <= SURABAYA_BOUNDS.maxLng;
+
+  if (!inside) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["lat"],
+      message:
+        "Titik kejadian harus berada di area Kota Surabaya. Geser titik di peta atau periksa angka lintang dan bujur.",
+    });
+  }
+}
+
+export const incidentDraftSchema = z
+  .object(incidentDraftFields)
+  .superRefine(checkIncidentInsideSurabaya);
+
+/** Dipakai saat petugas menyunting draf yang masih berstatus BARU. */
+export const incidentPatchSchema = z
+  .object(incidentDraftFields)
+  .partial()
+  .superRefine(checkIncidentInsideSurabaya);
+
+export const incidentFormSchema = z
+  .object({ ...incidentDraftFields, ...factorFields })
+  .superRefine((value, ctx) => {
+    checkVulnerableTotal(value, ctx);
+    checkIncidentInsideSurabaya(value, ctx);
+  });
+
+export const adjustRecommendationItemSchema = z.object({
+  finalQty: z.coerce
+    .number({ invalid_type_error: "Jumlah akhir wajib diisi angka." })
+    .int("Jumlah akhir harus bilangan bulat.")
+    .min(0, "Jumlah akhir tidak boleh negatif.")
+    .max(1_000_000, "Jumlah akhir terlalu besar. Periksa kembali angka yang dimasukkan."),
+  reason: requiredText("Alasan perubahan", 5, 300),
 });
 
-export const incidentFormSchema = incidentDraftSchema
-  .extend(factorFields)
-  .superRefine(checkVulnerableTotal);
+export const decisionInputSchema = z
+  .object({
+    decision: z.enum(DECISION_TYPES, {
+      required_error: "Pilih keputusan yang ingin disimpan.",
+    }),
+    reason: z.string().trim().max(300, "Catatan keputusan maksimal 300 karakter.").optional(),
+    poskoId: z
+      .string()
+      .trim()
+      .min(1, "Pilih posko tujuan distribusi.")
+      .optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.decision === "REJECT" && (!value.reason || value.reason.length < 5)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["reason"],
+        message:
+          "Tulis alasan penolakan minimal 5 karakter agar petugas tahu apa yang perlu diperbaiki.",
+      });
+    }
+
+    if (value.decision === "APPROVE" && !value.poskoId) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["poskoId"],
+        message: "Pilih posko tujuan distribusi sebelum menyetujui laporan.",
+      });
+    }
+  });
 
 export type IncidentDraftInput = z.infer<typeof incidentDraftSchema>;
+export type IncidentPatchInput = z.infer<typeof incidentPatchSchema>;
 export type IncidentFormInput = z.infer<typeof incidentFormSchema>;
+export type AdjustRecommendationItemInput = z.infer<typeof adjustRecommendationItemSchema>;
+export type DecisionInput = z.infer<typeof decisionInputSchema>;
 
 export const aidItemInputSchema = z.object({
   name: requiredText("Nama jenis bantuan", 2, 60),
