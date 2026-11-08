@@ -10,12 +10,14 @@ type AuditInput = {
   after?: Prisma.InputJsonValue;
 };
 
+type AuditWriter = Pick<PrismaClient, "auditLog"> | Prisma.TransactionClient;
+
 /**
  * Menulis satu baris riwayat perubahan. Modul lain tidak boleh mengubah atau
  * menghapus baris audit; tabel ini hanya menerima penambahan.
  */
 export async function writeAudit(
-  prisma: PrismaClient,
+  prisma: AuditWriter,
   clock: ClockService,
   input: AuditInput,
 ): Promise<void> {

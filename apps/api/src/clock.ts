@@ -23,6 +23,30 @@ export class ClockService {
     return new Date(now.getTime() + minutes * 60_000);
   }
 
+  /** Membaca waktu yang dikirim formulir. Semua parsing tanggal lewat sini. */
+  parseBusinessDate(value: string): Date {
+    return new Date(value);
+  }
+
+  /** Waktu bisnis ditambah sejumlah hari, dipakai untuk masa berlaku izin. */
+  async afterDays(days: number): Promise<Date> {
+    const now = await this.now();
+    return new Date(now.getTime() + days * 24 * 60 * 60_000);
+  }
+
+  /** Tanggal Jakarta dalam bentuk YYYYMMDD untuk nomor izin. */
+  async jakartaDateStamp(): Promise<string> {
+    const now = await this.now();
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    })
+      .format(now)
+      .replaceAll("-", "");
+  }
+
   /** Awal hari menurut waktu Jakarta, dipakai untuk ringkasan "hari ini". */
   async startOfDayJakarta(): Promise<Date> {
     const now = await this.now();

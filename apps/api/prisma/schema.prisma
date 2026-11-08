@@ -158,6 +158,7 @@ model AidItem {
   createdAt         DateTime @default(now())
 
   recommendationItems RecommendationItem[]
+  permitItems         PermitItem[]
   stocks              Stock[]
 
   @@map("aid_items")
@@ -178,16 +179,16 @@ model Incident {
   reporterId   String
   reporter     User           @relation("IncidentReporter", fields: [reporterId], references: [id])
 
-  affectedPeople    Int
-  damageLevel       DamageLevel
-  vulnerableBabies  Int         @default(0)
-  vulnerableElderly Int         @default(0)
-  vulnerablePregnant Int        @default(0)
-  vulnerableDisabled Int        @default(0)
-  handlingDays      Int
-  roadAccess        RoadAccess
-  weather           WeatherCondition
-  density           DensityLevel
+  affectedPeople     Int?
+  damageLevel        DamageLevel?
+  vulnerableBabies   Int          @default(0)
+  vulnerableElderly  Int          @default(0)
+  vulnerablePregnant Int          @default(0)
+  vulnerableDisabled Int          @default(0)
+  handlingDays       Int?
+  roadAccess         RoadAccess?
+  weather            WeatherCondition?
+  density            DensityLevel?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -241,6 +242,7 @@ model RecommendationItem {
   finalQty         Int
   unit             String
   reason           String
+  adjustReason     String?
 
   @@unique([recommendationId, aidItemId])
   @@map("recommendation_items")
@@ -253,9 +255,10 @@ model Decision {
   deciderId        String
   decider          User           @relation("DecisionDecider", fields: [deciderId], references: [id])
   decision         DecisionType
-  reason           String
+  reason           String?
   decidedAt        DateTime       @default(now())
 
+  @@unique([recommendationId])
   @@map("decisions")
 }
 
@@ -272,8 +275,26 @@ model Permit {
   validUntil DateTime?
   status     PermitStatus @default(TERBIT)
 
+  items PermitItem[]
+
   @@index([incidentId])
   @@map("permits")
+}
+
+/// Salinan daftar bantuan saat izin diterbitkan, agar dokumen lama tidak berubah.
+model PermitItem {
+  id        String  @id @default(cuid())
+  permitId  String
+  permit    Permit  @relation(fields: [permitId], references: [id], onDelete: Cascade)
+  aidItemId String
+  aidItem   AidItem @relation(fields: [aidItemId], references: [id])
+  name      String
+  unit      String
+  qty       Int
+  reason    String?
+
+  @@unique([permitId, aidItemId])
+  @@map("permit_items")
 }
 
 model Stock {

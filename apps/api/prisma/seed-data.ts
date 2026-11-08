@@ -76,9 +76,9 @@ export const AID_ITEMS: AidItemSeed[] = [
 export type StockSeed = { poskoId: string; aidItemId: string; qty: number };
 
 const stockByPosko: Record<string, number[]> = {
-  posko_balai_kota: [40, 12_000, 2_400, 60, 800, 8, 300, 240, 4, 10],
-  posko_rungkut: [25, 8_000, 1_600, 40, 500, 5, 200, 160, 3, 6],
-  posko_benowo: [30, 9_000, 1_800, 45, 600, 6, 220, 180, 3, 8],
+  posko_balai_kota: [40, 30_000, 5_000, 60, 800, 8, 300, 240, 4, 10],
+  posko_rungkut: [25, 20_000, 3_500, 40, 500, 5, 200, 160, 3, 6],
+  posko_benowo: [30, 22_000, 4_000, 45, 600, 6, 220, 180, 3, 8],
 };
 
 export const STOCKS: StockSeed[] = Object.entries(stockByPosko).flatMap(([poskoId, quantities]) =>

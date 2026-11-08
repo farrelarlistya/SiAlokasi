@@ -14,7 +14,8 @@
     "db:studio": "prisma studio",
     "demo:reset": "tsx scripts/demo-reset.ts",
     "verify:m1": "tsx scripts/verify-m1.ts",
-    "verify:m2": "tsx scripts/verify-m2.ts"
+    "verify:m2": "tsx scripts/verify-m2.ts",
+    "verify:m3": "tsx scripts/verify-m3.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

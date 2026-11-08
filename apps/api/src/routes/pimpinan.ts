@@ -20,7 +20,7 @@ export function registerPimpinanRoutes(
       const activeStatuses = [...ACTIVE_INCIDENT_STATUSES] as IncidentStatus[];
       const startOfToday = await deps.clock.startOfDayJakarta();
 
-      const [waitingCount, activeCount, affected, permitsToday, queue, poskos] =
+      const [waitingCount, activeCount, affected, permitsToday, waitingAid, queue, poskos] =
         await Promise.all([
           deps.prisma.incident.count({ where: { status: "MENUNGGU_PERSETUJUAN" } }),
           deps.prisma.incident.count({ where: { status: { in: activeStatuses } } }),
@@ -29,6 +29,15 @@ export function registerPimpinanRoutes(
             _sum: { affectedPeople: true },
           }),
           deps.prisma.permit.count({ where: { issuedAt: { gte: startOfToday } } }),
+          deps.prisma.recommendationItem.aggregate({
+            where: {
+              recommendation: {
+                isActive: true,
+                incident: { status: "MENUNGGU_PERSETUJUAN" },
+              },
+            },
+            _sum: { finalQty: true },
+          }),
           deps.prisma.incident.findMany({
             where: { status: "MENUNGGU_PERSETUJUAN" },
             orderBy: { occurredAt: "asc" },
@@ -84,8 +93,12 @@ export function registerPimpinanRoutes(
           affectedPeople: affected._sum.affectedPeople ?? 0,
           permitsToday,
           lowStockCount,
+          waitingAidTotal: waitingAid._sum.finalQty ?? 0,
         },
-        queue,
+        queue: queue.map((incident) => ({
+          ...incident,
+          affectedPeople: incident.affectedPeople ?? 0,
+        })),
       };
     },
   );

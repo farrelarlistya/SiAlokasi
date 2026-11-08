@@ -25,6 +25,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
   const demoAidItemIds = AID_ITEMS.map((item) => item.id);
 
   await prisma.$transaction(async (tx) => {
+    await tx.permitItem.deleteMany();
     await tx.permit.deleteMany();
     await tx.decision.deleteMany();
     await tx.recommendationItem.deleteMany();

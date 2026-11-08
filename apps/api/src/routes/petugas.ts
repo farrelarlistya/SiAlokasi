@@ -53,7 +53,10 @@ export function registerPetugasRoutes(app: FastifyInstance, deps: PetugasDepende
       return {
         counts,
         total,
-        recent,
+        recent: recent.map((incident) => ({
+          ...incident,
+          affectedPeople: incident.affectedPeople ?? 0,
+        })),
         profile: request.auth?.user ?? null,
       };
     },
