@@ -2,6 +2,13 @@
 
 Semua aset yang dipakai aplikasi wajib tercatat di sini beserta lisensinya.
 
+## Lambang
+
+| Aset | Sumber | Lisensi | Catatan |
+| :--- | :--- | :--- | :--- |
+| Lambang SiAlokasi | Disediakan pemilik proyek | Hak milik proyek | Berkas asli `logo-sialokasi-sumber.jpg`; versi bersih `logo-sialokasi.png` (512 px, latar transparan) dan `apps/web/public/favicon.png` (64 px) |
+| Lambang aplikasi | Berkas turunan dari lambang di atas | Hak milik proyek | Dipakai lewat komponen `BrandMark` di header dan halaman masuk |
+
 ## Ikon
 
 | Aset | Sumber | Lisensi | Catatan |

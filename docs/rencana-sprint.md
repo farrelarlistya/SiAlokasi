@@ -160,6 +160,27 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 ---
 
+## Revisi Antarsesi — Lambang Baru & Panel Peta (Selesai 2026-11-08)
+
+**Permintaan pemilik:** ganti lambang aplikasi dengan logo baru, lalu tambahkan panel samping yang bisa dibuka/ditutup agar formulir tidak menutupi peta.
+
+**Hasil:**
+- Lambang baru `BrandMark` (berkas PNG asli dari pemilik, latar hitam dipotong) dipakai di header, halaman masuk, dan `favicon.png` — pin bantuan di atas lipatan peta dengan gelombang, api, gunung, dan jalur oranye.
+- Komponen `MapWorkspace`: panel samping 420–440 px di desktop, lembar bawah 55% di ponsel, tombol "Tutup" / "Tampilkan panel", pilihan diingat per halaman.
+- Beranda publik (P1) dan Buat Laporan (T2) memakai panel baru; peta tidak lagi tertutup dan mengisi seluruh area saat panel ditutup.
+- Peta menghitung ulang ukuran (`invalidateSize`) setiap panel berubah; `AppShell` mendapat mode `fullBleed`; tombol simpan ponsel tidak lagi menutupi isian.
+- ADR 0006, pembaruan `docs/desain/design.md` §5, §7, §10, §12, dan bukti di `docs/bukti/revisi-peta-sidebar.md`.
+- Uji: 0 kesalahan konsol/halaman, 0 gulir horizontal pada 360/390/768/1440/1920 px, `npm run build` dan `npm test` lulus.
+
+**Kriteria selesai:**
+- [x] Logo baru tampil di header, halaman masuk, dan favicon.
+- [x] Panel bisa ditutup/dibuka di Beranda dan Buat Laporan; isian formulir tidak hilang.
+- [x] Peta tetap utuh dan dapat digeser setelah panel ditutup/dibuka.
+- [x] Ponsel 360–390 px: peta/panel tidak tertutup navigasi bawah, tidak ada gulir horizontal pada 360/390/768/1440/1920 px.
+- [x] `npm run build` dan `npm test` lulus bersih.
+
+---
+
 ## M4 — Kasus Khusus, Rekap, Admin, & Demo
 
 **Tujuan:** aplikasi tahan terhadap skenario tidak ideal dan siap dipamerkan berulang.
@@ -221,6 +242,7 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | 2026-11-08 | **`permit_items` snapshot** + nomor `IZN-YYYYMMDD-XXX`, berlaku 7 hari | Dokumen izin lama tidak berubah saat koreksi M4 | ADR 0005 |
 | 2026-11-08 | Kode lacak **`SIA-` + 5 karakter** (9 total, alfabet tanpa I/O/0/1) | Konsisten dengan pola PRD & mudah dibacakan | ADR 0005 |
 | 2026-11-08 | Stok hanya **dibandingkan & diberi peringatan** di M3 | Ledger & invariant stok dibangun benar di M4 | ADR 0005 |
+| 2026-11-08 | **Lambang baru (berkas asli) + panel peta bisa ditutup** | Formulir tidak menutupi peta; peta bisa dipakai lebar | ADR 0006 |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---

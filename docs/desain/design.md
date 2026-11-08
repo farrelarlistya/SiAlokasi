@@ -89,18 +89,20 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 
 ### 5.1 Desktop (≥1280 px)
 - **Peta penuh layar** sebagai lapisan dasar.
-- **Panel kiri** 400 px, mengapung 24 px dari tepi, tinggi mengikuti isi (maks. `calc(100vh - 48px)`), bisa digulir di dalam.
-- **Header** mengapung di kanan atas peta: nama pengguna, peran, tombol keluar.
-- **Kontrol peta** (zoom, layer, reset tampilan) di kanan bawah, tombol bulat 44 px.
+- **Panel samping kiri** 420–440 px menjadi bagian tata letak (bukan mengapung di atas peta), tinggi penuh, isinya bisa digulir sendiri.
+- Panel bisa **ditutup** lewat tombol "Tutup" atau dibuka lagi lewat "Tampilkan panel"; pilihan diingat per halaman sehingga peta bisa dipakai lebar tanpa kehilangan isian formulir.
+- **Header** tetap di atas: merek, navigasi peran, nama pengguna, dan tombol keluar.
+- **Kontrol peta** (zoom, layer, reset tampilan) di kiri atas, tidak bertumpuk dengan tombol buka panel.
 
 ### 5.2 Tablet (768–1279 px)
-- Panel kiri 360 px; peta tetap terlihat ≥ 50% lebar.
+- Panel samping 360 px; peta tetap terlihat ≥ 50% lebar.
 - Tabel bantuan berubah menjadi kartu bertumpuk.
 
 ### 5.3 Ponsel (<768 px)
-- Peta penuh layar; panel menjadi **bottom sheet** dengan tinggi 45% / 85% (bisa ditarik).
+- Peta di atas (45% tinggi area kerja) dan panel menjadi **lembar bawah** 55% yang bisa digulir.
+- Panel bisa ditutup agar peta memenuhi seluruh area kerja, lalu dibuka lagi lewat tombol "Tampilkan panel".
 - Navigasi peran di bawah (`BottomNav`), maksimal 4 tujuan, ikon + label 16 px.
-- Form satu kolom; tombol aksi menempel di bawah sheet.
+- Form satu kolom; tombol aksi mengikuti akhir formulir agar tidak menutupi isian.
 
 ## 6. Komponen Wajib
 
@@ -132,6 +134,7 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 5. Jika lebih dari 30 marker, gunakan pengelompokan (cluster) dengan angka.
 6. Tile gagal dimuat → tampilkan latar `#F3EEDD` + batas kecamatan dari data lokal + pita peringatan "Peta sedang memuat terbatas".
 7. Atribusi OpenStreetMap selalu terlihat di kanan bawah (kewajiban lisensi).
+8. Panel samping yang dibuka/ditutup tidak boleh memotong peta: ukuran peta dihitung ulang otomatis (`invalidateSize`) setelah panel berubah.
 
 ## 8. State & Pesan
 
@@ -154,6 +157,7 @@ Contoh pesan gagal: **"Laporan belum bisa dikirim karena koneksi terputus. Draf 
 
 ## 10. Ikonografi
 
+- Lambang aplikasi: **pin bantuan di atas lipatan peta**, dikelilingi gelombang, api, dan gunung berapi, dengan jalur bantuan oranye. Berkas asli dari pemilik ada di `docs/desain/gambar/logo-sialokasi-sumber.jpg`; versi bersih (latar hitam dihapus) ada di `docs/desain/gambar/logo-sialokasi.png`, sedangkan aplikasi memakai salinan 256 px di `apps/web/src/assets/brand/sialokasi-logo.png` lewat `BrandMark`. Favicon memakai `apps/web/public/favicon.png`.
 - Set ikon: **Lucide** (garis 1,5 px, sudut membulat).
 - Ikon jenis bantuan: turunan Lucide yang disesuaikan, disimpan sebagai SVG di `apps/web/src/assets/icons/aid/`.
 - Ukuran ikon: 20 px di dalam teks, 24 px di tombol, 48 px di `EmptyState`.
@@ -175,16 +179,17 @@ Contoh pesan gagal: **"Laporan belum bisa dikirim karena koneksi terputus. Draf 
 
 ### 12.1 `P1` — Beranda Publik
 - Peta penuh layar (Surabaya), marker kejadian.
-- Panel kiri: judul "Kejadian Aktif", filter jenis bencana & kecamatan, daftar kartu (judul, kecamatan, status chip, waktu relatif).
+- Panel samping: judul "Kejadian aktif", filter jenis bencana & kecamatan, daftar kartu (judul, kecamatan, status chip, waktu relatif).
+- Panel bisa ditutup/dibuka tanpa menutupi peta; pilihan diingat.
 - `EmptyState`: "Belum ada laporan kejadian. Wilayah Surabaya saat ini aman."
 - Header kanan atas: tombol "Masuk" (sekunder) + "Lacak laporan" (utama).
 
 ### 12.2 `T2` — Buat Laporan (Petugas)
-- Panel kiri 400 px, tiga bagian: **Lokasi**, **Detail**, **Wilayah terdampak**.
-- Langkah ditandai 1-2-3 di atas panel; progres terlihat.
-- Slider radius dengan nilai besar (contoh "1,2 km").
-- Tombol utama "Lanjut ke faktor" di bawah panel.
-- Pita kecil "Draf tersimpan 10:42" di atas tombol.
+- Peta menjadi kanvas utama; panel formulir di samping berisi **Titik & wilayah**, **Detail laporan**, dan tombol simpan.
+- Panel bisa ditutup agar seluruh peta terlihat saat menentukan titik, lalu dibuka lagi tanpa kehilangan isian.
+- Slider radius dengan nilai besar (contoh "1,2 km") dan alternatif angka lintang/bujur.
+- Tombol utama "Simpan & lanjut ke faktor" di akhir panel.
+- Pita kecil "Draf tersimpan 10:42" di dekat tombol.
 
 ### 12.3 `T3` — Faktor & Estimasi
 - Panel kiri: 8 field dikelompokkan (Dampak, Kondisi lapangan).
