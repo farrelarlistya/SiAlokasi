@@ -8,7 +8,7 @@
 | :--- | :--- | :--- | :--- |
 | `D1` | Perencanaan & Desain | ✅ Selesai — 2026-11-07 | `docs/prd/prd.md`, `docs/desain/design.md`, `AGENTS.md`, `docs/adr/0001..0003`, `SiAlokasi.figcraft` (9 board) |
 | `M1` | Pondasi + UI Matang + Seed Bersih | ✅ Selesai — 2026-11-08 | `docs/bukti/m1.md`, `apps/web`, `apps/api`, `packages/shared` |
-| `M2` | Akun Semua Peran & Data Master | ⏳ Belum dimulai | — |
+| `M2` | Akun Semua Peran & Data Master | ✅ Selesai — 2026-11-08 | `docs/bukti/m2.md`, `docs/adr/0004-autentikasi-otp-dan-sesi-cookie.md`, halaman A1/A2/T1/D1–D5 |
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ⏳ Belum dimulai | — |
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ⏳ Belum dimulai | — |
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ⏳ Belum dimulai | — |
@@ -98,6 +98,26 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 ---
 
+## M2 — Akun Semua Peran & Data Master (Selesai 2026-11-08)
+
+**Hasil:**
+- `packages/shared`: skema auth/pendaftaran/peran/filter publik, 18 nama ikon bantuan, validasi posko di area Surabaya — **44 unit test lulus**.
+- `apps/api`: tabel `Session`, `User.regionId`, `Region.isActive`, OTP `123456`, cookie httpOnly, RBAC 401/403, pendaftaran + aktivasi, CRUD akun/jenis bantuan/kecamatan/posko, audit perubahan, ringkasan admin/pimpinan/petugas, stok read-only, endpoint peta publik, `verify-m2` (49 pemeriksaan lulus).
+- `apps/web`: A1 masuk dua langkah, A2 daftar petugas, T1 dasbor petugas, L1 kerangka dasbor pimpinan, D1 dasbor admin, D2 akun & peran, D3 jenis bantuan, D4 kecamatan & posko + peta pemilih, D5 stok, P1 peta publik + filter, peta Leaflet + fallback tile.
+- Seed: petugas demo terhubung ke Kecamatan Gubeng; reset mengembalikan 3 akun / 10 bantuan / 8 kecamatan / 3 posko / 0 transaksi / 0 sesi.
+- Bukti: `docs/bukti/m2.md` + 17 tangkapan layar di `docs/bukti/m2/`.
+
+**Kriteria selesai:**
+- [x] 3 akun demo bisa masuk dan melihat menu sesuai peran.
+- [x] Menonaktifkan jenis bantuan tidak menghapus data laporan lama (diuji dengan baris rekomendasi).
+- [x] Panggilan API lintas peran ditolak 403; tanpa sesi 401.
+- [x] `npm run build` dan `npm test` lulus bersih.
+- [x] Uji 360/390/768/1024/1280/1366/1920 px tanpa gulir horizontal.
+
+**Catatan:** P1 sudah punya peta dan filter, tetapi belum ada data kejadian sampai M3 membuat laporan. T1/L1 masih berupa kerangka dasbor; tombol buat laporan dan tinjauan keputusan menyusul di M3. Constraint/trigger append-only audit dan panel `/dev` tetap dijadwalkan M4.
+
+---
+
 ## M3 — Alur Kerja Utama
 
 **Tujuan:** laporan lengkap dari lapangan sampai izin distribusi terbit.
@@ -173,6 +193,7 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | 2026-11-07 | Peta: **Leaflet** | Radius & marker langsung tersedia | ADR 0003 |
 | 2026-11-07 | Visual: panel gelap + peta terang + aksen biru | Sesuai referensi pemilik | `design.md` |
 | 2026-11-07 | Ikon bantuan = **SVG**, bukan foto | Barang logistik, bukan produk pajangan | `CREDITS.md` |
+| 2026-11-08 | Masuk tanpa kata sandi: **OTP demo + sesi cookie httpOnly** | Demo cepat, tetap memeriksa peran di server | ADR 0004 |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
@@ -192,8 +213,9 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
 
-**Titik mulai M2 (Akun & Data Master):**
-1. Tambah tabel `Session` + `OtpCode` (tabel OTP sudah ada) dan modul auth cookie httpOnly.
-2. Terapkan kode demo `123456` saat `DEMO_MODE=true`, lalu RBAC di server (403 untuk peran salah).
-3. Bangun halaman masuk `A1`, aktivasi `A2`, dan halaman admin `D1`–`D5` memakai komponen dari `/ui`.
-4. Pastikan menonaktifkan jenis bantuan tidak menghapus laporan lama; tulis `verify-m2.ts` dan `docs/bukti/m2.md`.
+**Titik mulai M3 (Alur Kerja Utama):**
+1. Lengkapi `packages/shared`: model estimasi deterministik + penjelasan, skema laporan 8 faktor, pembuatan kode lacak `SIA-XXXXX`.
+2. Tambah modul `incidents`, `recommendations`, `decisions`, `permits` di API; pakai `assertTransition` dan `ClockService`, kunci persetujuan ganda.
+3. Bangun `T2` (peta + radius), `T3` (8 faktor + estimasi), `T4` (ajukan), `L1` antrian nyata, `L2` tinjau + ubah jumlah, `L3` izin, `P2` lacak status.
+4. Ganti kerangka T1/L1 dengan data nyata; pastikan peta P1 langsung menampilkan laporan yang baru dibuat.
+5. Tulis `verify-m3.ts` dan `docs/bukti/m3.md`; buktikan persetujuan ganda ditolak dan laporan terkunci setelah diajukan.

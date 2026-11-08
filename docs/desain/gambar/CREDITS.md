@@ -7,7 +7,7 @@ Semua aset yang dipakai aplikasi wajib tercatat di sini beserta lisensinya.
 | Aset | Sumber | Lisensi | Catatan |
 | :--- | :--- | :--- | :--- |
 | Ikon antarmuka | [Lucide](https://lucide.dev) | ISC | Dapat dipakai bebas, termasuk komersial |
-| Ikon jenis bantuan (10 buah) | Lucide langsung | ISC | Nama ikon disimpan di kolom `icon` data master, dirender oleh web |
+| Ikon jenis bantuan (18 pilihan) | Lucide langsung | ISC | Nama ikon disimpan di kolom `icon` data master, dirender oleh web |
 
 Daftar ikon bantuan: tenda keluarga, air bersih, makanan siap saji, obat & P3K, selimut, sanitasi, susu bayi, pembalut, genset, tenda pleton.
 

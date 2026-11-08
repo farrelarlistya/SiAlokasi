@@ -4,7 +4,7 @@ Ruang kendali tanggap darurat bencana: satu alur dari **laporan lapangan** → *
 
 Wilayah demo: **Kota Surabaya**. Bahasa aplikasi: Indonesia.
 
-> Status pengembangan: **M1 — Pondasi + UI Matang + Seed Bersih** selesai (2026-11-08).
+> Status pengembangan: **M2 — Akun Semua Peran & Data Master** selesai (2026-11-08).
 > Papan status lengkap ada di [`docs/rencana-sprint.md`](docs/rencana-sprint.md).
 
 ## Isi Repositori
@@ -12,7 +12,7 @@ Wilayah demo: **Kota Surabaya**. Bahasa aplikasi: Indonesia.
 ```
 apps/
   api/      Fastify + Prisma + PostgreSQL 17
-  web/      React 18 + Vite + TypeScript + Tailwind v4
+  web/      React 18 + Vite + TypeScript + Tailwind v4 + Leaflet
 packages/
   shared/   Tipe, skema Zod, alur status, Haversine, format angka/tanggal
 docs/       PRD, desain, ADR, bukti pengujian
@@ -81,6 +81,7 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 | `npm run build` | Typecheck semua paket + build web produksi |
 | `npm test` | Unit test `packages/shared` |
 | `npm run verify:m1` | Memeriksa data master, kondisi bersih, dan aturan kode |
+| `npm run verify:m2` | Memeriksa masuk semua peran, RBAC, pendaftaran, dan CRUD data master |
 | `npm run db:start` / `db:stop` / `db:status` | Mengatur PostgreSQL lokal |
 | `npm run db:migrate` | Menerapkan migrasi Prisma |
 | `npm run db:seed` | Data master bersih (0 laporan) |
@@ -93,14 +94,14 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 
 - 10 jenis bantuan logistik, 8 kecamatan, 3 posko, 30 baris stok.
 - 3 akun demo: `petugas@sialokasi.demo`, `pimpinan@sialokasi.demo`, `admin@sialokasi.demo`.
-- **0 laporan, 0 rekomendasi, 0 keputusan, 0 izin, 0 riwayat.**
+- **0 laporan, 0 rekomendasi, 0 keputusan, 0 izin, 0 riwayat, 0 sesi.**
 
-Kode masuk demo (`123456`) dan halaman masuk baru tersedia pada tahap **M2**. Panel `/dev` tersedia pada **M4**.
+Masuk lewat <http://localhost:5173/masuk>. Saat `DEMO_MODE=true`, kode masuk selalu **`123456`** dan tiga akun demo bisa dipilih langsung. Pendaftaran petugas menunggu aktivasi Admin. Panel `/dev` tersedia pada **M4**.
 
 ## Pengujian Antarmuka
 
-Bukti M1 (tangkapan layar, hasil perintah, dan pemeriksaan aksesibilitas) ada di
-[`docs/bukti/m1.md`](docs/bukti/m1.md).
+Bukti M1 dan M2 (tangkapan layar, hasil perintah, dan pemeriksaan aksesibilitas) ada di
+[`docs/bukti/m1.md`](docs/bukti/m1.md) dan [`docs/bukti/m2.md`](docs/bukti/m2.md).
 
 ## Catatan
 

@@ -115,9 +115,13 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 
 ### 6.1 Komponen Pendukung
 - **Chip status**: `BARU` biru, `DIPERIKSA` ungu, `MENUNGGU_PERSETUJUAN` kuning, `DISETUJUI` hijau, `SELESAI` hijau tua, `DITOLAK` merah, `DIBATALKAN` abu. Teks selalu menyertai warna.
-- **Kartu metrik**: angka 40 px + label 16 px + tren kecil.
+- **Kartu metrik** (`StatCard`): angka 32–40 px + label 16 px + keterangan singkat opsional.
 - **Tabel bantuan**: kolom Jenis, Satuan, Jumlah, Alasan. Baris bisa diubah hanya oleh Pimpinan; sel yang diubah diberi penanda dan wajib alasan.
 - **Slider radius**: nilai angka + satuan selalu terlihat, langkah 100 m, rentang 100 m–5 km.
+- **`Alert`**: pesan info/sukses/peringatan/bahaya dengan ikon dan langkah lanjutan; dipakai untuk kegagalan API dan mode demo.
+- **`PageHeader`**: judul halaman 28–32 px, keterangan, dan aksi di kanan; dipakai semua halaman peran.
+- **`AidIcon`**: ikon Lucide berdasarkan nama ikon di data master; latar kotak 44 px.
+- **`LocationPicker`**: peta Leaflet 256 px di dalam modal posko, klik peta atau isi lintang/bujur; selalu disertai alternatif angka agar tidak bergantung pada tetikus.
 
 ## 7. Perilaku Peta
 
@@ -216,7 +220,26 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - `ConfirmDialog` — aksi berbahaya dengan dua tombol.
 - `Field` error — garis merah + pesan tepat di bawah kolom.
 
-> **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog).
+### 12.9 `A1` — Masuk & `A2` — Daftar Petugas (M2)
+- Dua kolom di desktop: panel kiri berisi merek, tiga jaminan singkat, dan ilustrasi peta; panel kanan berisi kartu formulir.
+- `A1` dua langkah: email → kode. Mode demo menampilkan tiga akun contoh; memilih akun mengisi email, lalu kode `123456` diisikan otomatis.
+- `A2` meminta nama, email, dan kecamatan. Setelah terkirim, tampil langkah "menunggu aktivasi admin" — bukan pesan sukses kosong.
+- Di ponsel hanya kartu formulir yang tampil, dengan tombol kembali ke peta di atas.
+
+### 12.10 `D1`–`D5` — Halaman Admin (M2)
+- Kerangka yang sama dengan dasbor peran: `AppHeader` + navigasi desktop, `BottomNav` maksimal empat tujuan di layar kecil.
+- `D1`: enam kartu metrik, empat pintasan, dan daftar aktivitas terakhir.
+- `D2`: pencarian nama/email, saringan peran & status, tabel di desktop dan kartu di ponsel; akun sendiri tidak punya tombol nonaktifkan.
+- `D3`: tabel jenis bantuan dengan ikon, satuan, standar per jiwa, jumlah pemakaian, status; formulir di `Modal`; nonaktif ≠ hapus.
+- `D4`: tab Kecamatan/Posko, formulir posko dengan `LocationPicker`; tombol aktif/nonaktif selalu disertai konsekuensi.
+- `D5`: matriks stok read-only, kolom pertama lengket saat digulir mendatar, penanda "Menipis" berupa teks + titik.
+
+### 12.11 Peta Leaflet (M2)
+- Warna garis radius, marker kejadian, dan penanda posko diambil dari token CSS lewat kelas peta, bukan hex lepas.
+- Kontrol zoom 44×44 px, atribusi OpenStreetMap 16 px, dan selalu terlihat.
+- Bila tile gagal dimuat, muncul pita "Peta sedang memuat terbatas" dan daftar kejadian tetap bisa dibaca.
+
+> **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog). Layar masuk dan halaman admin M2 mengikuti prinsip yang sama dan didokumentasikan di sini karena belum digambar sebagai board terpisah.
 
 ## 13. Larangan
 

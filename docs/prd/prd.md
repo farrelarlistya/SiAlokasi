@@ -188,9 +188,10 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 | Entitas | Kolom wajib | Catatan |
 | :--- | :--- | :--- |
-| `User` | `id`, `name`, `email` (unik), `role`, `isActive`, `createdAt` | Role: `PETUGAS`, `PIMPINAN`, `ADMIN` |
+| `User` | `id`, `name`, `email` (unik), `role`, `isActive`, `regionId` (opsional), `createdAt` | Role: `PETUGAS`, `PIMPINAN`, `ADMIN`; pendaftar baru `isActive=false` |
+| `Session` | `id`, `tokenHash` (unik), `userId`, `expiresAt`, `createdAt` | Sesi cookie httpOnly; token asli tidak disimpan (ADR 0004) |
 | `OtpCode` | `userId`, `codeHash`, `expiresAt`, `usedAt` | `123456` hanya saat `DEMO_MODE=true` |
-| `Region` | `id`, `name`, `boundary` (GeoJSON opsional) | 8 kecamatan contoh Surabaya |
+| `Region` | `id`, `name`, `isActive`, `boundary` (GeoJSON opsional) | 8 kecamatan contoh Surabaya; nonaktif ≠ hapus |
 | `Posko` | `id`, `name`, `regionId`, `lat`, `lng`, `isActive` | 3 posko contoh |
 | `AidItem` | `id`, `name`, `unit`, `icon`, `standardPerPerson`, `isActive` | 10 jenis bantuan |
 | `Incident` | `id`, `code`, `title`, `disasterType`, `lat`, `lng`, `radiusM`, `regionId`, `occurredAt`, `status`, `reporterId`, 8 kolom faktor | Faktor disimpan sebagai kolom eksplisit, bukan JSON bebas |
@@ -325,7 +326,7 @@ SiAlokasi/
 | Styling | Tailwind CSS v4 `@theme` | 4.x | Token warna terkunci di satu tempat |
 | State/data | TanStack Query | 5.x | Loading/error state konsisten |
 | Validasi | Zod | 3.x | Satu skema untuk form & server |
-| Auth | Cookie sesi httpOnly + OTP demo | — | Sederhana, aman untuk demo |
+| Auth | Cookie sesi httpOnly + OTP demo (`123456`) | — | Sederhana & aman untuk demo; ADR 0004 |
 
 ### 9.3 Model Estimasi
 
