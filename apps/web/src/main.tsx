@@ -2,7 +2,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
+import "leaflet/dist/leaflet.css";
 import { App } from "./App";
+import { AuthProvider } from "./auth/AuthProvider";
 import { ToastProvider } from "./components/Toast";
 import "./styles/theme.css";
 
@@ -27,7 +29,9 @@ ReactDOM.createRoot(rootElement).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ToastProvider>
-          <App />
+          <AuthProvider>
+            <App />
+          </AuthProvider>
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>

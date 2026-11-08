@@ -25,7 +25,7 @@ export function BottomNav({ items, className, variant = "fixed" }: BottomNavProp
       aria-label="Navigasi utama"
       className={cn(
         "z-30 border-t border-border bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur",
-        variant === "fixed" ? "fixed inset-x-0 bottom-0 md:hidden" : "relative w-full",
+        variant === "fixed" ? "fixed inset-x-0 bottom-0 lg:hidden" : "relative w-full",
         className,
       )}
     >

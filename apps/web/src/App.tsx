@@ -1,6 +1,16 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { RequireRole } from "./auth/RequireRole";
+import { AdminAidItemsPage } from "./pages/admin/AdminAidItemsPage";
+import { AdminRegionsPage } from "./pages/admin/AdminRegionsPage";
+import { AdminSummaryPage } from "./pages/admin/AdminSummaryPage";
+import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
+import { LoginPage } from "./pages/auth/LoginPage";
+import { RegisterPage } from "./pages/auth/RegisterPage";
 import { HomePage } from "./pages/HomePage";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { PetugasDashboardPage } from "./pages/petugas/PetugasDashboardPage";
+import { PimpinanDashboardPage } from "./pages/pimpinan/PimpinanDashboardPage";
+import { StockPage } from "./pages/shared/StockPage";
 import { UiKitPage } from "./pages/UiKitPage";
 
 export function App() {
@@ -14,7 +24,71 @@ export function App() {
       </a>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/masuk" element={<LoginPage />} />
+        <Route path="/daftar" element={<RegisterPage />} />
         <Route path="/ui" element={<UiKitPage />} />
+
+        <Route
+          path="/petugas"
+          element={
+            <RequireRole roles={["PETUGAS"]}>
+              <PetugasDashboardPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/pimpinan"
+          element={
+            <RequireRole roles={["PIMPINAN"]}>
+              <PimpinanDashboardPage />
+            </RequireRole>
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <AdminSummaryPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/akun"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <AdminUsersPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/bantuan"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <AdminAidItemsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/wilayah"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <AdminRegionsPage />
+            </RequireRole>
+          }
+        />
+        <Route path="/admin/stok" element={<Navigate to="/stok" replace />} />
+
+        <Route
+          path="/stok"
+          element={
+            <RequireRole roles={["ADMIN", "PIMPINAN"]}>
+              <StockPage />
+            </RequireRole>
+          }
+        />
+
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </>
