@@ -76,17 +76,33 @@ model User {
   email     String   @unique
   role      Role
   isActive  Boolean  @default(true)
+  regionId  String?
+  region    Region?  @relation(fields: [regionId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  incidents   Incident[]   @relation("IncidentReporter")
+  incidents    Incident[]    @relation("IncidentReporter")
   incidentLogs IncidentLog[] @relation("IncidentLogActor")
-  decisions   Decision[]   @relation("DecisionDecider")
-  permits     Permit[]     @relation("PermitIssuer")
-  auditLogs   AuditLog[]   @relation("AuditActor")
-  otpCodes    OtpCode[]
+  decisions    Decision[]    @relation("DecisionDecider")
+  permits      Permit[]      @relation("PermitIssuer")
+  auditLogs    AuditLog[]    @relation("AuditActor")
+  otpCodes     OtpCode[]
+  sessions     Session[]
 
+  @@index([role, isActive])
   @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId, expiresAt])
+  @@map("sessions")
 }
 
 model OtpCode {
@@ -105,10 +121,12 @@ model OtpCode {
 model Region {
   id        String   @id @default(cuid())
   name      String   @unique
+  isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
   poskos    Posko[]
   incidents Incident[]
+  users     User[]
 
   @@map("regions")
 }

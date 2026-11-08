@@ -13,12 +13,14 @@
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
     "demo:reset": "tsx scripts/demo-reset.ts",
-    "verify:m1": "tsx scripts/verify-m1.ts"
+    "verify:m1": "tsx scripts/verify-m1.ts",
+    "verify:m2": "tsx scripts/verify-m2.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
+    "@fastify/cookie": "^11.1.5",
     "@fastify/cors": "^11.4.1",
     "@prisma/client": "6.19.3",
     "@sialokasi/shared": "*",

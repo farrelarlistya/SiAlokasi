@@ -9,7 +9,7 @@ export function registerMasterRoutes(app: FastifyInstance, deps: MasterDependenc
   app.get("/api/master/summary", async () => {
     const [aidItems, regions, poskos, incidents] = await Promise.all([
       deps.prisma.aidItem.count({ where: { isActive: true } }),
-      deps.prisma.region.count(),
+      deps.prisma.region.count({ where: { isActive: true } }),
       deps.prisma.posko.count({ where: { isActive: true } }),
       deps.prisma.incident.count(),
     ]);
@@ -24,7 +24,11 @@ export function registerMasterRoutes(app: FastifyInstance, deps: MasterDependenc
         orderBy: { sortOrder: "asc" },
         select: { id: true, name: true, unit: true, icon: true, standardPerPerson: true },
       }),
-      deps.prisma.region.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true } }),
+      deps.prisma.region.findMany({
+        where: { isActive: true },
+        orderBy: { name: "asc" },
+        select: { id: true, name: true },
+      }),
       deps.prisma.posko.findMany({
         where: { isActive: true },
         orderBy: { name: "asc" },

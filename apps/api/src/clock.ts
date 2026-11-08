@@ -17,6 +17,24 @@ export class ClockService {
     return new Date(Date.now() + offset * 60_000);
   }
 
+  /** Waktu bisnis ditambah sejumlah menit, dipakai untuk masa berlaku sesi & kode masuk. */
+  async afterMinutes(minutes: number): Promise<Date> {
+    const now = await this.now();
+    return new Date(now.getTime() + minutes * 60_000);
+  }
+
+  /** Awal hari menurut waktu Jakarta, dipakai untuk ringkasan "hari ini". */
+  async startOfDayJakarta(): Promise<Date> {
+    const now = await this.now();
+    const date = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Jakarta",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    }).format(now);
+    return new Date(`${date}T00:00:00+07:00`);
+  }
+
   async setOffsetMinutes(offsetMinutes: number): Promise<Date> {
     await this.prisma.demoClock.upsert({
       where: { id: 1 },

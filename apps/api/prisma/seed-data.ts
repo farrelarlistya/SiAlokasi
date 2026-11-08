@@ -5,10 +5,17 @@ export type DemoUserSeed = {
   name: string;
   email: string;
   role: Role;
+  regionId?: string | null;
 };
 
 export const DEMO_USERS: DemoUserSeed[] = [
-  { id: "user_petugas", name: "Rina Kusuma", email: "petugas@sialokasi.demo", role: "PETUGAS" },
+  {
+    id: "user_petugas",
+    name: "Rina Kusuma",
+    email: "petugas@sialokasi.demo",
+    role: "PETUGAS",
+    regionId: "region_gubeng",
+  },
   { id: "user_pimpinan", name: "Budi Santoso", email: "pimpinan@sialokasi.demo", role: "PIMPINAN" },
   { id: "user_admin", name: "Sari Wulandari", email: "admin@sialokasi.demo", role: "ADMIN" },
 ];
