@@ -47,6 +47,58 @@ export const STATUS_TONE: Record<IncidentStatus, StatusTone> = {
   DIBATALKAN: "muted",
 };
 
+/** Status yang dianggap masih berjalan dan boleh tampil di peta publik. */
+export const ACTIVE_INCIDENT_STATUSES = [
+  "BARU",
+  "DIPERIKSA",
+  "MENUNGGU_PERSETUJUAN",
+  "DISETUJUI",
+] as const;
+
+/** Nama ikon Lucide yang boleh dipakai sebagai ikon jenis bantuan. */
+export const AID_ICON_NAMES = [
+  "tent",
+  "tent-tree",
+  "droplets",
+  "utensils",
+  "briefcase-medical",
+  "bed-double",
+  "toilet",
+  "milk",
+  "heart-pulse",
+  "zap",
+  "package",
+  "pill",
+  "shirt",
+  "baby",
+  "home",
+  "truck",
+  "radio",
+  "thermometer",
+] as const;
+export type AidIconName = (typeof AID_ICON_NAMES)[number];
+
+export const AID_ICON_LABEL: Record<AidIconName, string> = {
+  tent: "Tenda",
+  "tent-tree": "Tenda pleton",
+  droplets: "Air",
+  utensils: "Makanan",
+  "briefcase-medical": "Obat & P3K",
+  "bed-double": "Selimut & alas tidur",
+  toilet: "Sanitasi",
+  milk: "Susu bayi",
+  "heart-pulse": "Kesehatan",
+  zap: "Listrik & genset",
+  package: "Paket bantuan",
+  pill: "Obat-obatan",
+  shirt: "Pakaian",
+  baby: "Kebutuhan bayi",
+  home: "Tempat tinggal",
+  truck: "Angkutan",
+  radio: "Komunikasi",
+  thermometer: "Pemantauan suhu",
+};
+
 export const DISASTER_TYPES = ["BANJIR", "KEBAKARAN", "GEMPA", "ANGIN", "LAINNYA"] as const;
 export type DisasterType = (typeof DISASTER_TYPES)[number];
 export const disasterTypeSchema = z.enum(DISASTER_TYPES);

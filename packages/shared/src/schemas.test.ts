@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  aidItemInputSchema,
   emailSchema,
   incidentFactorsSchema,
   incidentFormSchema,
+  poskoInputSchema,
+  publicIncidentFilterSchema,
+  registerPetugasSchema,
   trackingCodeSchema,
 } from "./schemas";
 
@@ -136,5 +140,103 @@ describe("trackingCodeSchema", () => {
   it("menolak kode yang tidak sesuai pola", () => {
     expect(trackingCodeSchema.safeParse("SIA-123").success).toBe(false);
     expect(trackingCodeSchema.safeParse("7K2Q9").success).toBe(false);
+  });
+});
+
+describe("registerPetugasSchema", () => {
+  it("menerima pendaftaran petugas lengkap", () => {
+    expect(
+      registerPetugasSchema.safeParse({
+        name: "Rina Kusuma",
+        email: "  Rina@BPBD.Surabaya.go.id ",
+        regionId: "region_gubeng",
+      }).success,
+    ).toBe(true);
+  });
+
+  it("mewajibkan nama dan kecamatan", () => {
+    expect(
+      registerPetugasSchema.safeParse({
+        name: "Ri",
+        email: "rina@bpbd.surabaya.go.id",
+        regionId: "",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("aidItemInputSchema", () => {
+  it("hanya menerima ikon yang tersedia di antarmuka", () => {
+    expect(
+      aidItemInputSchema.safeParse({
+        name: "Air minum kemasan",
+        unit: "dus",
+        icon: "droplets",
+        standardPerPerson: 2,
+      }).success,
+    ).toBe(true);
+
+    expect(
+      aidItemInputSchema.safeParse({
+        name: "Air minum kemasan",
+        unit: "dus",
+        icon: "ikon-tidak-dikenal",
+        standardPerPerson: 2,
+      }).success,
+    ).toBe(false);
+  });
+
+  it("menolak standar per jiwa negatif", () => {
+    expect(
+      aidItemInputSchema.safeParse({
+        name: "Selimut",
+        unit: "lembar",
+        icon: "bed-double",
+        standardPerPerson: -1,
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("poskoInputSchema", () => {
+  it("menerima posko di area Surabaya", () => {
+    expect(
+      poskoInputSchema.safeParse({
+        name: "Posko Tambaksari",
+        regionId: "region_tambaksari",
+        lat: -7.243,
+        lng: 112.771,
+      }).success,
+    ).toBe(true);
+  });
+
+  it("menolak posko di luar area Surabaya dengan pesan yang mudah dipahami", () => {
+    const result = poskoInputSchema.safeParse({
+      name: "Posko Luar Kota",
+      regionId: "region_gubeng",
+      lat: -6.2,
+      lng: 106.8,
+    });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues[0]?.message).toContain("Kota Surabaya");
+    }
+  });
+});
+
+describe("publicIncidentFilterSchema", () => {
+  it("menganggap pilihan kosong sebagai tanpa filter", () => {
+    const result = publicIncidentFilterSchema.safeParse({ disasterType: "", regionId: "" });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.disasterType).toBeUndefined();
+      expect(result.data.regionId).toBeUndefined();
+    }
+  });
+
+  it("menolak jenis bencana yang tidak dikenal", () => {
+    expect(
+      publicIncidentFilterSchema.safeParse({ disasterType: "TSUNAMI", regionId: "" }).success,
+    ).toBe(false);
   });
 });

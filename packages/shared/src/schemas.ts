@@ -1,10 +1,12 @@
 import { z } from "zod";
 import {
+  AID_ICON_NAMES,
   DAMAGE_LEVELS,
   DENSITY_LEVELS,
   DISASTER_TYPES,
   FACTOR_LIMITS,
   ROAD_ACCESS_OPTIONS,
+  SURABAYA_BOUNDS,
   TRACKING_CODE_PATTERN,
   WEATHER_OPTIONS,
   roleSchema,
@@ -37,6 +39,15 @@ export const loginSchema = z.object({
 
 export const otpRequestSchema = z.object({
   email: emailSchema,
+});
+
+export const registerPetugasSchema = z.object({
+  name: requiredText("Nama lengkap", 3, 80),
+  email: emailSchema,
+  regionId: z.string({ required_error: "Pilih kecamatan tempat bertugas." }).trim().min(
+    1,
+    "Pilih kecamatan tempat bertugas.",
+  ),
 });
 
 export const trackingCodeSchema = z
@@ -151,7 +162,10 @@ export type IncidentFormInput = z.infer<typeof incidentFormSchema>;
 export const aidItemInputSchema = z.object({
   name: requiredText("Nama jenis bantuan", 2, 60),
   unit: requiredText("Satuan", 1, 20),
-  icon: requiredText("Ikon", 1, 60),
+  icon: z.enum(AID_ICON_NAMES, {
+    required_error: "Pilih ikon jenis bantuan.",
+    invalid_type_error: "Pilih ikon dari daftar yang tersedia.",
+  }),
   standardPerPerson: z.coerce
     .number({ invalid_type_error: "Standar per jiwa wajib diisi angka." })
     .min(0, "Standar per jiwa tidak boleh negatif.")
@@ -161,9 +175,10 @@ export const aidItemInputSchema = z.object({
 
 export const regionInputSchema = z.object({
   name: requiredText("Nama kecamatan", 2, 60),
+  isActive: z.boolean().optional(),
 });
 
-export const poskoInputSchema = z.object({
+export const poskoFieldsSchema = z.object({
   name: requiredText("Nama posko", 2, 80),
   regionId: z.string().trim().min(1, "Pilih kecamatan posko."),
   lat: latitudeSchema,
@@ -171,8 +186,44 @@ export const poskoInputSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+function checkPoskoInsideSurabaya(
+  value: { lat?: number; lng?: number },
+  ctx: z.RefinementCtx,
+): void {
+  if (value.lat === undefined || value.lng === undefined) return;
+
+  const inside =
+    value.lat >= SURABAYA_BOUNDS.minLat &&
+    value.lat <= SURABAYA_BOUNDS.maxLat &&
+    value.lng >= SURABAYA_BOUNDS.minLng &&
+    value.lng <= SURABAYA_BOUNDS.maxLng;
+
+  if (!inside) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["lat"],
+      message:
+        "Titik posko harus berada di area Kota Surabaya. Geser titik di peta atau periksa angka lintang dan bujur.",
+    });
+  }
+}
+
+/** Posko demo harus berada di area Kota Surabaya agar peta dan radius tetap masuk akal. */
+export const poskoInputSchema = poskoFieldsSchema.superRefine(checkPoskoInsideSurabaya);
+
+export const poskoUpdateSchema = poskoFieldsSchema
+  .partial()
+  .superRefine(checkPoskoInsideSurabaya);
+
+export const publicIncidentFilterSchema = z.object({
+  disasterType: z
+    .preprocess((value) => (value === "" ? undefined : value), z.enum(DISASTER_TYPES).optional()),
+  regionId: z
+    .preprocess((value) => (value === "" ? undefined : value), z.string().trim().optional()),
+});
+
 export const userRoleInputSchema = z.object({
-  role: roleSchema,
+  role: roleSchema.optional(),
   isActive: z.boolean().optional(),
 });
 
