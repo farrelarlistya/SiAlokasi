@@ -9,21 +9,14 @@ import {
   type DisasterType,
 } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
-import {
-  AlertTriangle,
-  ArrowLeft,
-  ArrowRight,
-  MapPin,
-  Save,
-  Trash2,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, ArrowRight, MapPin, Save, Trash2 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button, buttonStyles } from "../../components/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { Field, SelectInput, TextInput } from "../../components/Field";
-import { PageHeader } from "../../components/PageHeader";
+import { MapWorkspace } from "../../components/MapWorkspace";
 import { useToast } from "../../components/Toast";
 import {
   IncidentLocationPicker,
@@ -220,285 +213,302 @@ export function CreateIncidentPage() {
   };
 
   const radiusKm = formatDistance(form.radiusM);
+  const pointLabel = form.point
+    ? `${form.point.lat.toFixed(5)}, ${form.point.lng.toFixed(5)}`
+    : "Belum ada titik";
 
   return (
-    <AppShell>
-      <PageHeader
-        eyebrow="Laporan baru"
-        title="Tandai kejadian di peta"
-        description="Tentukan titik kejadian dan wilayah terdampak. Setelah tersimpan, Anda bisa mengisi 8 faktor untuk menghitung kebutuhan bantuan."
-        actions={
-          <Link to="/petugas" className={buttonStyles("secondary", "md")}>
-            <ArrowLeft aria-hidden="true" className="h-5 w-5" />
-            Kembali ke dasbor
-          </Link>
-        }
-      />
-
-      <form onSubmit={(event) => void submit(event)} className="mt-6 grid gap-6" noValidate>
-        {formError ? (
-          <Alert tone="danger" title="Laporan belum tersimpan.">
-            {formError}
-          </Alert>
-        ) : null}
-
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,0.65fr)]">
-          <section className="min-w-0 rounded-lg border border-border bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
+    <AppShell fullBleed>
+      <h1 className="sr-only">Buat laporan kejadian</h1>
+      <form onSubmit={(event) => void submit(event)} className="flex min-h-0 flex-1 flex-col" noValidate>
+        <MapWorkspace
+          storageKey="sialokasi.panel.laporan-baru"
+          panelLabel="Formulir laporan"
+          panelDescription="Bisa ditutup kapan saja"
+          sidebar={
+            <div className="grid gap-5 p-5">
               <div>
-                <h2 className="text-[22px] font-semibold leading-[30px]">Titik & wilayah</h2>
+                <Link to="/petugas" className={buttonStyles("ghost", "md", "-ml-2 mb-1 px-2")}>
+                  <ArrowLeft aria-hidden="true" className="h-5 w-5" />
+                  Dasbor petugas
+                </Link>
+                <h2 className="mt-1 text-[28px] font-bold leading-[36px] text-text">
+                  Tandai kejadian di peta
+                </h2>
+                <p className="mt-2 text-base text-text-muted">
+                  Tentukan titik kejadian dan wilayah terdampak. Setelah tersimpan, Anda bisa
+                  mengisi 8 faktor untuk menghitung kebutuhan bantuan.
+                </p>
+              </div>
+
+              {formError ? (
+                <Alert tone="danger" title="Laporan belum tersimpan.">
+                  {formError}
+                </Alert>
+              ) : null}
+
+              <section className="grid gap-4 rounded-md border border-border bg-elevated p-4">
+                <div>
+                  <h3 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
+                    <MapPin aria-hidden="true" className="h-5 w-5 text-danger" />
+                    Titik & wilayah
+                  </h3>
+                  <p className="mt-1 text-base text-text-muted">
+                    Klik peta di sebelah, atau isi lintang dan bujur di bawah.
+                  </p>
+                </div>
+
+                <p className="rounded-md border border-border bg-canvas px-3 py-2 font-mono text-base text-info">
+                  {pointLabel}
+                </p>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <Field id="incident-lat" label="Lintang">
+                    <TextInput
+                      type="number"
+                      step="0.000001"
+                      min={-90}
+                      max={90}
+                      value={form.point?.lat ?? ""}
+                      placeholder="-7.2575"
+                      onChange={(event) => {
+                        const lat =
+                          event.target.value === "" ? undefined : Number(event.target.value);
+                        updateForm({
+                          point:
+                            lat === undefined
+                              ? null
+                              : { lat, lng: form.point?.lng ?? SURABAYA_CENTER.lng },
+                        });
+                      }}
+                    />
+                  </Field>
+
+                  <Field id="incident-lng" label="Bujur">
+                    <TextInput
+                      type="number"
+                      step="0.000001"
+                      min={-180}
+                      max={180}
+                      value={form.point?.lng ?? ""}
+                      placeholder="112.7521"
+                      onChange={(event) => {
+                        const lng =
+                          event.target.value === "" ? undefined : Number(event.target.value);
+                        updateForm({
+                          point:
+                            lng === undefined
+                              ? null
+                              : { lat: form.point?.lat ?? SURABAYA_CENTER.lat, lng },
+                        });
+                      }}
+                    />
+                  </Field>
+                </div>
+
+                {errors.point ? (
+                  <p className="flex items-start gap-2 text-base text-danger">
+                    <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0" />
+                    <span>{errors.point}</span>
+                  </p>
+                ) : null}
+
+                <div>
+                  <div className="flex flex-wrap items-baseline justify-between gap-2">
+                    <label htmlFor="incident-radius" className="text-base font-medium text-text">
+                      Radius wilayah terdampak
+                    </label>
+                    <span className="font-mono text-[22px] font-medium text-info">{radiusKm}</span>
+                  </div>
+                  <input
+                    id="incident-radius"
+                    type="range"
+                    min={100}
+                    max={5_000}
+                    step={100}
+                    value={form.radiusM}
+                    onChange={(event) => {
+                      updateForm({ radiusM: Number(event.target.value) });
+                      if (errors.radiusM) setErrors((current) => ({ ...current, radiusM: undefined }));
+                    }}
+                    className="mt-2 h-11 w-full accent-primary"
+                  />
+                  <div className="flex flex-wrap items-center justify-between gap-3 text-base text-text-muted">
+                    <span>100 m</span>
+                    <span>5 km</span>
+                  </div>
+                  <Field
+                    id="incident-radius-number"
+                    label="Radius dalam meter"
+                    error={errors.radiusM}
+                    className="mt-3"
+                  >
+                    <TextInput
+                      type="number"
+                      min={100}
+                      max={5_000}
+                      step={100}
+                      value={form.radiusM}
+                      onChange={(event) => {
+                        updateForm({ radiusM: Number(event.target.value) });
+                        if (errors.radiusM) {
+                          setErrors((current) => ({ ...current, radiusM: undefined }));
+                        }
+                      }}
+                    />
+                  </Field>
+                </div>
+              </section>
+
+              {duplicates.length > 0 ? (
+                <Alert
+                  tone="warning"
+                  title="Sudah ada laporan dalam radius 200 meter."
+                >
+                  <p>
+                    Periksa apakah laporan ini berbeda. Anda tetap bisa melanjutkan bila memang
+                    kejadiannya baru.
+                  </p>
+                  <ul className="mt-2 space-y-1">
+                    {duplicates.map((incident) => (
+                      <li key={incident.id}>
+                        <span className="font-mono text-info">{incident.code}</span> · {incident.title}
+                      </li>
+                    ))}
+                  </ul>
+                </Alert>
+              ) : null}
+
+              <section className="grid gap-4">
+                <div>
+                  <h3 className="text-[22px] font-semibold leading-[30px]">Detail laporan</h3>
+                  <p className="mt-1 text-base text-text-muted">
+                    Isi singkat dan jelas. Judul akan tampil di peta publik.
+                  </p>
+                </div>
+
+                <Field id="incident-title" label="Judul laporan" error={errors.title} required>
+                  <TextInput
+                    value={form.title}
+                    placeholder="Contoh: Banjir di Wonokromo RW 03"
+                    maxLength={120}
+                    onChange={(event) => {
+                      updateForm({ title: event.target.value });
+                      if (errors.title) setErrors((current) => ({ ...current, title: undefined }));
+                    }}
+                  />
+                </Field>
+
+                <Field
+                  id="incident-disaster"
+                  label="Jenis bencana"
+                  error={errors.disasterType}
+                  required
+                >
+                  <SelectInput
+                    value={form.disasterType}
+                    onChange={(event) => {
+                      updateForm({ disasterType: event.target.value as DisasterType });
+                      if (errors.disasterType) {
+                        setErrors((current) => ({ ...current, disasterType: undefined }));
+                      }
+                    }}
+                  >
+                    {DISASTER_TYPES.map((type) => (
+                      <option key={type} value={type}>
+                        {DISASTER_LABEL[type]}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </Field>
+
+                <Field id="incident-time" label="Waktu kejadian" error={errors.occurredAt} required>
+                  <TextInput
+                    type="datetime-local"
+                    value={form.occurredAt}
+                    onChange={(event) => {
+                      updateForm({ occurredAt: event.target.value });
+                      if (errors.occurredAt) {
+                        setErrors((current) => ({ ...current, occurredAt: undefined }));
+                      }
+                    }}
+                  />
+                </Field>
+
+                <Field
+                  id="incident-region"
+                  label="Kecamatan terdampak"
+                  hint="Dipakai untuk menyaring peta dan laporan."
+                  error={errors.regionId}
+                  required
+                >
+                  <SelectInput
+                    value={form.regionId}
+                    disabled={master.isPending}
+                    onChange={(event) => {
+                      updateForm({ regionId: event.target.value });
+                      if (errors.regionId) {
+                        setErrors((current) => ({ ...current, regionId: undefined }));
+                      }
+                    }}
+                  >
+                    <option value="">{master.isPending ? "Memuat kecamatan…" : "Pilih kecamatan"}</option>
+                    {(master.data?.regions ?? []).map((region) => (
+                      <option key={region.id} value={region.id}>
+                        {region.name}
+                      </option>
+                    ))}
+                  </SelectInput>
+                </Field>
+              </section>
+
+              <div className="rounded-md border border-border bg-elevated p-4">
+                <p className="text-base font-medium text-text">Draf di perangkat ini</p>
                 <p className="mt-1 text-base text-text-muted">
-                  Klik peta untuk menaruh titik. Geser titik bila perlu, lalu atur radius.
+                  {draftSavedAt
+                    ? `Tersimpan pukul ${formatTime(draftSavedAt)}. Draf tidak hilang bila halaman tertutup.`
+                    : "Isian akan disimpan otomatis di perangkat ini selama Anda mengisi formulir."}
                 </p>
+                {draftSavedAt ? (
+                  <Button
+                    variant="ghost"
+                    className="mt-2 px-0"
+                    leadingIcon={<Trash2 />}
+                    onClick={() => setClearOpen(true)}
+                  >
+                    Hapus draf
+                  </Button>
+                ) : null}
               </div>
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
-                <MapPin aria-hidden="true" className="h-5 w-5 text-danger" />
-                {form.point ? "Titik sudah dipilih" : "Belum ada titik"}
-              </span>
-            </div>
 
-            <div className="mt-4">
-              <IncidentLocationPicker
-                value={form.point}
-                radiusM={form.radiusM}
-                onChange={(point) => {
-                  updateForm({ point });
-                  if (errors.point) setErrors((current) => ({ ...current, point: undefined }));
-                }}
-              />
-              {errors.point ? (
-                <p className="mt-2 flex items-start gap-2 text-base text-danger">
-                  <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0" />
-                  <span>{errors.point}</span>
-                </p>
-              ) : null}
-            </div>
-
-            <div className="mt-5 grid gap-4 sm:grid-cols-2">
-              <Field
-                id="incident-lat"
-                label="Lintang"
-                hint="Bisa diisi langsung bila lebih nyaman daripada menggeser peta."
-              >
-                <TextInput
-                  type="number"
-                  step="0.000001"
-                  min={-90}
-                  max={90}
-                  value={form.point?.lat ?? ""}
-                  placeholder="-7.2575"
-                  onChange={(event) => {
-                    const lat = event.target.value === "" ? undefined : Number(event.target.value);
-                    updateForm({
-                      point:
-                        lat === undefined
-                          ? null
-                          : { lat, lng: form.point?.lng ?? SURABAYA_CENTER.lng },
-                    });
-                  }}
-                />
-              </Field>
-
-              <Field id="incident-lng" label="Bujur">
-                <TextInput
-                  type="number"
-                  step="0.000001"
-                  min={-180}
-                  max={180}
-                  value={form.point?.lng ?? ""}
-                  placeholder="112.7521"
-                  onChange={(event) => {
-                    const lng = event.target.value === "" ? undefined : Number(event.target.value);
-                    updateForm({
-                      point:
-                        lng === undefined
-                          ? null
-                          : { lat: form.point?.lat ?? SURABAYA_CENTER.lat, lng },
-                    });
-                  }}
-                />
-              </Field>
-            </div>
-
-            <div className="mt-5">
-              <div className="flex flex-wrap items-baseline justify-between gap-2">
-                <label htmlFor="incident-radius" className="text-base font-medium text-text">
-                  Radius wilayah terdampak
-                </label>
-                <span className="font-mono text-[22px] font-medium text-info">{radiusKm}</span>
-              </div>
-              <input
-                id="incident-radius"
-                type="range"
-                min={100}
-                max={5_000}
-                step={100}
-                value={form.radiusM}
-                onChange={(event) => {
-                  updateForm({ radiusM: Number(event.target.value) });
-                  if (errors.radiusM) setErrors((current) => ({ ...current, radiusM: undefined }));
-                }}
-                className="mt-3 h-11 w-full accent-primary"
-              />
-              <div className="mt-2 flex flex-wrap items-center justify-between gap-3 text-base text-text-muted">
-                <span>100 m</span>
-                <span>5 km</span>
-              </div>
-              <Field
-                id="incident-radius-number"
-                label="Radius dalam meter"
-                error={errors.radiusM}
-                className="mt-3 max-w-xs"
-              >
-                <TextInput
-                  type="number"
-                  min={100}
-                  max={5_000}
-                  step={100}
-                  value={form.radiusM}
-                  onChange={(event) => {
-                    updateForm({ radiusM: Number(event.target.value) });
-                    if (errors.radiusM) {
-                      setErrors((current) => ({ ...current, radiusM: undefined }));
-                    }
-                  }}
-                />
-              </Field>
-            </div>
-
-            {duplicates.length > 0 ? (
-              <Alert
-                tone="warning"
-                title="Sudah ada laporan dalam radius 200 meter."
-                className="mt-5"
-              >
-                <p>
-                  Periksa apakah laporan ini berbeda. Anda tetap bisa melanjutkan bila memang
-                  kejadiannya baru.
-                </p>
-                <ul className="mt-2 space-y-1">
-                  {duplicates.map((incident) => (
-                    <li key={incident.id}>
-                      <span className="font-mono text-info">{incident.code}</span> · {incident.title}
-                    </li>
-                  ))}
-                </ul>
-              </Alert>
-            ) : null}
-          </section>
-
-          <section className="min-w-0 rounded-lg border border-border bg-surface p-5">
-            <h2 className="text-[22px] font-semibold leading-[30px]">Detail laporan</h2>
-            <p className="mt-1 text-base text-text-muted">
-              Isi singkat dan jelas. Judul akan tampil di peta publik.
-            </p>
-
-            <div className="mt-5 grid gap-5">
-              <Field id="incident-title" label="Judul laporan" error={errors.title} required>
-                <TextInput
-                  value={form.title}
-                  placeholder="Contoh: Banjir di Wonokromo RW 03"
-                  maxLength={120}
-                  onChange={(event) => {
-                    updateForm({ title: event.target.value });
-                    if (errors.title) setErrors((current) => ({ ...current, title: undefined }));
-                  }}
-                />
-              </Field>
-
-              <Field id="incident-disaster" label="Jenis bencana" error={errors.disasterType} required>
-                <SelectInput
-                  value={form.disasterType}
-                  onChange={(event) => {
-                    updateForm({ disasterType: event.target.value as DisasterType });
-                    if (errors.disasterType) {
-                      setErrors((current) => ({ ...current, disasterType: undefined }));
-                    }
-                  }}
-                >
-                  {DISASTER_TYPES.map((type) => (
-                    <option key={type} value={type}>
-                      {DISASTER_LABEL[type]}
-                    </option>
-                  ))}
-                </SelectInput>
-              </Field>
-
-              <Field id="incident-time" label="Waktu kejadian" error={errors.occurredAt} required>
-                <TextInput
-                  type="datetime-local"
-                  value={form.occurredAt}
-                  onChange={(event) => {
-                    updateForm({ occurredAt: event.target.value });
-                    if (errors.occurredAt) {
-                      setErrors((current) => ({ ...current, occurredAt: undefined }));
-                    }
-                  }}
-                />
-              </Field>
-
-              <Field
-                id="incident-region"
-                label="Kecamatan terdampak"
-                hint="Dipakai untuk menyaring peta dan laporan."
-                error={errors.regionId}
-                required
-              >
-                <SelectInput
-                  value={form.regionId}
-                  disabled={master.isPending}
-                  onChange={(event) => {
-                    updateForm({ regionId: event.target.value });
-                    if (errors.regionId) {
-                      setErrors((current) => ({ ...current, regionId: undefined }));
-                    }
-                  }}
-                >
-                  <option value="">{master.isPending ? "Memuat kecamatan…" : "Pilih kecamatan"}</option>
-                  {(master.data?.regions ?? []).map((region) => (
-                    <option key={region.id} value={region.id}>
-                      {region.name}
-                    </option>
-                  ))}
-                </SelectInput>
-              </Field>
-            </div>
-
-            <div className="mt-6 rounded-md border border-border bg-elevated p-4">
-              <p className="text-base font-medium text-text">Draf di perangkat ini</p>
-              <p className="mt-1 text-base text-text-muted">
-                {draftSavedAt
-                  ? `Tersimpan pukul ${formatTime(draftSavedAt)}. Draf tidak hilang bila halaman tertutup.`
-                  : "Isian akan disimpan otomatis di perangkat ini selama Anda mengisi formulir."}
-              </p>
-              {draftSavedAt ? (
+              <div className="mt-1 flex flex-col gap-3 border-t border-border pt-4 lg:sticky lg:bottom-0 lg:-mx-5 lg:-mb-5 lg:bg-surface lg:px-5 lg:py-4">
                 <Button
-                  variant="ghost"
-                  className="mt-2 px-0"
-                  leadingIcon={<Trash2 />}
-                  onClick={() => setClearOpen(true)}
+                  type="submit"
+                  size="lg"
+                  leadingIcon={<Save />}
+                  trailingIcon={<ArrowRight />}
+                  disabled={busy}
                 >
-                  Hapus draf
+                  {busy ? "Sedang menyimpan…" : "Simpan & lanjut ke faktor"}
                 </Button>
-              ) : null}
+                <Link to="/petugas" className={buttonStyles("secondary", "lg")}>
+                  Batal, kembali ke dasbor
+                </Link>
+              </div>
             </div>
-
-            <div className="mt-6 flex flex-col gap-3">
-              <Button
-                type="submit"
-                size="lg"
-                leadingIcon={<Save />}
-                trailingIcon={<ArrowRight />}
-                disabled={busy}
-              >
-                {busy ? "Sedang menyimpan…" : "Simpan & lanjut ke faktor"}
-              </Button>
-              <Link to="/petugas" className={buttonStyles("secondary", "lg")}>
-                Batal, kembali ke dasbor
-              </Link>
-            </div>
-          </section>
-        </div>
+          }
+        >
+          <IncidentLocationPicker
+            value={form.point}
+            radiusM={form.radiusM}
+            onChange={(point) => {
+              updateForm({ point });
+              if (errors.point) setErrors((current) => ({ ...current, point: undefined }));
+            }}
+            heightClass="h-full"
+            plain
+          />
+        </MapWorkspace>
       </form>
 
       <ConfirmDialog

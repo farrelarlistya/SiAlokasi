@@ -1,10 +1,33 @@
-import { MapContainer, TileLayer } from "react-leaflet";
-import { useRef, useState, type ReactNode } from "react";
+import { MapContainer, TileLayer, useMap } from "react-leaflet";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../../lib/cn";
 
 const OSM_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
 const OSM_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+/** Menjaga peta tetap rapi saat panel samping dibuka atau ditutup. */
+function MapResizeHandler() {
+  const map = useMap();
+
+  useEffect(() => {
+    const container = map.getContainer();
+    let frame = 0;
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => map.invalidateSize({ animate: false }));
+    });
+
+    observer.observe(container);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [map]);
+
+  return null;
+}
 
 type MapCanvasProps = {
   center: { lat: number; lng: number };
@@ -44,6 +67,7 @@ export function MapCanvas({ center, zoom = 12, className, children }: MapCanvasP
           }}
         />
         {children}
+        <MapResizeHandler />
       </MapContainer>
 
       {tileErrors > 0 ? (

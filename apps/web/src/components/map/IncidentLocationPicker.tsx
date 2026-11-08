@@ -12,6 +12,9 @@ type IncidentLocationPickerProps = {
   radiusM: number;
   onChange: (value: MapPoint) => void;
   className?: string;
+  heightClass?: string;
+  /** Tanpa garis dan sudut, dipakai saat peta memenuhi panel. */
+  plain?: boolean;
 };
 
 const pinIcon = L.divIcon({
@@ -50,11 +53,15 @@ export function IncidentLocationPicker({
   radiusM,
   onChange,
   className,
+  heightClass = "h-[340px]",
+  plain = false,
 }: IncidentLocationPickerProps) {
   return (
     <div
       className={cn(
-        "relative h-[340px] overflow-hidden rounded-md border border-border",
+        "relative overflow-hidden",
+        heightClass,
+        plain ? "" : "rounded-md border border-border",
         className,
       )}
     >
@@ -88,7 +95,7 @@ export function IncidentLocationPicker({
       </MapCanvas>
 
       {!value ? (
-        <p className="pointer-events-none absolute inset-x-0 bottom-0 z-[500] bg-surface/95 px-4 py-3 text-base text-text-muted">
+        <p className="pointer-events-none absolute inset-x-3 bottom-10 z-[500] rounded-md border border-border bg-surface/95 px-4 py-2 text-base text-text-muted shadow-panel">
           Klik peta untuk menandai titik kejadian. Titik bisa digeser setelah muncul.
         </p>
       ) : null}

@@ -45,7 +45,14 @@ function navItemsForRole(role: "PETUGAS" | "PIMPINAN" | "ADMIN"): NavItem[] {
   ];
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  fullBleed = false,
+}: {
+  children: ReactNode;
+  /** Halaman peta: isi memenuhi sisa layar tanpa bingkai max-width. */
+  fullBleed?: boolean;
+}) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const toast = useToast();
@@ -73,7 +80,7 @@ export function AppShell({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className={cn("flex flex-col", fullBleed ? "h-dvh overflow-hidden" : "min-h-dvh")}>
       <AppHeader
         user={{ name: user.name, role: user.role }}
         actions={
@@ -114,7 +121,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         }
       />
 
-      <main id="isi-utama" className="mx-auto w-full max-w-7xl flex-1 px-4 pb-24 pt-6 sm:px-6 lg:pb-10">
+      <main
+        id="isi-utama"
+        className={cn(
+          "flex-1",
+          fullBleed
+            ? "flex min-h-0 w-full flex-col pb-16 lg:pb-0"
+            : "mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:pb-10",
+        )}
+      >
         {children}
       </main>
 

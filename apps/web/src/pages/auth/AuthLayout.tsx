@@ -1,6 +1,7 @@
-import { ArrowLeft, MapPin, ShieldCheck } from "lucide-react";
+import { ArrowLeft, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { BrandMark } from "../../components/BrandMark";
 import { MapIllustration } from "../../components/MapIllustration";
 
 type AuthLayoutProps = {
@@ -19,9 +20,7 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
             to="/"
             className="inline-flex min-h-11 items-center gap-3 rounded-md text-base font-semibold text-text"
           >
-            <span className="grid h-11 w-11 place-items-center rounded-md border border-accent/40 bg-accent/15 text-info">
-              <MapPin aria-hidden="true" className="h-6 w-6" />
-            </span>
+            <BrandMark className="h-11 w-11 shrink-0" />
             SiAlokasi
           </Link>
 
@@ -64,7 +63,10 @@ export function AuthLayout({ title, description, children, footer }: AuthLayoutP
             <ArrowLeft aria-hidden="true" className="h-5 w-5" />
             Kembali ke peta
           </Link>
-          <span className="text-base text-text-muted lg:hidden">SiAlokasi</span>
+          <span className="inline-flex items-center gap-2 text-base text-text-muted lg:hidden">
+            <BrandMark className="h-8 w-8" />
+            SiAlokasi
+          </span>
         </div>
 
         <div className="flex min-w-0 flex-1 items-center justify-center px-4 pb-10 sm:px-8">

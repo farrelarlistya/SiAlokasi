@@ -1,8 +1,8 @@
 import { ROLE_LABEL, type Role } from "@sialokasi/shared";
-import { MapPin } from "lucide-react";
 import type { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { cn } from "../lib/cn";
+import { BrandMark } from "./BrandMark";
 
 type AppHeaderUser = {
   name: string;
@@ -33,12 +33,7 @@ export function AppHeader({ actions, nav, user, className, variant = "sticky" }:
             to="/"
             className="flex min-h-11 items-center gap-3 rounded-md pr-2 transition-colors hover:bg-hover/60"
           >
-            <span
-              aria-hidden="true"
-              className="grid h-11 w-11 place-items-center rounded-md border border-accent/40 bg-accent/15 text-info"
-            >
-              <MapPin className="h-6 w-6" />
-            </span>
+            <BrandMark className="h-11 w-11 shrink-0 drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]" />
             <span className="flex min-w-0 flex-col leading-tight">
               <span className="text-base font-semibold text-text">SiAlokasi</span>
               <span className="hidden whitespace-nowrap text-base text-text-muted xl:block">
