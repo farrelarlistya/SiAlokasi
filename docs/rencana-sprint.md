@@ -9,7 +9,7 @@
 | `D1` | Perencanaan & Desain | ✅ Selesai — 2026-11-07 | `docs/prd/prd.md`, `docs/desain/design.md`, `AGENTS.md`, `docs/adr/0001..0003`, `SiAlokasi.figcraft` (9 board) |
 | `M1` | Pondasi + UI Matang + Seed Bersih | ✅ Selesai — 2026-11-08 | `docs/bukti/m1.md`, `apps/web`, `apps/api`, `packages/shared` |
 | `M2` | Akun Semua Peran & Data Master | ✅ Selesai — 2026-11-08 | `docs/bukti/m2.md`, `docs/adr/0004-autentikasi-otp-dan-sesi-cookie.md`, halaman A1/A2/T1/D1–D5 |
-| `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ⏳ Belum dimulai | — |
+| `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ✅ Selesai — 2026-11-08 | `docs/bukti/m3.md`, `docs/adr/0005-alur-kerja-inti-dan-kunci-persetujuan.md`, halaman T2/T3/T4/L1/L2/L3/P2 |
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ⏳ Belum dimulai | — |
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ⏳ Belum dimulai | — |
 
@@ -138,6 +138,28 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 ---
 
+## M3 — Alur Kerja Utama (Selesai 2026-11-08)
+
+**Hasil:**
+- `packages/shared`: model estimasi `sialokasi-ridge-1.1.0` (faktor penyesuaian di atas rumus dasar), alasan bahasa manusia per baris, kode lacak `SIA-XXXXX`, skema penyesuaian/keputusan, tipe detail laporan & lacak publik — **63 unit test lulus**.
+- `tools/train-model`: pelatihan offline deterministik, R² 0,9986–0,9993 pada data sintetis.
+- `apps/api`: migrasi `m3_alur_kerja_utama` (faktor nullable, `adjustReason`, unique decision, `permit_items`), endpoint laporan/estimasi/pengajuan, tinjauan/penyesuaian/keputusan/izin/selesai, lacak publik, advisory lock per laporan & nomor izin, `verify-m3` (80 pemeriksaan lulus).
+- `apps/web`: T2 peta pemilih titik + slider radius + draf lokal + peringatan laporan dobel; T3 8 faktor + tabel estimasi; T4 pengajuan; L1 ringkasan antrian; L2 tinjau + ubah jumlah + stok posko; L3 dokumen izin + cetak A4 + tandai selesai; P2 lacak status + timeline; T1/P1 diperbarui.
+- Seed: stok air bersih & makanan dinaikkan agar kejadian contoh 3 hari bisa dipenuhi satu posko; reset tetap 0 transaksi.
+- Bukti: `docs/bukti/m3.md` + 21 tangkapan layar di `docs/bukti/m3/`; ADR 0005.
+
+**Kriteria selesai:**
+- [x] Skenario demo 5 menit berjalan penuh tanpa error; 0 kesalahan konsol dan 0 kesalahan halaman.
+- [x] Persetujuan ganda ditolak `409`; hanya satu izin dan satu keputusan terbit.
+- [x] Laporan terkunci setelah diajukan; sunting/estimasi ulang dijawab `409`.
+- [x] Kode lacak menampilkan status & timeline tanpa nama/email/telepon pelapor.
+- [x] `npm run build` dan `npm test` lulus bersih.
+- [x] 8 halaman baru lulus uji 360/768/1366/1920 px: 0 gulir horizontal, 0 teks <16 px, 0 target <44 px (di luar tautan lompat `sr-only`).
+
+**Catatan:** Stok masih dibaca dan dibandingkan, belum dikurangi. Ledger, invariant `qty >= 0`, pembatalan, koreksi, dan panel `/dev` tetap dijadwalkan M4.
+
+---
+
 ## M4 — Kasus Khusus, Rekap, Admin, & Demo
 
 **Tujuan:** aplikasi tahan terhadap skenario tidak ideal dan siap dipamerkan berulang.
@@ -194,6 +216,11 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | 2026-11-07 | Visual: panel gelap + peta terang + aksen biru | Sesuai referensi pemilik | `design.md` |
 | 2026-11-07 | Ikon bantuan = **SVG**, bukan foto | Barang logistik, bukan produk pajangan | `CREDITS.md` |
 | 2026-11-08 | Masuk tanpa kata sandi: **OTP demo + sesi cookie httpOnly** | Demo cepat, tetap memeriksa peran di server | ADR 0004 |
+| 2026-11-08 | Estimasi memakai **faktor penyesuaian di atas rumus dasar**, dilatih offline | Stabil untuk 1–50.000 jiwa, alasan mudah dijelaskan | ADR 0005 |
+| 2026-11-08 | **Advisory lock per laporan + unique decision**; persetujuan ganda `409` | Mencegah dua izin dari satu laporan | ADR 0005 |
+| 2026-11-08 | **`permit_items` snapshot** + nomor `IZN-YYYYMMDD-XXX`, berlaku 7 hari | Dokumen izin lama tidak berubah saat koreksi M4 | ADR 0005 |
+| 2026-11-08 | Kode lacak **`SIA-` + 5 karakter** (9 total, alfabet tanpa I/O/0/1) | Konsisten dengan pola PRD & mudah dibacakan | ADR 0005 |
+| 2026-11-08 | Stok hanya **dibandingkan & diberi peringatan** di M3 | Ledger & invariant stok dibangun benar di M4 | ADR 0005 |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
@@ -213,9 +240,9 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
 
-**Titik mulai M3 (Alur Kerja Utama):**
-1. Lengkapi `packages/shared`: model estimasi deterministik + penjelasan, skema laporan 8 faktor, pembuatan kode lacak `SIA-XXXXX`.
-2. Tambah modul `incidents`, `recommendations`, `decisions`, `permits` di API; pakai `assertTransition` dan `ClockService`, kunci persetujuan ganda.
-3. Bangun `T2` (peta + radius), `T3` (8 faktor + estimasi), `T4` (ajukan), `L1` antrian nyata, `L2` tinjau + ubah jumlah, `L3` izin, `P2` lacak status.
-4. Ganti kerangka T1/L1 dengan data nyata; pastikan peta P1 langsung menampilkan laporan yang baru dibuat.
-5. Tulis `verify-m3.ts` dan `docs/bukti/m3.md`; buktikan persetujuan ganda ditolak dan laporan terkunci setelah diajukan.
+**Titik mulai M4 (Kasus Khusus, Rekap, Admin, & Demo):**
+1. `shared`: skema pembatalan/koreksi, aturan stok & ledger, format rekap CSV.
+2. `api`: endpoint batal/tolak lanjutan/koreksi, pengurangan stok dalam transaksi dengan invariant `qty >= 0`, trigger/constraint append-only untuk `IncidentLog` & `AuditLog`, rekap per kecamatan/jenis/bulan, panel `/dev` (majukan waktu, reset, isi 3 contoh).
+3. `web`: halaman pembatalan/koreksi, rekap + ekspor CSV, panel `/dev`, perbaikan tampilan stok menipis.
+4. `verify-m4.ts`: dua pengurangan stok bersamaan → satu gagal; audit tidak bisa diubah/dihapus; rekap cocok dengan daftar; reset < 30 detik.
+5. Tulis `docs/bukti/m4.md` + ADR bila ada keputusan baru.

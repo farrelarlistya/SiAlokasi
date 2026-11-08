@@ -6,7 +6,7 @@ Folder ini menyimpan bukti nyata untuk setiap tahap. Satu berkas per tahap:
 | :--- | :--- | :--- |
 | `m1.md` | Hasil build, unit test, seed bersih, tangkapan layar `/ui` | ✅ selesai 2026-11-08 |
 | `m2.md` | Uji masuk semua peran, RBAC, CRUD data master | ✅ selesai 2026-11-08 |
-| `m3.md` | Uji alur inti, persetujuan ganda, kode lacak | ⏳ menunggu M3 |
+| `m3.md` | Uji alur inti, persetujuan ganda, kode lacak | ✅ selesai 2026-11-08 |
 | `m4.md` | Uji reset demo, stok tidak minus, audit log | ⏳ menunggu M4 |
 | `m5.md` | Uji 4 lebar perangkat, cetak izin, README | ⏳ menunggu M5 |
 

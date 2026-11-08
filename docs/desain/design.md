@@ -239,6 +239,16 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - Kontrol zoom 44×44 px, atribusi OpenStreetMap 16 px, dan selalu terlihat.
 - Bila tile gagal dimuat, muncul pita "Peta sedang memuat terbatas" dan daftar kejadian tetap bisa dibaca.
 
+### 12.12 Catatan Implementasi M3 (Alur Kerja Inti)
+
+- **T2** memakai peta penuh dengan titik yang bisa diklik dan digeser, slider radius 100 m–5 km, serta input angka lintang/bujur sebagai alternatif tanpa tetikus. Draf disimpan di perangkat dan peringatan muncul bila ada laporan lain dalam radius 200 m.
+- **T3** mengelompokkan 8 faktor menjadi "Dampak" dan "Kondisi lapangan". Setelah dihitung, tabel 10 bantuan menampilkan jumlah, satuan, dan alasan satu baris. Versi teknis perhitungan ditampilkan sebagai label ramah, mis. "Versi 1.1", bukan nama model.
+- **L1** menampilkan empat kartu: menunggu keputusan, jiwa terdampak, bantuan menunggu, dan izin terbit hari ini. Setiap kartu antrian menjadi tautan ke L2.
+- **L2** menambahkan kolom stok posko terpilih pada tabel rekomendasi. Perubahan jumlah memakai modal dengan alasan wajib; baris yang disesuaikan diberi penanda dan alasan perubahan. Peringatan stok kurang muncul sebelum tombol keputusan.
+- **L3** adalah dokumen putih A4 dengan nomor izin mono, daftar bantuan dari salinan `permit_items`, tanda tangan pimpinan, dan tombol Cetak. `@media print` menyembunyikan header, navigasi, dan tombol di luar dokumen.
+- **P2** menampilkan timeline empat langkah utama; status terminal (`DITOLAK`/`DIBATALKAN`) ditambahkan di akhir. Ringkasan bantuan hanya muncul setelah izin terbit. Nama, email, dan telepon pelapor tidak pernah ditampilkan.
+- **Tabel lebar** (T3, L2, L3, P2) selalu berada di dalam wadah `overflow-x-auto` dan kolom grid memakai `min-w-0`, sehingga halaman tidak pernah menggulir horizontal di ponsel.
+
 > **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog). Layar masuk dan halaman admin M2 mengikuti prinsip yang sama dan didokumentasikan di sini karena belum digambar sebagai board terpisah.
 
 ## 13. Larangan
