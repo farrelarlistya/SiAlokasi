@@ -292,22 +292,26 @@
 .print-document {
   background: var(--color-paper);
   color: var(--color-ink);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
 }
 
 @page {
   size: A4;
-  margin: 16mm;
+  margin: 12mm;
 }
 
 @media print {
+  html,
   body {
     background: var(--color-paper) !important;
     color: var(--color-ink) !important;
   }
 
-  header,
+  .app-header,
   nav,
-  .print-hidden {
+  .print-hidden,
+  [aria-label="Pemberitahuan"] {
     display: none !important;
   }
 
@@ -324,6 +328,83 @@
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    font-size: 12pt;
+    line-height: 1.22;
+  }
+
+  .print-document h1 {
+    font-size: 19pt !important;
+    line-height: 1.15 !important;
+  }
+
+  .print-document h2 {
+    font-size: 13pt !important;
+    line-height: 1.2 !important;
+  }
+
+  .print-document p,
+  .print-document dt,
+  .print-document dd,
+  .print-document li,
+  .print-document th,
+  .print-document td,
+  .print-document .text-base,
+  .print-document .font-mono {
+    font-size: 12pt !important;
+    line-height: 1.22 !important;
+  }
+
+  .print-document .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  .print-document .print-optional {
+    display: none !important;
+  }
+
+  .print-document table {
+    min-width: 0 !important;
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  .print-document table th,
+  .print-document table td {
+    padding: 2px 4px !important;
+  }
+
+  .print-document header {
+    padding-bottom: 6px !important;
+  }
+
+  .print-document .mt-5,
+  .print-document .mt-6,
+  .print-document .mt-10 {
+    margin-top: 8px !important;
+  }
+
+  .print-document .pt-4,
+  .print-document .pt-5,
+  .print-document .pt-6 {
+    padding-top: 6px !important;
+  }
+
+  .print-document .pb-6 {
+    padding-bottom: 6px !important;
+  }
+
+  .print-document section,
+  .print-document dl,
+  .print-document footer {
+    gap: 4px !important;
+  }
+
+  .print-document section {
+    break-inside: auto;
+  }
+
+  .print-document tr {
+    break-inside: avoid;
   }
 
   .print-document * {

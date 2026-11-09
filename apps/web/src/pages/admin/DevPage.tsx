@@ -1,6 +1,7 @@
 import { formatDateTime } from "@sialokasi/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  Bell,
   Clock3,
   DatabaseBackup,
   ExternalLink,
@@ -290,7 +291,7 @@ export function DevPage() {
         <h2 id="status-demo" className="sr-only">
           Status data demo
         </h2>
-        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <StatCard
             label="Laporan kejadian"
             value={data?.counts.incidents}
@@ -316,6 +317,13 @@ export function DevPage() {
             loading={status.isPending}
             icon={Clock3}
             tone="info"
+          />
+          <StatCard
+            label="Notifikasi tersimpan"
+            value={data?.counts.notifications}
+            loading={status.isPending}
+            icon={Bell}
+            tone="warning"
           />
         </div>
       </section>

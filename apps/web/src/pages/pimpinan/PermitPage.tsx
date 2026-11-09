@@ -355,7 +355,29 @@ export function PermitPage() {
               {PERMIT_STATUS_LABEL[permit.status] ?? permit.status}
             </dd>
           </div>
+          <div>
+            <dt className="text-ink-muted">Jenis dokumen</dt>
+            <dd className="mt-1 font-medium text-ink">
+              {permit.replacesNumber ? "Izin koreksi" : "Izin pertama"}
+            </dd>
+          </div>
+          {permit.replacesNumber ? (
+            <div>
+              <dt className="text-ink-muted">Menggantikan izin</dt>
+              <dd className="mt-1 font-mono font-medium text-ink">{permit.replacesNumber}</dd>
+            </div>
+          ) : null}
         </dl>
+
+        {permit.replacesNumber ? (
+          <p className="mt-5 border border-paper-border px-4 py-3 text-base text-ink">
+            Dokumen ini menggantikan izin {permit.replacesNumber}. Izin lama tetap tersimpan sebagai
+            riwayat dan tidak berlaku lagi untuk pengambilan bantuan.
+            {incident.corrections[0] ? (
+              <span className="mt-1 block">Alasan koreksi: {incident.corrections[0].reason}</span>
+            ) : null}
+          </p>
+        ) : null}
 
         <section className="mt-6 border-t border-paper-border pt-5">
           <h2 className="text-[22px] font-semibold leading-[30px] text-ink">Ringkasan kejadian</h2>
@@ -400,7 +422,9 @@ export function PermitPage() {
                   <th scope="col" className="px-2 py-2 font-medium">Jenis bantuan</th>
                   <th scope="col" className="px-2 py-2 text-right font-medium">Jumlah</th>
                   <th scope="col" className="px-2 py-2 font-medium">Satuan</th>
-                  <th scope="col" className="px-2 py-2 font-medium">Catatan</th>
+                  <th scope="col" className="print-optional px-2 py-2 font-medium">
+                    Catatan
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-paper-border">
@@ -414,7 +438,9 @@ export function PermitPage() {
                       {formatNumber(item.qty)}
                     </td>
                     <td className="px-2 py-3 text-ink-muted">{item.unit}</td>
-                    <td className="px-2 py-3 text-ink-muted">{item.reason ?? "—"}</td>
+                    <td className="print-optional px-2 py-3 text-ink-muted">
+                      {item.reason ?? "—"}
+                    </td>
                   </tr>
                 ))}
               </tbody>

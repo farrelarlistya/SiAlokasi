@@ -17,6 +17,7 @@ import { Button, buttonStyles } from "../components/Button";
 import { EmptyState } from "../components/EmptyState";
 import { Field, SelectInput } from "../components/Field";
 import { MapWorkspace } from "../components/MapWorkspace";
+import { NotificationBell } from "../components/NotificationBell";
 import { Skeleton } from "../components/Skeleton";
 import { StatusChip } from "../components/StatusChip";
 import { IncidentMarkers } from "../components/map/IncidentMarkers";
@@ -67,6 +68,7 @@ export function HomePage() {
               <Search aria-hidden="true" className="h-5 w-5 sm:hidden" />
               <span className="hidden sm:inline">Lacak</span>
             </Link>
+            {user ? <NotificationBell /> : null}
             {user ? (
               <Link
                 to={homePathForRole(user.role)}

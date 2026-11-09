@@ -22,7 +22,7 @@ export function AppHeader({ actions, nav, user, className, variant = "sticky" }:
   return (
     <header
       className={cn(
-        "z-30 border-b border-border bg-canvas/85 backdrop-blur",
+        "app-header z-30 border-b border-border bg-canvas/85 backdrop-blur",
         variant === "sticky" ? "sticky top-0" : "relative",
         className,
       )}

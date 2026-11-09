@@ -27,6 +27,7 @@ import { Button, buttonStyles } from "../../components/Button";
 import { EmptyState } from "../../components/EmptyState";
 import { Field, TextInput } from "../../components/Field";
 import { IncidentTimeline } from "../../components/IncidentTimeline";
+import { NotificationBell } from "../../components/NotificationBell";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { IncidentFocusMap } from "../../components/map/IncidentFocusMap";
@@ -91,6 +92,7 @@ export function TrackingPage() {
                 Peta kejadian
               </Link>
             </span>
+            {user ? <NotificationBell /> : null}
             {user ? (
               <Link to={homePathForRole(user.role)} className={buttonStyles("primary", "md")}>
                 Dasbor

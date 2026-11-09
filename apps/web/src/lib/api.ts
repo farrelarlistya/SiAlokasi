@@ -12,6 +12,8 @@ import type {
   IncidentStatus,
   LoginResponse,
   MutationResponse,
+  NotificationListResponse,
+  NotificationReadInput,
   PimpinanCancelInput,
   PimpinanIncidentDetailView,
   PoskoInput,
@@ -201,7 +203,7 @@ export type DevStatus = {
   demoMode: boolean;
   offsetMinutes: number;
   bisnisNow: string;
-  counts: { incidents: number; permits: number; auditLogs: number; movements: number };
+  counts: { incidents: number; permits: number; auditLogs: number; movements: number; notifications: number };
   examples: { code: string; title: string; target: string }[];
 };
 
@@ -399,8 +401,7 @@ export const api = {
       withQuery("/api/public/incidents", filters),
     ),
 
-  petugasDashboard: () => request<PetugasDashboard>("/api/petugas/dashboard"),
-  petugasIncidents: () => request<PetugasIncidentList>("/api/petugas/incidents"),
+  petugasDashboard: () => request<PetugasDashboard>("/api/petugas/dashboard"),  petugasIncidents: () => request<PetugasIncidentList>("/api/petugas/incidents"),
   petugasIncident: (id: string) =>
     request<{ data: IncidentDetailView }>(`/api/petugas/incidents/${id}`),
   createIncident: (body: IncidentDraftInput) =>
@@ -460,6 +461,19 @@ export const api = {
 
   publicTracking: (code: string) =>
     request<PublicIncidentTracking>(`/api/public/incidents/${encodeURIComponent(code)}`),
+
+  notifications: (options: { limit?: number; unreadOnly?: boolean } = {}) =>
+    request<NotificationListResponse>(
+      withQuery("/api/notifications", {
+        limit: String(options.limit ?? 20),
+        unread: options.unreadOnly ? "1" : undefined,
+      }),
+    ),
+  markNotificationsRead: (body: NotificationReadInput) =>
+    request<{ updated: number; message: string }>("/api/notifications/read", {
+      method: "POST",
+      body,
+    }),
 
   stockSummary: () => request<StockSummary>("/api/stock/summary"),
   stockMovements: (limit = 40) =>

@@ -17,6 +17,7 @@ import { useAuth } from "../auth/AuthProvider";
 import { AppHeader } from "../components/AppHeader";
 import { BottomNav, type BottomNavItem } from "../components/BottomNav";
 import { Button } from "../components/Button";
+import { NotificationBell } from "../components/NotificationBell";
 import { useToast } from "../components/Toast";
 import { cn } from "../lib/cn";
 
@@ -90,15 +91,18 @@ export function AppShell({
       <AppHeader
         user={{ name: user.name, role: user.role }}
         actions={
-          <Button
-            variant="secondary"
-            size="md"
-            leadingIcon={<LogOut />}
-            onClick={() => void handleLogout()}
-            aria-label="Keluar dari akun"
-          >
-            <span className="hidden sm:inline">Keluar</span>
-          </Button>
+          <>
+            <NotificationBell />
+            <Button
+              variant="secondary"
+              size="md"
+              leadingIcon={<LogOut />}
+              onClick={() => void handleLogout()}
+              aria-label="Keluar dari akun"
+            >
+              <span className="hidden sm:inline">Keluar</span>
+            </Button>
+          </>
         }
         nav={
           <>
