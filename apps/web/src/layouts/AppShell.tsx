@@ -14,6 +14,7 @@ import {
 import type { ReactNode } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthProvider";
+import { endLogout } from "../auth/logout-state";
 import { AppHeader } from "../components/AppHeader";
 import { BottomNav, type BottomNavItem } from "../components/BottomNav";
 import { Button } from "../components/Button";
@@ -74,7 +75,11 @@ export function AppShell({
       await logout();
       toast.push({ tone: "info", title: "Anda sudah keluar." });
       navigate("/", { replace: true });
+      // Cadangan bila navigasi tidak sempat terjadi; biasanya LogoutWatcher
+      // sudah menutup penanda begitu halaman publik tampil.
+      window.setTimeout(endLogout, 1_000);
     } catch (error) {
+      endLogout();
       toast.push({
         tone: "danger",
         title: "Belum bisa keluar.",

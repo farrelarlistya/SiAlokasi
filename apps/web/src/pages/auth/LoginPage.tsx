@@ -9,7 +9,7 @@ import { Button } from "../../components/Button";
 import { Field, TextInput } from "../../components/Field";
 import { useToast } from "../../components/Toast";
 import { api } from "../../lib/api";
-import { homePathForRole } from "../../lib/roles";
+import { nextPathForRole } from "../../lib/roles";
 import { AuthLayout } from "./AuthLayout";
 
 const DEMO_ACCOUNTS: { role: Role; email: string; name: string }[] = [
@@ -17,19 +17,12 @@ const DEMO_ACCOUNTS: { role: Role; email: string; name: string }[] = [
   { role: "PIMPINAN", email: "pimpinan@sialokasi.demo", name: "Budi Santoso" },
   { role: "ADMIN", email: "admin@sialokasi.demo", name: "Sari Wulandari" },
 ];
-
-function safeNext(value: string | null): string | null {
-  if (!value) return null;
-  if (!value.startsWith("/") || value.startsWith("//")) return null;
-  return value;
-}
-
 export function LoginPage() {
   const { user, applyLogin } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const next = safeNext(searchParams.get("next"));
+  const next = searchParams.get("next");
 
   const health = useQuery({ queryKey: ["health"], queryFn: api.health, retry: 0 });
 
@@ -102,7 +95,7 @@ export function LoginPage() {
       const response = await api.login(email.trim().toLowerCase(), parsed.data);
       applyLogin(response);
       toast.push({ tone: "success", title: response.message });
-      navigate(next ?? homePathForRole(response.user.role), { replace: true });
+      navigate(nextPathForRole(response.user.role, next), { replace: true });
     } catch (error) {
       setFormError(
         error instanceof Error
@@ -115,7 +108,7 @@ export function LoginPage() {
   };
 
   if (user) {
-    return <Navigate to={next ?? homePathForRole(user.role)} replace />;
+    return <Navigate to={nextPathForRole(user.role, next)} replace />;
   }
 
   return (

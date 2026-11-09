@@ -8,6 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { api } from "../lib/api";
+import { beginLogout, endLogout } from "./logout-state";
 
 type AuthContextValue = {
   user: AuthUser | null;
@@ -33,18 +34,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const applyLogin = useCallback(
     (response: LoginResponse) => {
+      endLogout();
       queryClient.setQueryData(["auth", "me"], { user: response.user });
     },
     [queryClient],
   );
 
   const logout = useCallback(async () => {
-    await api.logout();
-    queryClient.setQueryData(["auth", "me"], { user: null });
-    queryClient.removeQueries({ queryKey: ["admin"] });
-    queryClient.removeQueries({ queryKey: ["petugas"] });
-    queryClient.removeQueries({ queryKey: ["pimpinan"] });
-    queryClient.removeQueries({ queryKey: ["stock"] });
+    beginLogout();
+    try {
+      await api.logout();
+      queryClient.setQueryData(["auth", "me"], { user: null });
+      queryClient.removeQueries({ queryKey: ["admin"] });
+      queryClient.removeQueries({ queryKey: ["petugas"] });
+      queryClient.removeQueries({ queryKey: ["pimpinan"] });
+      queryClient.removeQueries({ queryKey: ["stock"] });
+    } catch (error) {
+      endLogout();
+      throw error;
+    }
   }, [queryClient]);
 
   const value = useMemo<AuthContextValue>(

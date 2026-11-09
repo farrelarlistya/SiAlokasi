@@ -20,6 +20,7 @@
     "verify:m3": "npm run verify:m3 -w @sialokasi/api",
     "verify:m4": "npm run verify:m4 -w @sialokasi/api",
     "verify:m5": "npm run verify:m5 -w @sialokasi/api",
+    "verify:login": "node scripts/check-login-switch.mjs",
     "share": "node scripts/share.mjs",
     "db:start": "node scripts/db.mjs start",
     "db:stop": "node scripts/db.mjs stop",

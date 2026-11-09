@@ -1,8 +1,10 @@
-import { lazy, Suspense } from "react";
-import { Navigate, Route, Routes } from "react-router-dom";
+import { lazy, Suspense, useEffect } from "react";
+import { Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { RequireRole } from "./auth/RequireRole";
+import { isLoggingOut, endLogout } from "./auth/logout-state";
 import { AppHeader } from "./components/AppHeader";
 import { Skeleton } from "./components/Skeleton";
+import { isPublicPath } from "./lib/roles";
 import { AdminAidItemsPage } from "./pages/admin/AdminAidItemsPage";
 import { AdminAuditPage } from "./pages/admin/AdminAuditPage";
 import { AdminSummaryPage } from "./pages/admin/AdminSummaryPage";
@@ -78,9 +80,23 @@ function RouteFallback() {
   );
 }
 
+/** Menutup penanda keluar setelah pengguna benar-benar tiba di halaman publik. */
+function LogoutWatcher() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (isLoggingOut() && isPublicPath(location.pathname)) {
+      endLogout();
+    }
+  }, [location.pathname]);
+
+  return null;
+}
+
 export function App() {
   return (
     <>
+      <LogoutWatcher />
       <a
         href="#isi-utama"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-primary focus:px-4 focus:py-3 focus:text-white"

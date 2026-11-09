@@ -7,6 +7,7 @@ import { buttonStyles } from "../components/Button";
 import { Skeleton } from "../components/Skeleton";
 import { homePathForRole } from "../lib/roles";
 import { useAuth } from "./AuthProvider";
+import { isLoggingOut } from "./logout-state";
 
 function AuthLoadingScreen() {
   return (
@@ -69,6 +70,8 @@ export function RequireRole({ roles, children }: RequireRoleProps) {
   if (isLoading) return <AuthLoadingScreen />;
 
   if (!user) {
+    // Jangan simpan alamat halaman berperan saat pengguna memang baru keluar.
+    if (isLoggingOut()) return <AuthLoadingScreen />;
     const next = encodeURIComponent(`${location.pathname}${location.search}`);
     return <Navigate to={`/masuk?next=${next}`} replace />;
   }
