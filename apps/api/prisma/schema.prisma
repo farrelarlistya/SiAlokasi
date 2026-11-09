@@ -96,6 +96,7 @@ model User {
   sessions       Session[]
   stockMovements StockMovement[]
   corrections    IncidentCorrection[]
+  notifications  Notification[]
 
   @@index([role, isActive])
   @@map("users")
@@ -208,6 +209,7 @@ model Incident {
   recommendations Recommendation[]
   permits         Permit[]
   corrections     IncidentCorrection[]
+  notifications   Notification[]
 
   @@index([status, occurredAt])
   @@map("incidents")
@@ -298,6 +300,7 @@ model Permit {
   movements           StockMovement[]
   correctionsPrevious IncidentCorrection[] @relation("CorrectionPreviousPermit")
   correctionsNew      IncidentCorrection[] @relation("CorrectionNewPermit")
+  notifications       Notification[]
 
   @@index([incidentId])
   @@map("permits")
@@ -373,6 +376,27 @@ model IncidentCorrection {
 
   @@index([incidentId, createdAt])
   @@map("incident_corrections")
+}
+
+/// Notifikasi simulasi in-app. Satu baris untuk satu penerima pada satu peristiwa.
+/// Tidak mengirim WA/SMS asli; halaman Notifikasi menjadi log yang bisa dibaca ulang.
+model Notification {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  kind       String
+  title      String
+  body       String
+  incidentId String?
+  incident   Incident? @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  permitId   String?
+  permit     Permit?   @relation(fields: [permitId], references: [id], onDelete: SetNull)
+  readAt     DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId, readAt, createdAt])
+  @@index([incidentId])
+  @@map("notifications")
 }
 
 model AuditLog {

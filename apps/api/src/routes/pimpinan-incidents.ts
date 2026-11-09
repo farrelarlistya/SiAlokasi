@@ -15,6 +15,7 @@ import {
   nextPermitNumber,
 } from "../lib/incident";
 import { requireRole } from "../lib/rbac";
+import { notifyPermitCorrection, notifyStatusChange } from "../lib/notifications";
 import { releaseStock, reserveStock } from "../lib/stock";
 
 type PimpinanIncidentDependencies = {
@@ -168,6 +169,8 @@ export function registerPimpinanIncidentRoutes(
             id: true,
             status: true,
             code: true,
+            title: true,
+            reporterId: true,
             recommendations: {
               where: { isActive: true },
               orderBy: { generatedAt: "desc" },
@@ -263,6 +266,15 @@ export function registerPimpinanIncidentRoutes(
             actorId: deciderId,
             before: { status: "MENUNGGU_PERSETUJUAN" },
             after: { status: "DITOLAK", reason },
+          });
+
+          await notifyStatusChange(tx, deps.clock, {
+            incidentId: id,
+            reporterId: incident.reporterId,
+            code: incident.code,
+            title: incident.title,
+            toStatus: "DITOLAK",
+            reason,
           });
 
           return `Laporan ${incident.code} ditolak. Alasan penolakan sudah dicatat dan bisa dibaca petugas.`;
@@ -373,6 +385,16 @@ export function registerPimpinanIncidentRoutes(
           },
         });
 
+        await notifyStatusChange(tx, deps.clock, {
+          incidentId: id,
+          reporterId: incident.reporterId,
+          code: incident.code,
+          title: incident.title,
+          toStatus: "DISETUJUI",
+          permitNumber: permit.number,
+          permitId: permit.id,
+        });
+
         return `Laporan ${incident.code} disetujui. Izin distribusi ${permit.number} terbit untuk ${posko.name}.`;
       });
     } catch (error) {
@@ -400,7 +422,9 @@ export function registerPimpinanIncidentRoutes(
           select: {
             id: true,
             code: true,
+            title: true,
             status: true,
+            reporterId: true,
             permits: { take: 1, select: { id: true, number: true } },
           },
         });
@@ -453,6 +477,16 @@ export function registerPimpinanIncidentRoutes(
           before: { status: "DISETUJUI" },
           after: { status: "SELESAI" },
         });
+
+        await notifyStatusChange(tx, deps.clock, {
+          incidentId: id,
+          reporterId: incident.reporterId,
+          code: incident.code,
+          title: incident.title,
+          toStatus: "SELESAI",
+          permitId: incident.permits[0]?.id ?? null,
+          permitNumber: incident.permits[0]?.number ?? null,
+        });
       });
     } catch (error) {
       if (error instanceof RequestError) {
@@ -486,7 +520,7 @@ export function registerPimpinanIncidentRoutes(
 
         const incident = await tx.incident.findUnique({
           where: { id },
-          select: { id: true, code: true, status: true },
+          select: { id: true, code: true, title: true, status: true, reporterId: true },
         });
 
         if (!incident) {
@@ -526,6 +560,15 @@ export function registerPimpinanIncidentRoutes(
           before: { status: "MENUNGGU_PERSETUJUAN" },
           after: { status: "DIBATALKAN", reason },
         });
+
+        await notifyStatusChange(tx, deps.clock, {
+          incidentId: id,
+          reporterId: incident.reporterId,
+          code: incident.code,
+          title: incident.title,
+          toStatus: "DIBATALKAN",
+          reason,
+        });
       });
     } catch (error) {
       if (error instanceof RequestError) {
@@ -562,7 +605,9 @@ export function registerPimpinanIncidentRoutes(
           select: {
             id: true,
             code: true,
+            title: true,
             status: true,
+            reporterId: true,
             permits: {
               orderBy: { issuedAt: "desc" },
               take: 1,
@@ -580,6 +625,7 @@ export function registerPimpinanIncidentRoutes(
                     name: true,
                     unit: true,
                     qty: true,
+                    reason: true,
                   },
                 },
               },
@@ -642,6 +688,7 @@ export function registerPimpinanIncidentRoutes(
           unit: item.unit,
           beforeQty: item.qty,
           afterQty: qtyByItem.get(item.aidItemId) ?? item.qty,
+          reason: item.reason,
         }));
         const changedQty = changes.some((item) => item.beforeQty !== item.afterQty);
 
@@ -693,7 +740,10 @@ export function registerPimpinanIncidentRoutes(
                 name: item.name,
                 unit: item.unit,
                 qty: item.afterQty,
-                reason: `Koreksi izin ${permit.number}: ${parsed.data.reason.trim()}`,
+                reason:
+                  item.beforeQty !== item.afterQty
+                    ? `Koreksi izin ${permit.number}: ${parsed.data.reason.trim()}`
+                    : item.reason,
               })),
             },
           },
@@ -737,6 +787,18 @@ export function registerPimpinanIncidentRoutes(
             actorId,
             createdAt: now,
           },
+        });
+
+        await notifyPermitCorrection(tx, deps.clock, {
+          incidentId: id,
+          reporterId: incident.reporterId,
+          actorId,
+          code: incident.code,
+          title: incident.title,
+          previousPermitNumber: permit.number,
+          newPermitNumber: newPermit.number,
+          permitId: newPermit.id,
+          reason: parsed.data.reason.trim(),
         });
 
         if (incident.status === "SELESAI") {

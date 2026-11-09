@@ -18,6 +18,7 @@ import {
   toIncidentDetail,
 } from "../lib/incident";
 import { requireRole } from "../lib/rbac";
+import { notifyStatusChange } from "../lib/notifications";
 
 type PetugasIncidentDependencies = {
   prisma: PrismaClient;
@@ -121,6 +122,14 @@ export function registerPetugasIncidentRoutes(
           note: "Laporan dibuat.",
           createdAt: now,
         },
+      });
+
+      await notifyStatusChange(tx, deps.clock, {
+        incidentId: created.id,
+        reporterId,
+        code,
+        title: created.title,
+        toStatus: "BARU",
       });
 
       await writeAudit(tx, deps.clock, {
@@ -278,7 +287,7 @@ export function registerPetugasIncidentRoutes(
 
         const incident = await tx.incident.findFirst({
           where: { id, reporterId },
-          select: { id: true, status: true },
+          select: { id: true, status: true, code: true, title: true },
         });
 
         if (!incident) {
@@ -360,6 +369,14 @@ export function registerPetugasIncidentRoutes(
               createdAt: now,
             },
           });
+
+          await notifyStatusChange(tx, deps.clock, {
+            incidentId: id,
+            reporterId,
+            code: incident.code,
+            title: incident.title,
+            toStatus: "DIPERIKSA",
+          });
         }
 
         await writeAudit(tx, deps.clock, {
@@ -406,6 +423,8 @@ export function registerPetugasIncidentRoutes(
           select: {
             id: true,
             status: true,
+            code: true,
+            title: true,
             recommendations: {
               where: { isActive: true },
               orderBy: { generatedAt: "desc" },
@@ -466,6 +485,14 @@ export function registerPetugasIncidentRoutes(
           },
         });
 
+        await notifyStatusChange(tx, deps.clock, {
+          incidentId: id,
+          reporterId,
+          code: incident.code,
+          title: incident.title,
+          toStatus: "MENUNGGU_PERSETUJUAN",
+        });
+
         await writeAudit(tx, deps.clock, {
           entity: "Incident",
           entityId: id,
@@ -511,7 +538,7 @@ export function registerPetugasIncidentRoutes(
 
         const incident = await tx.incident.findFirst({
           where: { id, reporterId },
-          select: { id: true, code: true, status: true },
+          select: { id: true, code: true, title: true, status: true },
         });
 
         if (!incident) {
@@ -541,6 +568,15 @@ export function registerPetugasIncidentRoutes(
             note: `Dibatalkan petugas: ${reason}`,
             createdAt: now,
           },
+        });
+
+        await notifyStatusChange(tx, deps.clock, {
+          incidentId: id,
+          reporterId,
+          code: incident.code,
+          title: incident.title,
+          toStatus: "DIBATALKAN",
+          reason,
         });
 
         await writeAudit(tx, deps.clock, {

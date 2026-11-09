@@ -14,6 +14,7 @@ import { registerAuthRoutes } from "./routes/auth";
 import { registerDevRoutes } from "./routes/dev";
 import { registerHealthRoutes } from "./routes/health";
 import { registerMasterRoutes } from "./routes/master";
+import { registerNotificationRoutes } from "./routes/notifications";
 import { registerPetugasIncidentRoutes } from "./routes/petugas-incidents";
 import { registerPetugasRoutes } from "./routes/petugas";
 import { registerPimpinanIncidentRoutes } from "./routes/pimpinan-incidents";
@@ -38,6 +39,7 @@ export async function buildApp(): Promise<FastifyInstance> {
 
   registerHealthRoutes(app, { prisma, clock, demoMode: env.DEMO_MODE });
   registerAuthRoutes(app, { prisma, clock, demoMode: env.DEMO_MODE });
+  registerNotificationRoutes(app, { prisma, clock });
   registerMasterRoutes(app, { prisma });
   registerPublicRoutes(app, { prisma });
   registerPetugasRoutes(app, { prisma, clock });

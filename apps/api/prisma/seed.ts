@@ -11,6 +11,7 @@ export type SeedResult = {
   aidItems: number;
   stocks: number;
   incidents: number;
+  notifications: number;
 };
 
 /**
@@ -29,6 +30,7 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
     await tx.$executeRawUnsafe("SELECT set_config('sialokasi.allow_purge', 'on', true)");
 
     await tx.incidentCorrection.deleteMany();
+    await tx.notification.deleteMany();
     await tx.stockMovement.deleteMany();
     await tx.permitItem.deleteMany();
     await tx.permit.deleteMany();
@@ -112,16 +114,17 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
     });
   });
 
-  const [users, regions, poskos, aidItems, stocks, incidents] = await Promise.all([
+  const [users, regions, poskos, aidItems, stocks, incidents, notifications] = await Promise.all([
     prisma.user.count(),
     prisma.region.count(),
     prisma.posko.count(),
     prisma.aidItem.count(),
     prisma.stock.count(),
     prisma.incident.count(),
+    prisma.notification.count(),
   ]);
 
-  return { users, regions, poskos, aidItems, stocks, incidents };
+  return { users, regions, poskos, aidItems, stocks, incidents, notifications };
 }
 
 const invokedDirectly =
@@ -139,6 +142,7 @@ if (invokedDirectly) {
     console.log(`  ${result.aidItems} jenis bantuan`);
     console.log(`  ${result.stocks} baris stok`);
     console.log(`  ${result.incidents} laporan kejadian (harus 0)`);
+    console.log(`  ${result.notifications} notifikasi (harus 0)`);
   } catch (error) {
     console.error("Data awal gagal disiapkan.");
     console.error(error);

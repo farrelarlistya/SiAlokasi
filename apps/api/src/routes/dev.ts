@@ -10,6 +10,7 @@ import type { ClockService } from "../clock";
 import { writeAudit } from "../lib/audit";
 import { firstIssueMessage, RequestError } from "../lib/errors";
 import { nextPermitNumber } from "../lib/incident";
+import { notifyStatusChange } from "../lib/notifications";
 import { requireRole } from "../lib/rbac";
 import { reserveStock } from "../lib/stock";
 import { seedDatabase } from "../../prisma/seed";
@@ -162,6 +163,14 @@ async function createExample(
     },
   });
 
+  await notifyStatusChange(tx, deps.clock, {
+    incidentId: incident.id,
+    reporterId: context.petugasId,
+    code: definition.code,
+    title: definition.title,
+    toStatus: "BARU",
+  });
+
   const estimation = predictAidNeeds(definition.factors, context.aidItems);
   const recommendation = await tx.recommendation.create({
     data: {
@@ -199,6 +208,14 @@ async function createExample(
     },
   });
 
+  await notifyStatusChange(tx, deps.clock, {
+    incidentId: incident.id,
+    reporterId: context.petugasId,
+    code: definition.code,
+    title: definition.title,
+    toStatus: "DIPERIKSA",
+  });
+
   if (definition.target === "MENUNGGU") {
     await tx.incident.update({
       where: { id: incident.id },
@@ -215,6 +232,14 @@ async function createExample(
         createdAt: occurredAt,
       },
     });
+
+    await notifyStatusChange(tx, deps.clock, {
+      incidentId: incident.id,
+      reporterId: context.petugasId,
+      code: definition.code,
+      title: definition.title,
+      toStatus: "MENUNGGU_PERSETUJUAN",
+    });
   } else {
     const poskoName = context.poskoNames.get(definition.poskoId) ?? "Posko tujuan";
     const decidedAt = deps.clock.shift(context.now, -2 * 3_600_000);
@@ -230,6 +255,14 @@ async function createExample(
         note: "Laporan contoh diajukan ke pimpinan.",
         createdAt: submittedAt,
       },
+    });
+
+    await notifyStatusChange(tx, deps.clock, {
+      incidentId: incident.id,
+      reporterId: context.petugasId,
+      code: definition.code,
+      title: definition.title,
+      toStatus: "MENUNGGU_PERSETUJUAN",
     });
 
     await tx.decision.create({
@@ -298,6 +331,16 @@ async function createExample(
       },
     });
 
+    await notifyStatusChange(tx, deps.clock, {
+      incidentId: incident.id,
+      reporterId: context.petugasId,
+      code: definition.code,
+      title: definition.title,
+      toStatus: "DISETUJUI",
+      permitNumber: number,
+      permitId: permit.id,
+    });
+
     if (definition.target === "SELESAI") {
       const finishedAt = deps.clock.shift(context.now, -3_600_000);
       await tx.incident.update({
@@ -315,6 +358,16 @@ async function createExample(
           createdAt: finishedAt,
         },
       });
+
+      await notifyStatusChange(tx, deps.clock, {
+        incidentId: incident.id,
+        reporterId: context.petugasId,
+        code: definition.code,
+        title: definition.title,
+        toStatus: "SELESAI",
+        permitNumber: number,
+        permitId: permit.id,
+      });
     }
   }
 
@@ -331,20 +384,22 @@ export function registerDevRoutes(app: FastifyInstance, deps: DevDependencies): 
   const adminOnly = { preHandler: requireRole(deps, "ADMIN") };
 
   app.get("/api/dev/status", adminOnly, async () => {
-    const [offsetMinutes, now, incidents, permits, auditLogs, movements] = await Promise.all([
-      deps.clock.offsetMinutes(),
-      deps.clock.now(),
-      deps.prisma.incident.count(),
-      deps.prisma.permit.count(),
-      deps.prisma.auditLog.count(),
-      deps.prisma.stockMovement.count(),
-    ]);
+    const [offsetMinutes, now, incidents, permits, auditLogs, movements, notifications] =
+      await Promise.all([
+        deps.clock.offsetMinutes(),
+        deps.clock.now(),
+        deps.prisma.incident.count(),
+        deps.prisma.permit.count(),
+        deps.prisma.auditLog.count(),
+        deps.prisma.stockMovement.count(),
+        deps.prisma.notification.count(),
+      ]);
 
     return {
       demoMode: deps.demoMode,
       offsetMinutes,
       bisnisNow: now.toISOString(),
-      counts: { incidents, permits, auditLogs, movements },
+      counts: { incidents, permits, auditLogs, movements, notifications },
       examples: EXAMPLES.map((example) => ({
         code: example.code,
         title: example.title,
