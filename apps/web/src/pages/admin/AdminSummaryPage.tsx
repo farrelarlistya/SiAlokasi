@@ -3,9 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import {
   AlertCircle,
   ClipboardList,
+  FlaskConical,
   MapPinned,
   Package,
   RefreshCw,
+  ScrollText,
   Users,
   Warehouse,
 } from "lucide-react";
@@ -61,6 +63,18 @@ const SHORTCUTS = [
     title: "Ringkasan stok",
     description: "Lihat ketersediaan bantuan per posko.",
     icon: Warehouse,
+  },
+  {
+    to: "/admin/audit",
+    title: "Audit & riwayat",
+    description: "Periksa siapa mengubah apa, lengkap dengan nilai sebelum dan sesudah.",
+    icon: ScrollText,
+  },
+  {
+    to: "/dev",
+    title: "Panel demo",
+    description: "Majukan waktu, isi contoh laporan, atau reset untuk demo baru.",
+    icon: FlaskConical,
   },
 ];
 

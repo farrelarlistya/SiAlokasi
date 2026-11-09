@@ -6,13 +6,24 @@ import {
   formatNumber,
 } from "@sialokasi/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowLeft, CheckCircle2, Printer, RefreshCw, Stamp } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRightLeft,
+  CheckCircle2,
+  History,
+  Pencil,
+  Printer,
+  RefreshCw,
+  Stamp,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Alert } from "../../components/Alert";
 import { Button, buttonStyles } from "../../components/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { EmptyState } from "../../components/EmptyState";
+import { Field, SelectInput, Textarea, TextInput } from "../../components/Field";
+import { Modal } from "../../components/Modal";
 import { PageHeader } from "../../components/PageHeader";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
@@ -33,6 +44,12 @@ export function PermitPage() {
   const queryClient = useQueryClient();
   const [confirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [correctionOpen, setCorrectionOpen] = useState(false);
+  const [correctionReason, setCorrectionReason] = useState("");
+  const [correctionPoskoId, setCorrectionPoskoId] = useState("");
+  const [correctionQty, setCorrectionQty] = useState<Record<string, string>>({});
+  const [correctionError, setCorrectionError] = useState<string | undefined>();
+  const [correctionBusy, setCorrectionBusy] = useState(false);
 
   const detail = useQuery({
     queryKey: ["pimpinan", "incident", id],
@@ -42,15 +59,94 @@ export function PermitPage() {
 
   const incident = detail.data?.data;
   const permit = incident?.permit ?? null;
-  const posko = incident?.poskos.find((item) => item.id === permit?.posko.id) ?? null;
 
-  const shortages = useMemo(() => {
-    if (!permit || !posko) return [];
-    return compareStock(
-      permit.items.map((item) => ({ aidItemId: item.aidItemId, qty: item.qty })),
-      posko.stocks,
-    ).filter((row) => row.shortage > 0);
-  }, [permit, posko]);
+  const correctionPosko = incident?.poskos.find((item) => item.id === correctionPoskoId) ?? null;
+  const correctionNeeds = useMemo(() => {
+    if (!permit) return [];
+    return permit.items.map((item) => ({
+      aidItemId: item.aidItemId,
+      qty: Number(correctionQty[item.aidItemId] ?? item.qty),
+    }));
+  }, [permit, correctionQty]);
+  const correctionShortages = useMemo(() => {
+    if (!correctionPosko) return [];
+    return compareStock(correctionNeeds, correctionPosko.stocks).filter(
+      (row) => row.shortage > 0,
+    );
+  }, [correctionNeeds, correctionPosko]);
+
+  const canCorrect =
+    incident !== undefined &&
+    (incident.status === "DISETUJUI" || incident.status === "SELESAI") &&
+    permit !== null &&
+    permit.supersededAt === null;
+
+  const openCorrection = () => {
+    if (!permit || !incident) return;
+    setCorrectionReason("");
+    setCorrectionPoskoId(permit.posko.id);
+    setCorrectionQty(
+      Object.fromEntries(permit.items.map((item) => [item.aidItemId, String(item.qty)])),
+    );
+    setCorrectionError(undefined);
+    setCorrectionOpen(true);
+  };
+
+  const saveCorrection = async () => {
+    setCorrectionError(undefined);
+    if (!permit) return;
+
+    if (correctionReason.trim().length < 5) {
+      setCorrectionError("Tulis alasan koreksi minimal 5 karakter agar perubahannya bisa dipahami.");
+      return;
+    }
+    if (!correctionPoskoId) {
+      setCorrectionError("Pilih posko tujuan untuk izin koreksi.");
+      return;
+    }
+
+    const items: { aidItemId: string; qty: number }[] = [];
+    for (const item of permit.items) {
+      const raw = correctionQty[item.aidItemId] ?? String(item.qty);
+      if (raw.trim() === "") {
+        setCorrectionError(`Jumlah ${item.name} belum diisi. Isi 0 bila bantuan tidak diperlukan.`);
+        return;
+      }
+      const qty = Number(raw);
+      if (!Number.isInteger(qty) || qty < 0) {
+        setCorrectionError(
+          `Jumlah ${item.name} harus bilangan bulat 0 atau lebih. Periksa kembali isian tersebut.`,
+        );
+        return;
+      }
+      items.push({ aidItemId: item.aidItemId, qty });
+    }
+
+    setCorrectionBusy(true);
+    try {
+      const response = await api.correctIncidentPermit(id, {
+        reason: correctionReason.trim(),
+        poskoId: correctionPoskoId,
+        items,
+      });
+      queryClient.setQueryData(["pimpinan", "incident", id], { data: response.data });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pimpinan", "summary"] }),
+        queryClient.invalidateQueries({ queryKey: ["stock"] }),
+        queryClient.invalidateQueries({ queryKey: ["public", "incidents"] }),
+      ]);
+      toast.push({ tone: "success", title: response.message });
+      setCorrectionOpen(false);
+    } catch (error) {
+      setCorrectionError(
+        error instanceof Error
+          ? error.message
+          : "Koreksi belum bisa disimpan. Periksa koneksi, lalu coba lagi.",
+      );
+    } finally {
+      setCorrectionBusy(false);
+    }
+  };
 
   const complete = async () => {
     setBusy(true);
@@ -158,6 +254,16 @@ export function PermitPage() {
               >
                 Cetak
               </Button>
+              {canCorrect ? (
+                <Button
+                  variant="secondary"
+                  leadingIcon={<Pencil />}
+                  onClick={openCorrection}
+                  disabled={correctionBusy}
+                >
+                  Koreksi izin
+                </Button>
+              ) : null}
               {incident.status === "DISETUJUI" ? (
                 <Button leadingIcon={<CheckCircle2 />} onClick={() => setConfirmCompleteOpen(true)}>
                   Tandai distribusi selesai
@@ -181,28 +287,30 @@ export function PermitPage() {
           </Alert>
         ) : null}
 
-        {shortages.length > 0 ? (
+        {permit.supersededAt ? (
           <Alert
             tone="warning"
-            title={`Stok di ${permit.posko.name} kurang untuk ${shortages.length} jenis bantuan.`}
+            title={`Izin ini sudah digantikan oleh ${permit.supersededByNumber ?? "izin koreksi"}.`}
             className="mt-4"
           >
-            <p>
-              Izin tetap berlaku, tetapi koordinasikan dengan posko tujuan sebelum pengambilan
-              bantuan. Kekurangan yang tercatat:
-            </p>
-            <ul className="mt-2 space-y-1">
-              {shortages.map((row) => {
-                const item = permit.items.find((permitItem) => permitItem.aidItemId === row.aidItemId);
-                return (
-                  <li key={row.aidItemId}>
-                    {item?.name ?? "Bantuan"}: kurang {formatNumber(row.shortage)} {item?.unit ?? ""}
-                  </li>
-                );
-              })}
-            </ul>
+            Dokumen ini tetap tersimpan sebagai riwayat. Gunakan izin terbaru untuk pengambilan
+            bantuan.
           </Alert>
-        ) : null}
+        ) : permit.replacesNumber ? (
+          <Alert
+            tone="info"
+            title={`Izin ini menggantikan ${permit.replacesNumber}.`}
+            className="mt-4"
+          >
+            Stok posko lama sudah dikembalikan, lalu stok posko tujuan baru diambil sesuai daftar
+            pada dokumen ini.
+          </Alert>
+        ) : (
+          <Alert tone="info" title="Stok sudah diambil saat izin terbit." className="mt-4">
+            Sisa stok posko tujuan bisa dilihat di halaman Ringkasan stok. Koreksi jumlah atau posko
+            dilakukan lewat tombol Koreksi izin, bukan dengan mengubah dokumen ini.
+          </Alert>
+        )}
       </div>
 
       <article className="print-document mx-auto mt-6 w-full max-w-[760px] rounded-lg p-6 shadow-panel sm:p-10">
@@ -312,16 +420,6 @@ export function PermitPage() {
               </tbody>
             </table>
           </div>
-
-          {shortages.length > 0 ? (
-            <div className="mt-4 rounded-md border border-warning/50 bg-warning/10 p-3 text-base text-ink">
-              <p className="font-medium">Catatan stok</p>
-              <p className="mt-1">
-                Sebagian bantuan belum mencukupi di posko tujuan. Koordinasikan dengan petugas posko
-                sebelum pengambilan.
-              </p>
-            </div>
-          ) : null}
         </section>
 
         <footer className="mt-10 flex flex-col gap-8 border-t border-paper-border pt-6 text-base sm:flex-row sm:items-end sm:justify-between">
@@ -340,6 +438,198 @@ export function PermitPage() {
           Dokumen ini dihasilkan oleh SiAlokasi. Periksa nomor izin sebelum menyerahkan bantuan.
         </p>
       </article>
+
+      {incident.corrections.length > 0 ? (
+        <section className="print-hidden mx-auto mt-6 w-full max-w-[760px] rounded-lg border border-border bg-surface p-5">
+          <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
+            <History aria-hidden="true" className="h-6 w-6 text-info" />
+            Riwayat koreksi izin
+          </h2>
+          <p className="mt-1 text-base text-text-muted">
+            Izin lama tidak dihapus. Setiap koreksi menyimpan alasan, pelaku, dan perubahan
+            jumlahnya.
+          </p>
+          <ul className="mt-4 divide-y divide-border">
+            {incident.corrections.map((correction) => (
+              <li key={correction.id} className="py-4 first:pt-0 last:pb-0">
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="text-base text-text">
+                    <span className="font-semibold">{correction.actorName}</span> mengoreksi{" "}
+                    <span className="font-mono text-info">{correction.previousPermitNumber}</span>{" "}
+                    menjadi{" "}
+                    <span className="font-mono text-info">{correction.newPermitNumber}</span>.
+                  </p>
+                  <p className="text-base text-text-muted">
+                    {formatDateTime(correction.createdAt)}
+                  </p>
+                </div>
+                <p className="mt-1 text-base text-text">{correction.reason}</p>
+                <ul className="mt-2 space-y-1 text-base text-text-muted">
+                  {correction.items
+                    .filter((item) => item.beforeQty !== item.afterQty)
+                    .map((item) => (
+                      <li key={item.aidItemId} className="flex flex-wrap items-center gap-2">
+                        <ArrowRightLeft aria-hidden="true" className="h-5 w-5 text-info" />
+                        {item.name}: {formatNumber(item.beforeQty)} →{" "}
+                        {formatNumber(item.afterQty)} {item.unit}
+                      </li>
+                    ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <Modal
+        open={correctionOpen}
+        onClose={() => {
+          if (!correctionBusy) setCorrectionOpen(false);
+        }}
+        title="Koreksi izin distribusi"
+        description={
+          permit
+            ? `Izin ${permit.number} akan ditandai digantikan, lalu izin baru terbit dengan nomor berikutnya. Stok posko lama dikembalikan dan stok posko baru diambil otomatis.`
+            : undefined
+        }
+        size="lg"
+        footer={
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => setCorrectionOpen(false)}
+              disabled={correctionBusy}
+            >
+              Batal
+            </Button>
+            <Button onClick={() => void saveCorrection()} disabled={correctionBusy}>
+              {correctionBusy ? "Sedang menyimpan…" : "Simpan koreksi"}
+            </Button>
+          </>
+        }
+      >
+        {correctionError ? (
+          <Alert tone="danger" title="Koreksi belum bisa disimpan." className="mb-4">
+            {correctionError}
+          </Alert>
+        ) : null}
+
+        <div className="grid gap-5">
+          <Field
+            id="correction-posko"
+            label="Posko tujuan izin koreksi"
+            hint="Boleh tetap sama atau diganti. Stok posko sebelumnya akan dikembalikan."
+            required
+          >
+            <SelectInput
+              value={correctionPoskoId}
+              onChange={(event) => {
+                setCorrectionPoskoId(event.target.value);
+                if (correctionError) setCorrectionError(undefined);
+              }}
+            >
+              <option value="">Pilih posko tujuan</option>
+              {(incident.poskos ?? []).map((posko) => (
+                <option key={posko.id} value={posko.id}>
+                  {posko.name} · {posko.regionName}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+
+          {correctionShortages.length > 0 ? (
+            <Alert
+              tone="danger"
+              title={`Stok ${correctionPosko?.name ?? "posko terpilih"} belum cukup untuk ${correctionShortages.length} jenis bantuan.`}
+            >
+              Koreksi akan ditolak sampai jumlah dikurangi atau posko diganti. Jenis yang kurang:{" "}
+              {correctionShortages
+                .map((row) => {
+                  const item = permit?.items.find(
+                    (permitItem) => permitItem.aidItemId === row.aidItemId,
+                  );
+                  return `${item?.name ?? "Bantuan"} kurang ${formatNumber(row.shortage)} ${
+                    item?.unit ?? ""
+                  }`;
+                })
+                .join(", ")}
+              .
+            </Alert>
+          ) : correctionPosko ? (
+            <Alert tone="success" title={`Stok ${correctionPosko.name} mencukupi untuk jumlah ini.`}>
+              Angka di bawah adalah jumlah setelah koreksi, bukan tambahan.
+            </Alert>
+          ) : null}
+
+          <div className="overflow-x-auto rounded-md border border-border">
+            <table className="w-full min-w-[520px] border-collapse text-left text-base">
+              <caption className="sr-only">Jumlah bantuan pada izin koreksi</caption>
+              <thead>
+                <tr className="border-b border-border bg-elevated text-text-muted">
+                  <th scope="col" className="px-3 py-3 font-medium">
+                    Jenis bantuan
+                  </th>
+                  <th scope="col" className="px-3 py-3 text-right font-medium">
+                    Jumlah lama
+                  </th>
+                  <th scope="col" className="px-3 py-3 font-medium">
+                    Jumlah baru
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {permit?.items.map((item) => (
+                  <tr key={item.aidItemId}>
+                    <th scope="row" className="px-3 py-3 text-left font-medium text-text">
+                      {item.name}
+                      <span className="block text-base font-normal text-text-muted">
+                        satuan {item.unit}
+                      </span>
+                    </th>
+                    <td className="px-3 py-3 text-right text-text-muted">
+                      {formatNumber(item.qty)}
+                    </td>
+                    <td className="px-3 py-3">
+                      <TextInput
+                        id={`correction-qty-${item.aidItemId}`}
+                        aria-label={`Jumlah baru ${item.name} dalam ${item.unit}`}
+                        type="number"
+                        min={0}
+                        max={1_000_000}
+                        value={correctionQty[item.aidItemId] ?? String(item.qty)}
+                        onChange={(event) => {
+                          setCorrectionQty((current) => ({
+                            ...current,
+                            [item.aidItemId]: event.target.value,
+                          }));
+                          if (correctionError) setCorrectionError(undefined);
+                        }}
+                      />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <Field
+            id="correction-reason"
+            label="Alasan koreksi"
+            hint="Jelaskan kenapa jumlah atau posko berubah agar riwayat mudah diperiksa."
+            required
+          >
+            <Textarea
+              value={correctionReason}
+              placeholder="Contoh: Hasil pendataan ulang menunjukkan kebutuhan air lebih kecil."
+              maxLength={300}
+              onChange={(event) => {
+                setCorrectionReason(event.target.value);
+                if (correctionError) setCorrectionError(undefined);
+              }}
+            />
+          </Field>
+        </div>
+      </Modal>
 
       <ConfirmDialog
         open={confirmCompleteOpen}

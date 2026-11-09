@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
   ArrowLeft,
+  Ban,
   CheckCircle2,
   ClipboardCheck,
   MapPin,
@@ -63,6 +64,9 @@ export function PimpinanReviewPage() {
   const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
   const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [cancelError, setCancelError] = useState<string | undefined>();
 
   const [adjustTarget, setAdjustTarget] = useState<RecommendationItemView | null>(null);
   const [adjustQty, setAdjustQty] = useState("");
@@ -157,6 +161,12 @@ export function PimpinanReviewPage() {
       setDecisionError("Pilih posko tujuan distribusi sebelum menyetujui laporan.");
       return;
     }
+    if (shortages.length > 0) {
+      setDecisionError(
+        `Stok di ${selectedPosko?.name ?? "posko terpilih"} belum cukup untuk ${shortages.length} jenis bantuan. Pilih posko lain atau sesuaikan jumlah bantuan terlebih dahulu.`,
+      );
+      return;
+    }
     setConfirmApproveOpen(true);
   };
 
@@ -223,6 +233,40 @@ export function PimpinanReviewPage() {
           : "Penolakan belum bisa disimpan. Periksa koneksi, lalu coba lagi.",
       );
       setConfirmRejectOpen(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const cancel = async () => {
+    setCancelError(undefined);
+    if (cancelReason.trim().length < 5) {
+      setCancelError(
+        "Tulis alasan pembatalan minimal 5 karakter agar petugas tahu kenapa laporan dihentikan.",
+      );
+      return;
+    }
+
+    setBusy(true);
+    try {
+      const response = await api.cancelIncidentByPimpinan(id, {
+        reason: cancelReason.trim(),
+      });
+      queryClient.setQueryData(["pimpinan", "incident", id], { data: response.data });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pimpinan", "summary"] }),
+        queryClient.invalidateQueries({ queryKey: ["public", "incidents"] }),
+        queryClient.invalidateQueries({ queryKey: ["petugas", "dashboard"] }),
+      ]);
+      toast.push({ tone: "info", title: response.message });
+      setCancelOpen(false);
+      navigate("/pimpinan", { replace: true });
+    } catch (error) {
+      setCancelError(
+        error instanceof Error
+          ? error.message
+          : "Pembatalan belum bisa disimpan. Periksa koneksi, lalu coba lagi.",
+      );
     } finally {
       setBusy(false);
     }
@@ -299,11 +343,13 @@ export function PimpinanReviewPage() {
           title={
             incident.status === "DITOLAK"
               ? "Laporan ini sudah ditolak."
-              : incident.status === "DISETUJUI"
-                ? "Laporan ini sudah disetujui."
-                : incident.status === "SELESAI"
-                  ? "Distribusi laporan ini sudah selesai."
-                  : "Laporan ini tidak sedang menunggu keputusan."
+              : incident.status === "DIBATALKAN"
+                ? "Laporan ini sudah dibatalkan."
+                : incident.status === "DISETUJUI"
+                  ? "Laporan ini sudah disetujui."
+                  : incident.status === "SELESAI"
+                    ? "Distribusi laporan ini sudah selesai."
+                    : "Laporan ini tidak sedang menunggu keputusan."
           }
           className="mt-6"
           action={
@@ -317,9 +363,11 @@ export function PimpinanReviewPage() {
           {incident.status === "DITOLAK"
             ? incident.decision?.reason ??
               "Alasan penolakan tidak tercatat. Hubungi admin bila perlu memeriksa riwayat."
-            : incident.status === "DISETUJUI" || incident.status === "SELESAI"
-              ? `Izin distribusi ${incident.permit?.number ?? "belum tersedia"} sudah tercatat.`
-              : "Kembali ke antrian untuk memilih laporan yang masih menunggu keputusan."}
+            : incident.status === "DIBATALKAN"
+              ? incident.cancelReason ?? "Laporan ini dibatalkan sebelum diputuskan."
+              : incident.status === "DISETUJUI" || incident.status === "SELESAI"
+                ? `Izin distribusi ${incident.permit?.number ?? "belum tersedia"} sudah tercatat.`
+                : "Kembali ke antrian untuk memilih laporan yang masih menunggu keputusan."}
         </Alert>
       ) : null}
 
@@ -456,6 +504,23 @@ export function PimpinanReviewPage() {
                       {formatNumber(recommendation.totalPeople)} jiwa
                     </span>
                   </div>
+
+                  {incident.corrections.length > 0 ? (
+                    <Alert
+                      tone="info"
+                      title="Jumlah final sudah dikoreksi di dokumen izin."
+                      className="mb-4"
+                    >
+                      Tabel ini menampilkan usulan awal. Jumlah yang berlaku ada pada{" "}
+                      <Link
+                        to={`/pimpinan/izin/${incident.id}`}
+                        className="font-medium text-info underline-offset-4 hover:underline"
+                      >
+                        izin distribusi terbaru
+                      </Link>
+                      .
+                    </Alert>
+                  ) : null}
 
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[700px] table-fixed border-collapse text-left text-base">
@@ -610,15 +675,17 @@ export function PimpinanReviewPage() {
 
                 {shortages.length > 0 ? (
                   <Alert
-                    tone="warning"
+                    tone="danger"
                     title={`Stok di ${selectedPosko?.name ?? "posko terpilih"} belum mencukupi untuk ${shortages.length} jenis bantuan.`}
                   >
-                    Persetujuan tetap bisa dilakukan, tetapi pertimbangkan posko lain atau
-                    sesuaikan jumlah bantuan. Kekurangan stok akan tampil di izin distribusi.
+                    Persetujuan akan ditolak oleh server sampai stok cukup. Pilih posko lain atau
+                    sesuaikan jumlah bantuan terlebih dahulu. Stok diambil otomatis saat izin
+                    terbit.
                   </Alert>
                 ) : selectedPosko ? (
                   <Alert tone="success" title={`Stok di ${selectedPosko.name} mencukupi.`}>
-                    Semua bantuan final tersedia di posko tujuan yang dipilih.
+                    Semua bantuan final tersedia dan akan langsung diambil dari posko ini saat izin
+                    terbit.
                   </Alert>
                 ) : null}
 
@@ -646,6 +713,19 @@ export function PimpinanReviewPage() {
 
                 <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
                   <Button
+                    variant="secondary"
+                    size="lg"
+                    leadingIcon={<Ban />}
+                    disabled={busy}
+                    onClick={() => {
+                      setCancelReason("");
+                      setCancelError(undefined);
+                      setCancelOpen(true);
+                    }}
+                  >
+                    Batalkan laporan
+                  </Button>
+                  <Button
                     variant="outlineDanger"
                     size="lg"
                     leadingIcon={<XCircle />}
@@ -657,7 +737,7 @@ export function PimpinanReviewPage() {
                   <Button
                     size="lg"
                     leadingIcon={<ClipboardCheck />}
-                    disabled={busy || poskos.length === 0}
+                    disabled={busy || poskos.length === 0 || shortages.length > 0}
                     onClick={requestApprove}
                   >
                     Setujui & terbitkan izin
@@ -759,6 +839,49 @@ export function PimpinanReviewPage() {
         ) : null}
       </Modal>
 
+      <Modal
+        open={cancelOpen}
+        onClose={() => {
+          if (!busy) setCancelOpen(false);
+        }}
+        title="Batalkan laporan ini?"
+        description="Laporan akan ditutup dengan status Dibatalkan. Tulis alasan yang bisa dibaca petugas agar laporan bisa dibuat ulang dengan benar."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setCancelOpen(false)} disabled={busy}>
+              Kembali
+            </Button>
+            <Button variant="danger" onClick={() => void cancel()} disabled={busy}>
+              {busy ? "Sedang membatalkan…" : "Ya, batalkan laporan"}
+            </Button>
+          </>
+        }
+      >
+        {cancelError ? (
+          <Alert tone="danger" title="Laporan belum bisa dibatalkan." className="mb-4">
+            {cancelError}
+          </Alert>
+        ) : null}
+
+        <Field
+          id="cancel-reason"
+          label="Alasan pembatalan"
+          hint="Contoh: laporan dobel, lokasi salah, atau kejadian sudah ditangani posko lain."
+          required
+        >
+          <Textarea
+            data-autofocus
+            value={cancelReason}
+            placeholder="Tulis alasan pembatalan minimal 5 karakter."
+            maxLength={300}
+            onChange={(event) => {
+              setCancelReason(event.target.value);
+              if (cancelError) setCancelError(undefined);
+            }}
+          />
+        </Field>
+      </Modal>
+
       <ConfirmDialog
         open={confirmApproveOpen}
         onClose={() => setConfirmApproveOpen(false)}
@@ -768,11 +891,7 @@ export function PimpinanReviewPage() {
         title="Setujui laporan dan terbitkan izin?"
         description={`Izin distribusi akan terbit untuk ${
           selectedPosko?.name ?? "posko terpilih"
-        }. Setelah disetujui, laporan tidak bisa diubah lagi.${
-          shortages.length > 0
-            ? ` Perhatian: stok di posko ini kurang untuk ${shortages.length} jenis bantuan.`
-            : ""
-        }`}
+        } dan stok posko langsung berkurang. Setelah disetujui, jumlah bantuan hanya bisa diperbaiki lewat izin koreksi.`}
         confirmLabel="Ya, setujui & terbitkan"
         cancelLabel="Periksa lagi"
       />

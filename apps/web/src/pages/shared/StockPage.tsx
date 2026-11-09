@@ -1,6 +1,16 @@
-import { formatNumber } from "@sialokasi/shared";
+import { formatDateTime, formatNumber } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, Info, MapPinned, Package, RefreshCw, Warehouse } from "lucide-react";
+import {
+  AlertTriangle,
+  ArrowDownRight,
+  ArrowUpRight,
+  History,
+  Info,
+  MapPinned,
+  Package,
+  RefreshCw,
+  Warehouse,
+} from "lucide-react";
 import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
@@ -17,6 +27,10 @@ import { api } from "../../lib/api";
 export function StockPage() {
   const { user } = useAuth();
   const stock = useQuery({ queryKey: ["stock", "summary"], queryFn: api.stockSummary });
+  const movements = useQuery({
+    queryKey: ["stock", "movements"],
+    queryFn: () => api.stockMovements(30),
+  });
 
   const { maxByItem, lowCount } = useMemo(() => {
     const max = new Map<string, number>();
@@ -52,10 +66,13 @@ export function StockPage() {
             <Button
               variant="secondary"
               leadingIcon={<RefreshCw />}
-              onClick={() => void stock.refetch()}
-              disabled={stock.isRefetching}
+              onClick={() => {
+                void stock.refetch();
+                void movements.refetch();
+              }}
+              disabled={stock.isRefetching || movements.isRefetching}
             >
-              {stock.isRefetching ? "Sedang memuat…" : "Muat ulang"}
+              {stock.isRefetching || movements.isRefetching ? "Sedang memuat…" : "Muat ulang"}
             </Button>
             {user?.role === "ADMIN" ? (
               <Link to="/admin/wilayah" className={buttonStyles("secondary", "md")}>
@@ -92,8 +109,8 @@ export function StockPage() {
 
       {lowCount > 0 ? (
         <Alert tone="warning" title={`${formatNumber(lowCount)} baris stok perlu perhatian.`} className="mt-6">
-          Stok menipis tidak menghalangi persetujuan, tetapi pilih posko tujuan yang masih punya
-          cukup persediaan.
+          Stok menipis bisa membuat persetujuan ditolak. Pilih posko lain atau sesuaikan jumlah
+          bantuan sebelum menerbitkan izin.
         </Alert>
       ) : null}
 
@@ -207,12 +224,106 @@ export function StockPage() {
               <div className="mt-4 flex items-start gap-2 border-t border-border pt-4 text-base text-text-muted">
                 <Info aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-info" />
                 <p>
-                  Angka di atas adalah ringkasan. Perubahan stok dilakukan di luar aplikasi pada
-                  tahap ini; aplikasi menjaga agar angka tidak pernah minus saat perhitungan
-                  berjalan.
+                  Stok berkurang otomatis saat izin distribusi terbit. Angka di atas adalah sisa
+                  stok saat ini, dan setiap perubahan tercatat di jurnal stok di bawah.
                 </p>
               </div>
             </>
+          )}
+        </div>
+      </section>
+
+      <section className="mt-6 overflow-hidden rounded-lg border border-border bg-surface">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
+          <div>
+            <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
+              <History aria-hidden="true" className="h-6 w-6 text-info" />
+              Jurnal stok terakhir
+            </h2>
+            <p className="mt-1 text-base text-text-muted">
+              {movements.data?.note ??
+                "Setiap pengambilan dan pengembalian stok meninggalkan satu baris yang tidak bisa dihapus."}
+            </p>
+          </div>
+          <span className="inline-flex min-h-9 items-center rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
+            {movements.isPending
+              ? "Memuat…"
+              : `${formatNumber(movements.data?.movements.length ?? 0)} baris terakhir`}
+          </span>
+        </div>
+
+        <div className="p-5">
+          {movements.isPending ? (
+            <div className="space-y-3" aria-busy="true">
+              <span className="sr-only">Sedang memuat jurnal stok</span>
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+          ) : movements.isError ? (
+            <Alert
+              tone="danger"
+              title="Jurnal stok belum bisa dimuat."
+              action={
+                <Button variant="secondary" onClick={() => void movements.refetch()}>
+                  Coba lagi
+                </Button>
+              }
+            >
+              Periksa koneksi, lalu tekan Coba lagi.
+            </Alert>
+          ) : (movements.data?.movements.length ?? 0) === 0 ? (
+            <EmptyState
+              compact
+              icon={<History />}
+              title="Belum ada perubahan stok."
+              description="Jurnal akan terisi saat pimpinan menyetujui izin atau saat izin dikoreksi. Stok awal dari seed tidak dihitung sebagai perubahan."
+            />
+          ) : (
+            <ul className="divide-y divide-border">
+              {movements.data?.movements.map((movement) => {
+                const isRelease = movement.kind === "RELEASE";
+                const Icon = isRelease ? ArrowUpRight : ArrowDownRight;
+                return (
+                  <li key={movement.id} className="flex flex-wrap items-start justify-between gap-3 py-4 first:pt-0 last:pb-0">
+                    <div className="min-w-0">
+                      <p className="text-base text-text">
+                        <span className="font-medium">{movement.aidItemName}</span> ·{" "}
+                        {movement.poskoName}
+                      </p>
+                      <p className="mt-1 text-base text-text-muted">
+                        {movement.permitNumber ? (
+                          <span className="font-mono text-info">{movement.permitNumber}</span>
+                        ) : (
+                          "Tanpa izin"
+                        )}
+                        {movement.actorName ? ` · ${movement.actorName}` : ""} ·{" "}
+                        {formatDateTime(movement.createdAt)}
+                      </p>
+                      {movement.note ? (
+                        <p className="mt-1 text-base text-text-muted">{movement.note}</p>
+                      ) : null}
+                    </div>
+                    <div className="text-right">
+                      <p
+                        className={
+                          isRelease
+                            ? "inline-flex min-h-9 items-center gap-1 font-mono text-base font-semibold text-success"
+                            : "inline-flex min-h-9 items-center gap-1 font-mono text-base font-semibold text-danger"
+                        }
+                      >
+                        <Icon aria-hidden="true" className="h-5 w-5" />
+                        {movement.qtyDelta > 0 ? "+" : "−"}
+                        {formatNumber(Math.abs(movement.qtyDelta))} {movement.unit}
+                      </p>
+                      <p className="text-base text-text-muted">
+                        Sisa {formatNumber(movement.balanceAfter)} {movement.unit}
+                      </p>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
           )}
         </div>
       </section>

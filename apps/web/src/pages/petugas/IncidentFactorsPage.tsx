@@ -4,6 +4,7 @@ import {
   DENSITY_LABEL,
   DENSITY_LEVELS,
   DISASTER_LABEL,
+  canCancelByPetugas,
   formatDateTime,
   formatDistance,
   formatModelVersion,
@@ -23,6 +24,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ArrowRight,
+  Ban,
   Calculator,
   CheckCircle2,
   Clock3,
@@ -38,6 +40,7 @@ import { Link, useParams } from "react-router-dom";
 import { AidIcon } from "../../components/AidIcon";
 import { Alert } from "../../components/Alert";
 import { Button, buttonStyles } from "../../components/Button";
+import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { EmptyState } from "../../components/EmptyState";
 import { Field, SelectInput, TextInput } from "../../components/Field";
 import { IncidentTimeline } from "../../components/IncidentTimeline";
@@ -108,6 +111,8 @@ export function IncidentFactorsPage() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [cancelBusy, setCancelBusy] = useState(false);
   const hydrated = useRef(false);
 
   useEffect(() => {
@@ -186,6 +191,34 @@ export function IncidentFactorsPage() {
     }
   };
 
+  const cancelReport = async () => {
+    setCancelBusy(true);
+    try {
+      const response = await api.cancelIncident(id, {
+        reason: "Laporan tidak dilanjutkan oleh petugas.",
+      });
+      queryClient.setQueryData(["petugas", "incident", id], { data: response.data });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["petugas", "dashboard"] }),
+        queryClient.invalidateQueries({ queryKey: ["petugas", "incidents"] }),
+        queryClient.invalidateQueries({ queryKey: ["public", "incidents"] }),
+        queryClient.invalidateQueries({ queryKey: ["pimpinan"] }),
+      ]);
+      toast.push({ tone: "info", title: response.message });
+      setConfirmCancelOpen(false);
+    } catch (error) {
+      toast.push({
+        tone: "danger",
+        title: "Laporan belum bisa dibatalkan.",
+        description:
+          error instanceof Error ? error.message : "Periksa koneksi, lalu coba lagi.",
+      });
+      setConfirmCancelOpen(false);
+    } finally {
+      setCancelBusy(false);
+    }
+  };
+
   if (detail.isPending) {
     return (
       <AppShell>
@@ -236,7 +269,9 @@ export function IncidentFactorsPage() {
             ? incident.decision?.reason ??
               "Laporan ini ditolak pimpinan. Buat laporan baru bila ada data yang perlu diperbaiki."
             : status === "DIBATALKAN"
-              ? "Laporan ini dibatalkan dan tidak bisa dilanjutkan."
+              ? incident.cancelReason
+                ? `Laporan ini dibatalkan: ${incident.cancelReason}`
+                : "Laporan ini dibatalkan dan tidak bisa dilanjutkan."
               : "";
 
   return (
@@ -258,6 +293,16 @@ export function IncidentFactorsPage() {
               <MapPin aria-hidden="true" className="h-5 w-5" />
               Lihat kode lacak
             </Link>
+            {canCancelByPetugas(incident.status) ? (
+              <Button
+                variant="outlineDanger"
+                leadingIcon={<Ban />}
+                onClick={() => setConfirmCancelOpen(true)}
+                disabled={cancelBusy}
+              >
+                Batalkan laporan
+              </Button>
+            ) : null}
           </>
         }
       />
@@ -716,6 +761,17 @@ export function IncidentFactorsPage() {
           </section>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmCancelOpen}
+        onClose={() => setConfirmCancelOpen(false)}
+        onConfirm={() => void cancelReport()}
+        busy={cancelBusy}
+        title="Batalkan laporan ini?"
+        description="Laporan akan berstatus Dibatalkan dan tidak masuk antrian pimpinan. Tindakan ini tidak bisa dibatalkan; buat laporan baru bila data perlu diperbaiki."
+        confirmLabel="Ya, batalkan laporan"
+        cancelLabel="Belum"
+      />
     </AppShell>
   );
 }

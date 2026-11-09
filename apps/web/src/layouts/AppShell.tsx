@@ -1,10 +1,13 @@
 import {
+  BarChart3,
   FilePlus2,
+  FlaskConical,
   House,
   LayoutDashboard,
   LogOut,
   MapPinned,
   Package,
+  ScrollText,
   Users,
   Warehouse,
 } from "lucide-react";
@@ -24,15 +27,18 @@ function navItemsForRole(role: "PETUGAS" | "PIMPINAN" | "ADMIN"): NavItem[] {
     return [
       { label: "Dasbor", to: "/admin", icon: LayoutDashboard, mobile: true },
       { label: "Akun", to: "/admin/akun", icon: Users, mobile: true },
-      { label: "Bantuan", to: "/admin/bantuan", icon: Package, mobile: true },
-      { label: "Wilayah", to: "/admin/wilayah", icon: MapPinned, mobile: true },
+      { label: "Bantuan", to: "/admin/bantuan", icon: Package, mobile: false },
+      { label: "Wilayah", to: "/admin/wilayah", icon: MapPinned, mobile: false },
       { label: "Stok", to: "/stok", icon: Warehouse, mobile: false },
+      { label: "Audit", to: "/admin/audit", icon: ScrollText, mobile: true },
+      { label: "Demo", to: "/dev", icon: FlaskConical, mobile: true },
     ];
   }
 
   if (role === "PIMPINAN") {
     return [
       { label: "Dasbor", to: "/pimpinan", icon: LayoutDashboard, mobile: true },
+      { label: "Rekap", to: "/pimpinan/rekap", icon: BarChart3, mobile: true },
       { label: "Stok", to: "/stok", icon: Warehouse, mobile: true },
       { label: "Peta", to: "/", icon: House, mobile: true },
     ];

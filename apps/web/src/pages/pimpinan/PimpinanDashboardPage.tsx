@@ -7,6 +7,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  BarChart3,
   ClipboardCheck,
   FileCheck2,
   MapPinned,
@@ -47,6 +48,10 @@ export function PimpinanDashboardPage() {
         description="Lihat gambaran kejadian aktif, antrian keputusan, dan kondisi stok sebelum mengambil keputusan."
         actions={
           <>
+            <Link to="/pimpinan/rekap" className={buttonStyles("secondary", "md")}>
+              <BarChart3 aria-hidden="true" className="h-5 w-5" />
+              Rekap laporan
+            </Link>
             <Link to="/stok" className={buttonStyles("secondary", "md")}>
               <Warehouse aria-hidden="true" className="h-5 w-5" />
               Ringkasan stok
@@ -129,8 +134,8 @@ export function PimpinanDashboardPage() {
             </Link>
           }
         >
-          Stok menipis tidak menghalangi persetujuan, tetapi posko tujuan perlu dipilih dengan
-          cermat.
+          Stok menipis bisa membuat persetujuan ditolak. Pilih posko tujuan dengan cermat atau
+          sesuaikan jumlah bantuan sebelum menerbitkan izin.
         </Alert>
       ) : null}
 

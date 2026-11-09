@@ -1,9 +1,11 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { RequireRole } from "./auth/RequireRole";
 import { AdminAidItemsPage } from "./pages/admin/AdminAidItemsPage";
+import { AdminAuditPage } from "./pages/admin/AdminAuditPage";
 import { AdminRegionsPage } from "./pages/admin/AdminRegionsPage";
 import { AdminSummaryPage } from "./pages/admin/AdminSummaryPage";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
+import { DevPage } from "./pages/admin/DevPage";
 import { LoginPage } from "./pages/auth/LoginPage";
 import { RegisterPage } from "./pages/auth/RegisterPage";
 import { HomePage } from "./pages/HomePage";
@@ -15,6 +17,7 @@ import { SubmitIncidentPage } from "./pages/petugas/SubmitIncidentPage";
 import { PermitPage } from "./pages/pimpinan/PermitPage";
 import { PimpinanDashboardPage } from "./pages/pimpinan/PimpinanDashboardPage";
 import { PimpinanReviewPage } from "./pages/pimpinan/PimpinanReviewPage";
+import { RecapPage } from "./pages/pimpinan/RecapPage";
 import { TrackingPage } from "./pages/public/TrackingPage";
 import { StockPage } from "./pages/shared/StockPage";
 import { UiKitPage } from "./pages/UiKitPage";
@@ -92,6 +95,14 @@ export function App() {
             </RequireRole>
           }
         />
+        <Route
+          path="/pimpinan/rekap"
+          element={
+            <RequireRole roles={["PIMPINAN"]}>
+              <RecapPage />
+            </RequireRole>
+          }
+        />
 
         <Route
           path="/admin"
@@ -122,6 +133,22 @@ export function App() {
           element={
             <RequireRole roles={["ADMIN"]}>
               <AdminRegionsPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/admin/audit"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <AdminAuditPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="/dev"
+          element={
+            <RequireRole roles={["ADMIN"]}>
+              <DevPage />
             </RequireRole>
           }
         />

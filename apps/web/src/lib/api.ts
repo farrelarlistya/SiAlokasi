@@ -2,6 +2,8 @@ import type {
   AdjustRecommendationItemInput,
   AidItemInput,
   AuthMeResponse,
+  CancelIncidentInput,
+  CorrectionInput,
   DecisionInput,
   IncidentDetailView,
   IncidentDraftInput,
@@ -10,12 +12,16 @@ import type {
   IncidentStatus,
   LoginResponse,
   MutationResponse,
+  PimpinanCancelInput,
   PimpinanIncidentDetailView,
   PoskoInput,
   PublicIncidentTracking,
+  RecapFilter,
+  RecapResponse,
   RegionInput,
   RequestCodeResponse,
   Role,
+  StockMovementView,
 } from "@sialokasi/shared";
 
 export type HealthResponse = {
@@ -143,6 +149,78 @@ export type StockSummary = {
     stocks: { aidItemId: string; qty: number }[];
   }[];
   note: string;
+};
+
+export type StockMovementList = {
+  movements: StockMovementView[];
+  note: string;
+};
+
+export type AdminAuditEntry = {
+  id: string;
+  entity: string;
+  entityId: string;
+  action: string;
+  before: unknown;
+  after: unknown;
+  actorName: string;
+  actorRole: Role | null;
+  createdAt: string;
+};
+
+export type AdminAuditList = {
+  entries: AdminAuditEntry[];
+  total: number;
+  limit: number;
+  offset: number;
+  options: { entities: string[]; actions: string[] };
+  note: string;
+};
+
+export type AdminIncidentLog = {
+  id: string;
+  fromStatus: IncidentStatus | null;
+  toStatus: IncidentStatus;
+  note: string | null;
+  actorName: string;
+  incidentId: string;
+  incidentCode: string;
+  incidentTitle: string;
+  createdAt: string;
+};
+
+export type AdminIncidentLogList = {
+  logs: AdminIncidentLog[];
+  total: number;
+  limit: number;
+  offset: number;
+  note: string;
+};
+
+export type DevStatus = {
+  demoMode: boolean;
+  offsetMinutes: number;
+  bisnisNow: string;
+  counts: { incidents: number; permits: number; auditLogs: number; movements: number };
+  examples: { code: string; title: string; target: string }[];
+};
+
+export type DevClockResponse = {
+  offsetMinutes: number;
+  bisnisNow: string;
+  message: string;
+};
+
+export type DevResetResponse = {
+  result: { users: number; regions: number; poskos: number; aidItems: number; stocks: number; incidents: number };
+  elapsedMs: number;
+  message: string;
+};
+
+export type DevSeedExamplesResponse = {
+  incidents: number;
+  elapsedMs: number;
+  message: string;
 };
 
 export type AdminSummaryResponse = {
@@ -336,6 +414,11 @@ export const api = {
     }),
   submitIncident: (id: string) =>
     request<IncidentMutation>(`/api/petugas/incidents/${id}/submit`, { method: "POST" }),
+  cancelIncident: (id: string, body: CancelIncidentInput = {}) =>
+    request<IncidentMutation>(`/api/petugas/incidents/${id}/cancel`, {
+      method: "POST",
+      body,
+    }),
 
   pimpinanSummary: () => request<PimpinanSummary>("/api/pimpinan/summary"),
   pimpinanIncident: (id: string) =>
@@ -354,13 +437,52 @@ export const api = {
     request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/complete`, {
       method: "POST",
     }),
+  cancelIncidentByPimpinan: (id: string, body: PimpinanCancelInput) =>
+    request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/cancel`, {
+      method: "POST",
+      body,
+    }),
+  correctIncidentPermit: (id: string, body: CorrectionInput) =>
+    request<PimpinanIncidentMutation>(`/api/pimpinan/incidents/${id}/corrections`, {
+      method: "POST",
+      body,
+    }),
+  recap: (filters: RecapFilter) =>
+    request<RecapResponse>(
+      withQuery("/api/pimpinan/recap", {
+        from: filters.from,
+        to: filters.to,
+        regionId: filters.regionId,
+        disasterType: filters.disasterType,
+        groupBy: filters.groupBy,
+      }),
+    ),
 
   publicTracking: (code: string) =>
     request<PublicIncidentTracking>(`/api/public/incidents/${encodeURIComponent(code)}`),
 
   stockSummary: () => request<StockSummary>("/api/stock/summary"),
+  stockMovements: (limit = 40) =>
+    request<StockMovementList>(withQuery("/api/stock/movements", { limit: String(limit) })),
 
   adminSummary: () => request<AdminSummaryResponse>("/api/admin/summary"),
+  adminAudit: (filters: { entity?: string; action?: string; search?: string; limit?: number; offset?: number } = {}) =>
+    request<AdminAuditList>(
+      withQuery("/api/admin/audit", {
+        entity: filters.entity,
+        action: filters.action,
+        search: filters.search,
+        limit: filters.limit?.toString(),
+        offset: filters.offset?.toString(),
+      }),
+    ),
+  adminIncidentLogs: (limit = 30, offset = 0) =>
+    request<AdminIncidentLogList>(
+      withQuery("/api/admin/incident-logs", {
+        limit: String(limit),
+        offset: String(offset),
+      }),
+    ),
   adminUsers: (filters: { search?: string; role?: string; status?: string } = {}) =>
     request<AdminUserList>(withQuery("/api/admin/users", filters)),
   updateUser: (id: string, body: { role?: Role; isActive?: boolean }) =>
@@ -404,4 +526,25 @@ export const api = {
       method: "PATCH",
       body,
     }),
+
+  devStatus: () => request<DevStatus>("/api/dev/status"),
+  devSetClock: (offsetMinutes: number) =>
+    request<DevClockResponse>("/api/dev/clock", {
+      method: "PATCH",
+      body: { offsetMinutes },
+    }),
+  devReset: () => request<DevResetResponse>("/api/dev/reset", { method: "POST" }),
+  devSeedExamples: () =>
+    request<DevSeedExamplesResponse>("/api/dev/seed-examples", { method: "POST" }),
 };
+
+/** Tautan langsung untuk mengunduh CSV rekap; cookie sesi ikut terkirim. */
+export function recapCsvUrl(filters: RecapFilter): string {
+  return withQuery("/api/pimpinan/recap/export.csv", {
+    from: filters.from,
+    to: filters.to,
+    regionId: filters.regionId,
+    disasterType: filters.disasterType,
+    groupBy: filters.groupBy,
+  });
+}
