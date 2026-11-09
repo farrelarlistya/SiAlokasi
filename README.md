@@ -4,7 +4,7 @@ Ruang kendali tanggap darurat bencana: satu alur dari **laporan lapangan** → *
 
 Wilayah demo: **Kota Surabaya**. Bahasa aplikasi: Indonesia.
 
-> Status pengembangan: **M2 — Akun Semua Peran & Data Master** selesai (2026-11-08).
+> Status pengembangan: **M4 — Kasus Khusus, Rekap, Admin, & Demo** selesai (2026-11-09).
 > Papan status lengkap ada di [`docs/rencana-sprint.md`](docs/rencana-sprint.md).
 
 ## Isi Repositori
@@ -82,6 +82,8 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 | `npm test` | Unit test `packages/shared` |
 | `npm run verify:m1` | Memeriksa data master, kondisi bersih, dan aturan kode |
 | `npm run verify:m2` | Memeriksa masuk semua peran, RBAC, pendaftaran, dan CRUD data master |
+| `npm run verify:m3` | Memeriksa alur laporan, estimasi, persetujuan, izin, dan kode lacak |
+| `npm run verify:m4` | Memeriksa pembatalan, koreksi, stok anti-minus, audit tetap, rekap, dan reset demo |
 | `npm run db:start` / `db:stop` / `db:status` | Mengatur PostgreSQL lokal |
 | `npm run db:migrate` | Menerapkan migrasi Prisma |
 | `npm run db:seed` | Data master bersih (0 laporan) |
@@ -96,12 +98,13 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 - 3 akun demo: `petugas@sialokasi.demo`, `pimpinan@sialokasi.demo`, `admin@sialokasi.demo`.
 - **0 laporan, 0 rekomendasi, 0 keputusan, 0 izin, 0 riwayat, 0 sesi.**
 
-Masuk lewat <http://localhost:5173/masuk>. Saat `DEMO_MODE=true`, kode masuk selalu **`123456`** dan tiga akun demo bisa dipilih langsung. Pendaftaran petugas menunggu aktivasi Admin. Panel `/dev` tersedia pada **M4**.
+Masuk lewat <http://localhost:5173/masuk>. Saat `DEMO_MODE=true`, kode masuk selalu **`123456`** dan tiga akun demo bisa dipilih langsung. Pendaftaran petugas menunggu aktivasi Admin. Panel `/dev` (khusus admin) bisa membuka `http://localhost:5173/dev` untuk mengatur waktu demo, mengisi 3 contoh laporan, atau reset transaksi.
 
 ## Pengujian Antarmuka
 
-Bukti M1 dan M2 (tangkapan layar, hasil perintah, dan pemeriksaan aksesibilitas) ada di
-[`docs/bukti/m1.md`](docs/bukti/m1.md) dan [`docs/bukti/m2.md`](docs/bukti/m2.md).
+Bukti M1–M4 (tangkapan layar, hasil perintah, dan pemeriksaan aksesibilitas) ada di
+[`docs/bukti/m1.md`](docs/bukti/m1.md), [`docs/bukti/m2.md`](docs/bukti/m2.md),
+[`docs/bukti/m3.md`](docs/bukti/m3.md), dan [`docs/bukti/m4.md`](docs/bukti/m4.md).
 
 ## Catatan
 

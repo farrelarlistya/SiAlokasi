@@ -237,7 +237,7 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - `D2`: pencarian nama/email, saringan peran & status, tabel di desktop dan kartu di ponsel; akun sendiri tidak punya tombol nonaktifkan.
 - `D3`: tabel jenis bantuan dengan ikon, satuan, standar per jiwa, jumlah pemakaian, status; formulir di `Modal`; nonaktif ≠ hapus.
 - `D4`: tab Kecamatan/Posko, formulir posko dengan `LocationPicker`; tombol aktif/nonaktif selalu disertai konsekuensi.
-- `D5`: matriks stok read-only, kolom pertama lengket saat digulir mendatar, penanda "Menipis" berupa teks + titik.
+- `D5`: matriks stok read-only, kolom pertama lengket saat digulir mendatar, penanda "Menipis" berupa teks + titik, serta jurnal stok terakhir yang mencatat pengambilan/pengembalian.
 
 ### 12.11 Peta Leaflet (M2)
 - Warna garis radius, marker kejadian, dan penanda posko diambil dari token CSS lewat kelas peta, bukan hex lepas.
@@ -253,6 +253,18 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - **L3** adalah dokumen putih A4 dengan nomor izin mono, daftar bantuan dari salinan `permit_items`, tanda tangan pimpinan, dan tombol Cetak. `@media print` menyembunyikan header, navigasi, dan tombol di luar dokumen.
 - **P2** menampilkan timeline empat langkah utama; status terminal (`DITOLAK`/`DIBATALKAN`) ditambahkan di akhir. Ringkasan bantuan hanya muncul setelah izin terbit. Nama, email, dan telepon pelapor tidak pernah ditampilkan.
 - **Tabel lebar** (T3, L2, L3, P2) selalu berada di dalam wadah `overflow-x-auto` dan kolom grid memakai `min-w-0`, sehingga halaman tidak pernah menggulir horizontal di ponsel.
+
+### 12.13 Catatan Implementasi M4 (Kasus Khusus, Rekap, Admin, & Demo)
+
+- **Stok** diambil otomatis saat izin terbit. L2 menonaktifkan tombol setujui bila stok posko terpilih kurang; server tetap memeriksa ulang dengan `UPDATE ... WHERE qty >= jumlah` agar aman saat dua pimpinan menyetujui bersamaan.
+- **D5** menampilkan sisa stok dan **jurnal stok terakhir** (pengambilan/pengembalian, nomor izin, pelaku, sisa saldo). Tidak ada tombol ubah stok; perubahan hanya lewat izin atau koreksi.
+- **L3** menampilkan penanda "menggantikan / digantikan", tombol **Koreksi izin**, modal berisi posko + jumlah baru + alasan wajib, dan riwayat koreksi di bawah dokumen. Dokumen lama tetap bisa dicetak.
+- **L4 Rekap** memakai filter tanggal/kecamatan/jenis, tiga pilihan kelompok (kecamatan/jenis/bulan), kartu ringkasan, tabel dengan baris jumlah, dan tombol **Unduh CSV** (BOM UTF-8, CRLF).
+- **D7 Audit** punya dua tab: perubahan data (nilai sebelum→sesudah bisa dibuka) dan riwayat status laporan. Tidak ada tombol ubah/hapus.
+- **D6 Panel demo** berisi waktu layanan + tombol majukan 1 jam/6 jam/1 hari/3 hari, reset dengan `ConfirmDialog`, dan isi 3 contoh. Reset mengakhiri sesi; pengguna diarahkan ke halaman masuk.
+- **T3/L2** menyediakan pembatalan: petugas untuk `BARU`/`DIPERIKSA`, pimpinan untuk `MENUNGGU_PERSETUJUAN` dengan alasan wajib. Status terminal tetap menampilkan alasan di alert dan riwayat.
+- **P2** membaca daftar bantuan dari izin terbaru, sehingga koreksi langsung terlihat tanpa menampilkan data pribadi.
+- Halaman Rekap, Audit, Panel Demo, Stok, dan Izin lulus uji 360/768/1366/1920 px tanpa gulir horizontal dan tanpa teks/target di bawah standar.
 
 > **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog). Layar masuk dan halaman admin M2 mengikuti prinsip yang sama dan didokumentasikan di sini karena belum digambar sebagai board terpisah.
 

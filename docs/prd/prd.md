@@ -280,7 +280,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | Ditolak pimpinan | Alasan wajib; petugas bisa membuat **laporan baru** yang menunjuk ke laporan lama (bukan mengedit) |
 | Salah angka setelah disetujui | Wajib **catatan koreksi** baru; izin lama tetap tersimpan & ditandai "digantikan" |
 | Laporan dobel di lokasi sama | Sistem menampilkan peringatan "sudah ada laporan dalam radius 200 m", petugas tetap boleh lanjut dengan catatan |
-| Stok tidak cukup | Persetujuan tetap bisa, tetapi izin menampilkan "stok kurang" dan pimpinan harus memilih posko lain |
+| Stok tidak cukup | Persetujuan **ditolak** dengan pesan stok kurang; pimpinan memilih posko lain atau menyesuaikan jumlah. Stok diambil otomatis saat izin terbit (M4). |
 | Sinyal hilang saat mengisi | Draf tersimpan lokal; saat kembali, pengguna ditawari melanjutkan draf |
 | Waktu demo dimajukan | Tanggal izin & batas berlaku ikut bergeser sesuai `ClockService` |
 
@@ -375,12 +375,14 @@ SiAlokasi/
 | `L1` | Dasbor pimpinan | Pimpinan | Peta, antrian, kartu ringkasan | `Skeleton`, `EmptyState` antrian kosong |
 | `L2` | Tinjau rekomendasi | Pimpinan | Peta radius, tabel bisa diubah, alasan perubahan | Validasi alasan wajib |
 | `L3` | Izin distribusi | Pimpinan | Dokumen izin, nomor, tombol cetak | Tampilan cetak A4 |
+| `L4` | Rekap laporan | Pimpinan | Filter tanggal/kecamatan/jenis, tabel rekap, unduh CSV | `Skeleton`, `EmptyState` |
 | `D1` | Ringkasan admin | Admin | Statistik, pintasan | `Skeleton` |
 | `D2` | Akun & peran | Admin | Tabel, `ConfirmDialog` nonaktifkan | Pencegah nonaktifkan diri sendiri |
 | `D3` | Jenis bantuan | Admin | Tabel + modal formulir | Nonaktif ≠ hapus |
 | `D4` | Wilayah & posko | Admin | Tabel + peta pemilih koordinat | Validasi koordinat |
-| `D5` | Stok per posko | Admin/Pimpinan | Tabel read-only | Peringatan stok menipis |
+| `D5` | Stok per posko | Admin/Pimpinan | Matriks read-only + jurnal stok | Peringatan stok menipis |
 | `D6` | Panel `/dev` | Admin | Majukan waktu, reset, isi contoh | `ConfirmDialog` reset |
+| `D7` | Audit & riwayat | Admin | Tab perubahan & riwayat status, filter, nilai sebelum→sesudah | `Skeleton`, `EmptyState` |
 
 ### 10.2 Prinsip Tata Letak
 - **Peta sebagai kanvas utama**, panel mengapung di kiri (desktop) atau menjadi *bottom sheet* (mobile).
@@ -396,7 +398,7 @@ SiAlokasi/
 5. Ajukan → ganti akun **Pimpinan** → antrian menampilkan laporan.
 6. Ubah 2 item dengan alasan → Setujui → izin `IZN-20261107-001` terbit.
 7. Kembali ke `P2` sebagai **Tamu**, masukkan kode lacak → timeline tampil.
-8. Tutup dengan panel `/dev`: reset → kembali ke 0 transaksi untuk kelompok berikutnya.
+8. Tutup dengan panel `/dev`: reset → kembali ke 0 transaksi untuk kelompok berikutnya, atau isi 3 contoh untuk memperlihatkan antrian, izin, dan laporan selesai.
 
 ---
 

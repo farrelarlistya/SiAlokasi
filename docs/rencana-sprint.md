@@ -10,7 +10,7 @@
 | `M1` | Pondasi + UI Matang + Seed Bersih | ✅ Selesai — 2026-11-08 | `docs/bukti/m1.md`, `apps/web`, `apps/api`, `packages/shared` |
 | `M2` | Akun Semua Peran & Data Master | ✅ Selesai — 2026-11-08 | `docs/bukti/m2.md`, `docs/adr/0004-autentikasi-otp-dan-sesi-cookie.md`, halaman A1/A2/T1/D1–D5 |
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ✅ Selesai — 2026-11-08 | `docs/bukti/m3.md`, `docs/adr/0005-alur-kerja-inti-dan-kunci-persetujuan.md`, halaman T2/T3/T4/L1/L2/L3/P2 |
-| `M4` | Kasus Khusus, Rekap, Admin, Demo | ⏳ Belum dimulai | — |
+| `M4` | Kasus Khusus, Rekap, Admin, Demo | ✅ Selesai — 2026-11-09 | `docs/bukti/m4.md`, `docs/adr/0007-stok-ledger-append-only-dan-koreksi-izin.md`, halaman L4/D6/D7 |
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ⏳ Belum dimulai | — |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
@@ -201,6 +201,29 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 ---
 
+## M4 — Kasus Khusus, Rekap, Admin, & Demo (Selesai 2026-11-09)
+
+**Hasil:**
+- `packages/shared`: skema batal/koreksi/rekap/offset demo, aturan status kasus khusus, CSV rekap (BOM + CRLF), tipe koreksi izin & jurnal stok — **84 unit test lulus**.
+- `apps/api`: migrasi `m4_kasus_khusus` (constraint `stocks_qty_nonnegative`, tabel `stock_movements` & `incident_corrections`, trigger append-only di audit/riwayat/jurnal), pengambilan stok atomik saat izin terbit, pembatalan petugas/pimpinan, koreksi izin dengan izin baru + penanda pengganti, rekap per kecamatan/jenis/bulan + CSV, audit admin, panel `/dev` (waktu, reset, 3 contoh), `verify-m4` (**99 pemeriksaan lulus**).
+- `apps/web`: L4 rekap + unduh CSV, D7 audit + riwayat status, D6 panel demo, tombol batal di T3/L2, modal koreksi izin + riwayat di L3, jurnal stok di D5, navigasi peran diperbarui.
+- Seed/reset: 3 akun, 10 bantuan, 8 kecamatan, 3 posko, 30 baris stok, **0 transaksi**; reset dari `/dev` 0,2–0,3 detik.
+- Bukti: `docs/bukti/m4.md` + 17 tangkapan layar di `docs/bukti/m4/`; ADR 0007.
+
+**Kriteria selesai:**
+- [x] `demo:reset` < 30 detik dan mengembalikan 0 transaksi.
+- [x] Audit log menampilkan seluruh perubahan (pelaku, waktu, sebelum→sesudah).
+- [x] Tidak ada stok negatif pada uji dua persetujuan bersamaan; database menolak `qty < 0`.
+- [x] Audit, riwayat status, dan jurnal stok menolak `UPDATE`/`DELETE` lewat trigger.
+- [x] Pembatalan dan koreksi izin berjalan tanpa menghapus izin lama.
+- [x] Rekap cocok dengan daftar laporan; CSV bisa diunduh.
+- [x] `npm run build` dan `npm test` lulus bersih.
+- [x] 5 halaman baru lulus uji 360/768/1366/1920 px: 0 gulir horizontal, 0 teks <16 px, 0 target <44 px.
+
+**Catatan:** Panel `/dev` memakai `seedDatabase` yang sama dengan `demo:reset`, sehingga reset dari UI juga mengakhiri sesi dan pengguna perlu masuk lagi. Koreksi izin pada laporan `SELESAI` membuka kembali status ke `DISETUJUI` agar distribusi hasil koreksi bisa ditutup lagi.
+
+---
+
 ## M5 — Uji Lintas Perangkat & Siap Pamer
 
 **Tujuan:** orang lain bisa menjalankan dan mendemokan tanpa didampingi.
@@ -243,6 +266,13 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | 2026-11-08 | Kode lacak **`SIA-` + 5 karakter** (9 total, alfabet tanpa I/O/0/1) | Konsisten dengan pola PRD & mudah dibacakan | ADR 0005 |
 | 2026-11-08 | Stok hanya **dibandingkan & diberi peringatan** di M3 | Ledger & invariant stok dibangun benar di M4 | ADR 0005 |
 | 2026-11-08 | **Lambang baru (berkas asli) + panel peta bisa ditutup** | Formulir tidak menutupi peta; peta bisa dipakai lebar | ADR 0006 |
+| 2026-11-09 | Stok diambil **atomik saat izin terbit** (`UPDATE ... WHERE qty >= jumlah`) + `CHECK qty >= 0` | Dua persetujuan bersamaan tidak bisa membuat stok minus | ADR 0007 |
+| 2026-11-09 | **Jurnal stok append-only** (`stock_movements`) mencatat setiap pengambilan/pengembalian | Angka stok selalu bisa ditelusuri | ADR 0007 |
+| 2026-11-09 | **Koreksi izin = izin baru**; izin lama ditandai `DIBATALKAN` + `supersededAt` | Dokumen lama tidak berubah; stok lama dikembalikan | ADR 0007 |
+| 2026-11-09 | Koreksi pada laporan `SELESAI` **membuka kembali ke `DISETUJUI`** | Distribusi hasil koreksi bisa ditutup lagi dengan jejak status | ADR 0007 |
+| 2026-11-09 | Trigger **append-only** untuk audit, riwayat status, jurnal stok; reset memakai setelan `allow_purge` | Riwayat tidak bisa diubah diam-diam, reset demo tetap cepat | ADR 0007 |
+| 2026-11-09 | Rekap CSV memakai **koma + BOM UTF-8 + CRLF** | Rapi dibuka di Excel Indonesia | ADR 0007 |
+| 2026-11-09 | Panel `/dev` memakai `seedDatabase` yang sama dengan `demo:reset` + 3 contoh asli | Satu sumber kebenaran; hasil demo deterministik | ADR 0007 |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
@@ -262,9 +292,9 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
 
-**Titik mulai M4 (Kasus Khusus, Rekap, Admin, & Demo):**
-1. `shared`: skema pembatalan/koreksi, aturan stok & ledger, format rekap CSV.
-2. `api`: endpoint batal/tolak lanjutan/koreksi, pengurangan stok dalam transaksi dengan invariant `qty >= 0`, trigger/constraint append-only untuk `IncidentLog` & `AuditLog`, rekap per kecamatan/jenis/bulan, panel `/dev` (majukan waktu, reset, isi 3 contoh).
-3. `web`: halaman pembatalan/koreksi, rekap + ekspor CSV, panel `/dev`, perbaikan tampilan stok menipis.
-4. `verify-m4.ts`: dua pengurangan stok bersamaan → satu gagal; audit tidak bisa diubah/dihapus; rekap cocok dengan daftar; reset < 30 detik.
-5. Tulis `docs/bukti/m4.md` + ADR bila ada keputusan baru.
+**Titik mulai M5 (Uji Lintas Perangkat & Siap Pamer):**
+1. `web`: rapikan pemecahan bundel Leaflet bila memungkinkan, lalu uji semua halaman di 360/768/1366/1920 px.
+2. `api`: adapter notifikasi simulasi (lonceng in-app + log) untuk setiap perubahan status penting.
+3. `web`: finalisasi cetak A4 izin (termasuk izin koreksi) dan notifikasi simulasi.
+4. `scripts/share.mjs` + `npm run share` lewat tunnel; uji alamat publik dari perangkat lain.
+5. `README.md` + panduan demo 5 menit; tulis `docs/bukti/m5.md`, perbarui papan status, lalu commit + tag `m5-selesai`.
