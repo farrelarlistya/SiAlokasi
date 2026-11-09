@@ -19,6 +19,8 @@
     "verify:m2": "npm run verify:m2 -w @sialokasi/api",
     "verify:m3": "npm run verify:m3 -w @sialokasi/api",
     "verify:m4": "npm run verify:m4 -w @sialokasi/api",
+    "verify:m5": "npm run verify:m5 -w @sialokasi/api",
+    "share": "node scripts/share.mjs",
     "db:start": "node scripts/db.mjs start",
     "db:stop": "node scripts/db.mjs stop",
     "db:status": "node scripts/db.mjs status",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "concurrently": "^10.0.7",
+    "localtunnel": "^2.0.2",
     "typescript": "^5.9.3"
   },
   "engines": {
