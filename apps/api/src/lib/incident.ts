@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
   createTrackingCode,
+  type IncidentCorrectionView,
   type IncidentDetailView,
   type PimpinanIncidentDetailView,
   type PoskoStockView,
@@ -66,6 +67,9 @@ export const incidentDetailInclude = {
       issuedAt: true,
       validUntil: true,
       status: true,
+      supersededAt: true,
+      supersededByNumber: true,
+      replacesNumber: true,
       posko: { select: { id: true, name: true, region: { select: { name: true } } } },
       issuedBy: { select: { name: true } },
       items: {
@@ -81,11 +85,51 @@ export const incidentDetailInclude = {
       },
     },
   },
+  corrections: {
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      reason: true,
+      changes: true,
+      createdAt: true,
+      actor: { select: { name: true } },
+      previousPermit: { select: { number: true } },
+      newPermit: { select: { number: true } },
+    },
+  },
 } satisfies Prisma.IncidentInclude;
 
 export type IncidentWithDetail = Prisma.IncidentGetPayload<{
   include: typeof incidentDetailInclude;
 }>;
+
+function readCorrectionItems(changes: Prisma.JsonValue): IncidentCorrectionView["items"] {
+  if (!Array.isArray(changes)) return [];
+
+  return changes.flatMap((entry) => {
+    if (entry === null || typeof entry !== "object" || Array.isArray(entry)) return [];
+    const row = entry as Record<string, unknown>;
+    if (
+      typeof row.aidItemId !== "string" ||
+      typeof row.name !== "string" ||
+      typeof row.unit !== "string" ||
+      typeof row.beforeQty !== "number" ||
+      typeof row.afterQty !== "number"
+    ) {
+      return [];
+    }
+
+    return [
+      {
+        aidItemId: row.aidItemId,
+        name: row.name,
+        unit: row.unit,
+        beforeQty: row.beforeQty,
+        afterQty: row.afterQty,
+      },
+    ];
+  });
+}
 
 export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailView {
   const recommendation = incident.recommendations[0] ?? null;
@@ -127,6 +171,7 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
     region: incident.region,
     reporter: incident.reporter,
     factors,
+    cancelReason: incident.cancelReason,
     createdAt: incident.createdAt.toISOString(),
     updatedAt: incident.updatedAt.toISOString(),
     recommendation: recommendation
@@ -170,6 +215,9 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
           },
           issuedBy: permit.issuedBy,
           items: permit.items,
+          supersededAt: permit.supersededAt?.toISOString() ?? null,
+          supersededByNumber: permit.supersededByNumber,
+          replacesNumber: permit.replacesNumber,
         }
       : null,
     decision: decision
@@ -181,6 +229,15 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
           deciderName: decision.decider.name,
         }
       : null,
+    corrections: incident.corrections.map((correction) => ({
+      id: correction.id,
+      reason: correction.reason,
+      actorName: correction.actor.name,
+      createdAt: correction.createdAt.toISOString(),
+      previousPermitNumber: correction.previousPermit.number,
+      newPermitNumber: correction.newPermit.number,
+      items: readCorrectionItems(correction.changes),
+    })),
   };
 }
 

@@ -42,7 +42,57 @@ export function registerStockRoutes(app: FastifyInstance, deps: StockDependencie
           regionName: posko.region.name,
           stocks: posko.stocks,
         })),
-        note: "Ringkasan stok hanya untuk dilihat. Perubahan stok dilakukan di luar aplikasi.",
+        note: "Stok berkurang otomatis saat izin distribusi terbit. Setiap perubahan tercatat di jurnal stok dan tidak bisa dihapus.",
+      };
+    },
+  );
+
+  app.get(
+    "/api/stock/movements",
+    { preHandler: requireRole(deps, "ADMIN", "PIMPINAN") },
+    async (request) => {
+      const query = request.query as { limit?: string };
+      const parsedLimit = Number.parseInt(query.limit ?? "40", 10);
+      const limit = Number.isFinite(parsedLimit)
+        ? Math.min(Math.max(parsedLimit, 1), 100)
+        : 40;
+
+      const movements = await deps.prisma.stockMovement.findMany({
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        select: {
+          id: true,
+          poskoId: true,
+          posko: { select: { name: true } },
+          aidItemId: true,
+          aidItem: { select: { name: true, unit: true } },
+          qtyDelta: true,
+          balanceAfter: true,
+          kind: true,
+          permit: { select: { number: true } },
+          actor: { select: { name: true } },
+          note: true,
+          createdAt: true,
+        },
+      });
+
+      return {
+        movements: movements.map((movement) => ({
+          id: movement.id,
+          poskoId: movement.poskoId,
+          poskoName: movement.posko.name,
+          aidItemId: movement.aidItemId,
+          aidItemName: movement.aidItem.name,
+          unit: movement.aidItem.unit,
+          qtyDelta: movement.qtyDelta,
+          balanceAfter: movement.balanceAfter,
+          kind: movement.kind,
+          permitNumber: movement.permit?.number ?? null,
+          actorName: movement.actor?.name ?? null,
+          note: movement.note,
+          createdAt: movement.createdAt.toISOString(),
+        })),
+        note: "Jurnal stok hanya menerima penambahan; baris lama tidak bisa diubah atau dihapus.",
       };
     },
   );

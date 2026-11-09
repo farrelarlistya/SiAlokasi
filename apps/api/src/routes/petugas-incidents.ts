@@ -1,5 +1,6 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
+  cancelIncidentSchema,
   incidentDraftSchema,
   incidentFactorsSchema,
   incidentPatchSchema,
@@ -490,6 +491,82 @@ export function registerPetugasIncidentRoutes(
       data: toIncidentDetail(incident),
       message:
         "Laporan sudah diajukan ke pimpinan. Isi laporan terkunci sampai keputusan dibuat.",
+    };
+  });
+
+  app.post("/api/petugas/incidents/:id/cancel", petugasOnly, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const reporterId = request.auth?.user.id ?? "";
+
+    const parsed = cancelIncidentSchema.safeParse(request.body ?? {});
+    if (!parsed.success) {
+      return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
+    }
+
+    const reason = parsed.data.reason?.trim() || "Dibatalkan oleh petugas.";
+
+    try {
+      await deps.prisma.$transaction(async (tx) => {
+        await lockIncident(tx, id);
+
+        const incident = await tx.incident.findFirst({
+          where: { id, reporterId },
+          select: { id: true, code: true, status: true },
+        });
+
+        if (!incident) {
+          throw new RequestError(404, "Laporan ini tidak ditemukan di akun Anda.");
+        }
+
+        if (incident.status !== "BARU" && incident.status !== "DIPERIKSA") {
+          throw new RequestError(
+            409,
+            "Laporan ini sudah diajukan atau sudah diputuskan, sehingga tidak bisa dibatalkan dari akun petugas. Hubungi pimpinan bila laporan perlu dihentikan.",
+          );
+        }
+
+        const now = await deps.clock.now();
+
+        await tx.incident.update({
+          where: { id },
+          data: { status: "DIBATALKAN", cancelReason: reason },
+        });
+
+        await tx.incidentLog.create({
+          data: {
+            incidentId: id,
+            fromStatus: incident.status,
+            toStatus: "DIBATALKAN",
+            actorId: reporterId,
+            note: `Dibatalkan petugas: ${reason}`,
+            createdAt: now,
+          },
+        });
+
+        await writeAudit(tx, deps.clock, {
+          entity: "Incident",
+          entityId: id,
+          action: "BATALKAN",
+          actorId: reporterId,
+          before: { status: incident.status },
+          after: { status: "DIBATALKAN", reason },
+        });
+      });
+    } catch (error) {
+      if (error instanceof RequestError) {
+        return reply.code(error.statusCode).send({ error: { message: error.message } });
+      }
+      throw error;
+    }
+
+    const incident = await deps.prisma.incident.findUniqueOrThrow({
+      where: { id },
+      include: incidentDetailInclude,
+    });
+
+    return {
+      data: toIncidentDetail(incident),
+      message: "Laporan sudah dibatalkan. Laporan ini tidak masuk antrian pimpinan.",
     };
   });
 }

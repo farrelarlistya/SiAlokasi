@@ -1,7 +1,9 @@
 import type { PrismaClient } from "@prisma/client";
 import {
   adjustRecommendationItemSchema,
+  correctionInputSchema,
   decisionInputSchema,
+  pimpinanCancelSchema,
 } from "@sialokasi/shared";
 import type { FastifyInstance } from "fastify";
 import type { ClockService } from "../clock";
@@ -13,6 +15,7 @@ import {
   nextPermitNumber,
 } from "../lib/incident";
 import { requireRole } from "../lib/rbac";
+import { releaseStock, reserveStock } from "../lib/stock";
 
 type PimpinanIncidentDependencies = {
   prisma: PrismaClient;
@@ -326,6 +329,26 @@ export function registerPimpinanIncidentRoutes(
           select: { id: true, number: true },
         });
 
+        // Stok diambil saat izin terbit. Bila salah satu kurang, seluruh
+        // keputusan dibatalkan dan stok tidak berubah sedikit pun.
+        await reserveStock(
+          tx,
+          {
+            clock: deps.clock,
+            poskoId: posko.id,
+            poskoName: posko.name,
+            actorId: deciderId,
+            permitId: permit.id,
+            note: `Pengambilan stok untuk izin ${permit.number}.`,
+          },
+          recommendation.items.map((item) => ({
+            aidItemId: item.aidItemId,
+            qty: item.finalQty,
+            name: item.aidItem.name,
+            unit: item.unit,
+          })),
+        );
+
         await tx.incidentLog.create({
           data: {
             incidentId: id,
@@ -444,5 +467,322 @@ export function registerPimpinanIncidentRoutes(
       data: detail,
       message: "Distribusi sudah ditandai selesai. Laporan ini ditutup.",
     };
+  });
+
+  app.post("/api/pimpinan/incidents/:id/cancel", pimpinanOnly, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const actorId = request.auth?.user.id ?? "";
+
+    const parsed = pimpinanCancelSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
+    }
+
+    const reason = parsed.data.reason.trim();
+
+    try {
+      await deps.prisma.$transaction(async (tx) => {
+        await lockIncident(tx, id);
+
+        const incident = await tx.incident.findUnique({
+          where: { id },
+          select: { id: true, code: true, status: true },
+        });
+
+        if (!incident) {
+          throw new RequestError(404, "Laporan ini tidak ditemukan.");
+        }
+
+        if (incident.status !== "MENUNGGU_PERSETUJUAN") {
+          throw new RequestError(
+            409,
+            "Hanya laporan yang masih menunggu keputusan yang bisa dibatalkan pimpinan. Laporan yang sudah disetujui diperbaiki lewat koreksi izin.",
+          );
+        }
+
+        const now = await deps.clock.now();
+
+        await tx.incident.update({
+          where: { id },
+          data: { status: "DIBATALKAN", cancelReason: reason },
+        });
+
+        await tx.incidentLog.create({
+          data: {
+            incidentId: id,
+            fromStatus: "MENUNGGU_PERSETUJUAN",
+            toStatus: "DIBATALKAN",
+            actorId,
+            note: `Dibatalkan pimpinan: ${reason}`,
+            createdAt: now,
+          },
+        });
+
+        await writeAudit(tx, deps.clock, {
+          entity: "Incident",
+          entityId: id,
+          action: "BATALKAN",
+          actorId,
+          before: { status: "MENUNGGU_PERSETUJUAN" },
+          after: { status: "DIBATALKAN", reason },
+        });
+      });
+    } catch (error) {
+      if (error instanceof RequestError) {
+        return reply.code(error.statusCode).send({ error: { message: error.message } });
+      }
+      throw error;
+    }
+
+    const detail = await loadPimpinanIncidentDetail(deps.prisma, id);
+
+    return {
+      data: detail,
+      message: "Laporan sudah dibatalkan pimpinan. Alasan pembatalan tercatat di riwayat.",
+    };
+  });
+
+  app.post("/api/pimpinan/incidents/:id/corrections", pimpinanOnly, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const actorId = request.auth?.user.id ?? "";
+
+    const parsed = correctionInputSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
+    }
+
+    let message = "";
+
+    try {
+      message = await deps.prisma.$transaction(async (tx) => {
+        await lockIncident(tx, id);
+
+        const incident = await tx.incident.findUnique({
+          where: { id },
+          select: {
+            id: true,
+            code: true,
+            status: true,
+            permits: {
+              orderBy: { issuedAt: "desc" },
+              take: 1,
+              select: {
+                id: true,
+                number: true,
+                status: true,
+                poskoId: true,
+                supersededAt: true,
+                posko: { select: { id: true, name: true } },
+                items: {
+                  orderBy: { aidItemId: "asc" },
+                  select: {
+                    aidItemId: true,
+                    name: true,
+                    unit: true,
+                    qty: true,
+                  },
+                },
+              },
+            },
+          },
+        });
+
+        if (!incident) {
+          throw new RequestError(404, "Laporan ini tidak ditemukan.");
+        }
+
+        if (incident.status !== "DISETUJUI" && incident.status !== "SELESAI") {
+          throw new RequestError(
+            409,
+            "Koreksi hanya bisa diajukan setelah laporan disetujui. Laporan yang masih menunggu keputusan cukup ditolak atau dibatalkan.",
+          );
+        }
+
+        const permit = incident.permits[0];
+        if (!permit) {
+          throw new RequestError(
+            409,
+            "Izin distribusi belum terbit, sehingga belum ada yang bisa dikoreksi.",
+          );
+        }
+
+        if (permit.supersededAt) {
+          throw new RequestError(
+            409,
+            "Izin ini sudah digantikan izin koreksi yang lebih baru. Buka izin terbaru untuk mengoreksi lagi.",
+          );
+        }
+
+        const posko = await tx.posko.findFirst({
+          where: { id: parsed.data.poskoId, isActive: true },
+          select: { id: true, name: true },
+        });
+
+        if (!posko) {
+          throw new RequestError(
+            400,
+            "Posko tujuan koreksi belum tersedia atau sudah nonaktif. Pilih posko lain.",
+          );
+        }
+
+        const qtyByItem = new Map(parsed.data.items.map((item) => [item.aidItemId, item.qty]));
+        const known = new Set(permit.items.map((item) => item.aidItemId));
+        for (const aidItemId of qtyByItem.keys()) {
+          if (!known.has(aidItemId)) {
+            throw new RequestError(
+              400,
+              "Ada jenis bantuan yang tidak tercatat pada izin ini. Muat ulang halaman, lalu coba lagi.",
+            );
+          }
+        }
+
+        const changes = permit.items.map((item) => ({
+          aidItemId: item.aidItemId,
+          name: item.name,
+          unit: item.unit,
+          beforeQty: item.qty,
+          afterQty: qtyByItem.get(item.aidItemId) ?? item.qty,
+        }));
+        const changedQty = changes.some((item) => item.beforeQty !== item.afterQty);
+
+        if (!changedQty && posko.id === permit.poskoId) {
+          throw new RequestError(
+            400,
+            "Belum ada perubahan pada jumlah bantuan atau posko tujuan. Ubah salah satunya bila memang perlu dikoreksi.",
+          );
+        }
+
+        const now = await deps.clock.now();
+
+        await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext('sialokasi-permit-number')::bigint)`;
+        const number = await nextPermitNumber(tx, deps.clock);
+
+        // Stok izin lama dikembalikan lebih dulu, lalu izin baru mengambil stok.
+        // Semua langkah berada dalam satu transaksi; gagal di tengah = tidak ada perubahan.
+        await releaseStock(
+          tx,
+          {
+            clock: deps.clock,
+            poskoId: permit.poskoId,
+            poskoName: permit.posko.name,
+            actorId,
+            permitId: permit.id,
+            note: `Stok dikembalikan karena izin ${permit.number} digantikan koreksi.`,
+          },
+          permit.items.map((item) => ({
+            aidItemId: item.aidItemId,
+            qty: item.qty,
+            name: item.name,
+            unit: item.unit,
+          })),
+        );
+
+        const newPermit = await tx.permit.create({
+          data: {
+            number,
+            incidentId: id,
+            poskoId: posko.id,
+            issuedById: actorId,
+            issuedAt: now,
+            validUntil: await deps.clock.afterDays(7),
+            status: "TERBIT",
+            replacesNumber: permit.number,
+            items: {
+              create: changes.map((item) => ({
+                aidItemId: item.aidItemId,
+                name: item.name,
+                unit: item.unit,
+                qty: item.afterQty,
+                reason: `Koreksi izin ${permit.number}: ${parsed.data.reason.trim()}`,
+              })),
+            },
+          },
+          select: { id: true, number: true },
+        });
+
+        await reserveStock(
+          tx,
+          {
+            clock: deps.clock,
+            poskoId: posko.id,
+            poskoName: posko.name,
+            actorId,
+            permitId: newPermit.id,
+            note: `Pengambilan stok untuk izin koreksi ${newPermit.number}.`,
+          },
+          changes.map((item) => ({
+            aidItemId: item.aidItemId,
+            qty: item.afterQty,
+            name: item.name,
+            unit: item.unit,
+          })),
+        );
+
+        await tx.permit.update({
+          where: { id: permit.id },
+          data: {
+            status: "DIBATALKAN",
+            supersededAt: now,
+            supersededByNumber: newPermit.number,
+          },
+        });
+
+        await tx.incidentCorrection.create({
+          data: {
+            incidentId: id,
+            previousPermitId: permit.id,
+            newPermitId: newPermit.id,
+            reason: parsed.data.reason.trim(),
+            changes,
+            actorId,
+            createdAt: now,
+          },
+        });
+
+        if (incident.status === "SELESAI") {
+          await tx.incident.update({
+            where: { id },
+            data: { status: "DISETUJUI" },
+          });
+
+          await tx.incidentLog.create({
+            data: {
+              incidentId: id,
+              fromStatus: "SELESAI",
+              toStatus: "DISETUJUI",
+              actorId,
+              note: `Laporan dibuka kembali karena koreksi izin ${permit.number} → ${newPermit.number}.`,
+              createdAt: now,
+            },
+          });
+        }
+
+        await writeAudit(tx, deps.clock, {
+          entity: "Incident",
+          entityId: id,
+          action: "KOREKSI_IZIN",
+          actorId,
+          before: { permitNumber: permit.number, poskoId: permit.poskoId },
+          after: {
+            permitNumber: newPermit.number,
+            poskoId: posko.id,
+            reason: parsed.data.reason.trim(),
+          },
+        });
+
+        return `Izin ${permit.number} sudah digantikan izin ${newPermit.number}. Stok posko ${
+          permit.posko.name
+        } → ${posko.name} ikut disesuaikan.`;
+      });
+    } catch (error) {
+      if (error instanceof RequestError) {
+        return reply.code(error.statusCode).send({ error: { message: error.message } });
+      }
+      throw error;
+    }
+
+    const detail = await loadPimpinanIncidentDetail(deps.prisma, id);
+
+    return { data: detail, message };
   });
 }

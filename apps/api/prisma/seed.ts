@@ -25,6 +25,11 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
   const demoAidItemIds = AID_ITEMS.map((item) => item.id);
 
   await prisma.$transaction(async (tx) => {
+    // Trigger append-only hanya mengizinkan penghapusan saat reset demo.
+    await tx.$executeRawUnsafe("SELECT set_config('sialokasi.allow_purge', 'on', true)");
+
+    await tx.incidentCorrection.deleteMany();
+    await tx.stockMovement.deleteMany();
     await tx.permitItem.deleteMany();
     await tx.permit.deleteMany();
     await tx.decision.deleteMany();

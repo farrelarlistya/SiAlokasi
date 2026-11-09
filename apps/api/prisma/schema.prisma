@@ -70,6 +70,12 @@ enum PermitStatus {
   DIBATALKAN
 }
 
+enum StockMovementKind {
+  RESERVE
+  RELEASE
+  ADJUST
+}
+
 model User {
   id        String   @id @default(cuid())
   name      String
@@ -81,13 +87,15 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  incidents    Incident[]    @relation("IncidentReporter")
-  incidentLogs IncidentLog[] @relation("IncidentLogActor")
-  decisions    Decision[]    @relation("DecisionDecider")
-  permits      Permit[]      @relation("PermitIssuer")
-  auditLogs    AuditLog[]    @relation("AuditActor")
-  otpCodes     OtpCode[]
-  sessions     Session[]
+  incidents      Incident[]           @relation("IncidentReporter")
+  incidentLogs   IncidentLog[]        @relation("IncidentLogActor")
+  decisions      Decision[]           @relation("DecisionDecider")
+  permits        Permit[]             @relation("PermitIssuer")
+  auditLogs      AuditLog[]           @relation("AuditActor")
+  otpCodes       OtpCode[]
+  sessions       Session[]
+  stockMovements StockMovement[]
+  corrections    IncidentCorrection[]
 
   @@index([role, isActive])
   @@map("users")
@@ -141,8 +149,9 @@ model Posko {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  stocks  Stock[]
-  permits Permit[]
+  stocks    Stock[]
+  permits   Permit[]
+  movements StockMovement[]
 
   @@map("poskos")
 }
@@ -160,6 +169,7 @@ model AidItem {
   recommendationItems RecommendationItem[]
   permitItems         PermitItem[]
   stocks              Stock[]
+  movements           StockMovement[]
 
   @@map("aid_items")
 }
@@ -178,13 +188,14 @@ model Incident {
   status       IncidentStatus @default(BARU)
   reporterId   String
   reporter     User           @relation("IncidentReporter", fields: [reporterId], references: [id])
+  cancelReason String?
 
   affectedPeople     Int?
   damageLevel        DamageLevel?
-  vulnerableBabies   Int          @default(0)
-  vulnerableElderly  Int          @default(0)
-  vulnerablePregnant Int          @default(0)
-  vulnerableDisabled Int          @default(0)
+  vulnerableBabies   Int               @default(0)
+  vulnerableElderly  Int               @default(0)
+  vulnerablePregnant Int               @default(0)
+  vulnerableDisabled Int               @default(0)
   handlingDays       Int?
   roadAccess         RoadAccess?
   weather            WeatherCondition?
@@ -196,6 +207,7 @@ model Incident {
   logs            IncidentLog[]
   recommendations Recommendation[]
   permits         Permit[]
+  corrections     IncidentCorrection[]
 
   @@index([status, occurredAt])
   @@map("incidents")
@@ -275,7 +287,17 @@ model Permit {
   validUntil DateTime?
   status     PermitStatus @default(TERBIT)
 
-  items PermitItem[]
+  /**
+   * Penanda koreksi: izin lama digantikan izin baru, bukan dihapus.
+   */
+  supersededAt       DateTime?
+  supersededByNumber String?
+  replacesNumber     String?
+
+  items               PermitItem[]
+  movements           StockMovement[]
+  correctionsPrevious IncidentCorrection[] @relation("CorrectionPreviousPermit")
+  correctionsNew      IncidentCorrection[] @relation("CorrectionNewPermit")
 
   @@index([incidentId])
   @@map("permits")
@@ -308,6 +330,49 @@ model Stock {
 
   @@unique([poskoId, aidItemId])
   @@map("stocks")
+}
+
+/// Jurnal stok append-only. Setiap pengurangan/penambahan meninggalkan baris,
+/// sehingga angka stok selalu bisa ditelusuri kembali.
+model StockMovement {
+  id           String            @id @default(cuid())
+  poskoId      String
+  posko        Posko             @relation(fields: [poskoId], references: [id])
+  aidItemId    String
+  aidItem      AidItem           @relation(fields: [aidItemId], references: [id])
+  qtyDelta     Int
+  balanceAfter Int
+  kind         StockMovementKind
+  permitId     String?
+  permit       Permit?           @relation(fields: [permitId], references: [id])
+  actorId      String?
+  actor        User?             @relation(fields: [actorId], references: [id])
+  note         String?
+  createdAt    DateTime          @default(now())
+
+  @@index([poskoId, aidItemId, createdAt])
+  @@index([permitId])
+  @@map("stock_movements")
+}
+
+/// Catatan koreksi pasca-persetujuan. Izin lama tetap tersimpan, ditandai
+/// digantikan, dan seluruh perubahan jumlah tercatat di `changes`.
+model IncidentCorrection {
+  id               String   @id @default(cuid())
+  incidentId       String
+  incident         Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+  previousPermitId String
+  previousPermit   Permit   @relation("CorrectionPreviousPermit", fields: [previousPermitId], references: [id])
+  newPermitId      String
+  newPermit        Permit   @relation("CorrectionNewPermit", fields: [newPermitId], references: [id])
+  reason           String
+  changes          Json
+  actorId          String
+  actor            User     @relation(fields: [actorId], references: [id])
+  createdAt        DateTime @default(now())
+
+  @@index([incidentId, createdAt])
+  @@map("incident_corrections")
 }
 
 model AuditLog {

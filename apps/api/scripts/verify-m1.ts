@@ -4,6 +4,7 @@ import { SURABAYA_BOUNDS } from "@sialokasi/shared";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { seedDatabase } from "../prisma/seed";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "../../..");
@@ -55,6 +56,7 @@ async function findInFiles(dir: string, pattern: RegExp, skip: string[] = []): P
 
 async function main(): Promise<void> {
   console.log("Pemeriksaan M1 — Pondasi, UI Matang, Seed Bersih\n");
+  await seedDatabase(prisma);
 
   console.log("[1] Data master dan kondisi bersih");
   const [aidItems, regions, poskos, users, incidents, recommendations, decisions, permits, logs, clock] =

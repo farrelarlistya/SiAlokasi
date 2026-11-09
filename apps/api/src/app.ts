@@ -5,16 +5,19 @@ import { ClockService } from "./clock";
 import { env } from "./env";
 import { prisma } from "./prisma";
 import { registerAdminAidItemRoutes } from "./routes/admin-aid-items";
+import { registerAdminAuditRoutes } from "./routes/admin-audit";
 import { registerAdminPoskoRoutes } from "./routes/admin-poskos";
 import { registerAdminRegionRoutes } from "./routes/admin-regions";
 import { registerAdminSummaryRoutes } from "./routes/admin-summary";
 import { registerAdminUserRoutes } from "./routes/admin-users";
 import { registerAuthRoutes } from "./routes/auth";
+import { registerDevRoutes } from "./routes/dev";
 import { registerHealthRoutes } from "./routes/health";
 import { registerMasterRoutes } from "./routes/master";
 import { registerPetugasIncidentRoutes } from "./routes/petugas-incidents";
 import { registerPetugasRoutes } from "./routes/petugas";
 import { registerPimpinanIncidentRoutes } from "./routes/pimpinan-incidents";
+import { registerPimpinanRecapRoutes } from "./routes/pimpinan-recap";
 import { registerPimpinanRoutes } from "./routes/pimpinan";
 import { registerPublicRoutes } from "./routes/public";
 import { registerStockRoutes } from "./routes/stock";
@@ -41,12 +44,15 @@ export async function buildApp(): Promise<FastifyInstance> {
   registerPetugasIncidentRoutes(app, { prisma, clock });
   registerPimpinanRoutes(app, { prisma, clock });
   registerPimpinanIncidentRoutes(app, { prisma, clock });
+  registerPimpinanRecapRoutes(app, { prisma, clock });
   registerStockRoutes(app, { prisma, clock });
   registerAdminSummaryRoutes(app, { prisma, clock });
+  registerAdminAuditRoutes(app, { prisma, clock });
   registerAdminUserRoutes(app, { prisma, clock });
   registerAdminAidItemRoutes(app, { prisma, clock });
   registerAdminRegionRoutes(app, { prisma, clock });
   registerAdminPoskoRoutes(app, { prisma, clock });
+  registerDevRoutes(app, { prisma, clock, demoMode: env.DEMO_MODE });
 
   app.setNotFoundHandler((_request, reply) => {
     reply.status(404).send({

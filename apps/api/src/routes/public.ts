@@ -102,15 +102,6 @@ export function registerPublicRoutes(app: FastifyInstance, deps: PublicDependenc
           select: {
             modelVersion: true,
             totalPeople: true,
-            items: {
-              orderBy: { aidItem: { sortOrder: "asc" } },
-              select: {
-                finalQty: true,
-                unit: true,
-                reason: true,
-                aidItem: { select: { name: true } },
-              },
-            },
           },
         },
         permits: {
@@ -122,6 +113,15 @@ export function registerPublicRoutes(app: FastifyInstance, deps: PublicDependenc
             validUntil: true,
             status: true,
             posko: { select: { name: true } },
+            items: {
+              orderBy: { name: "asc" },
+              select: {
+                name: true,
+                unit: true,
+                qty: true,
+                reason: true,
+              },
+            },
           },
         },
       },
@@ -166,11 +166,11 @@ export function registerPublicRoutes(app: FastifyInstance, deps: PublicDependenc
           ? {
               modelVersion: recommendation.modelVersion,
               totalPeople: recommendation.totalPeople,
-              items: recommendation.items.map((item) => ({
-                name: item.aidItem.name,
+              items: permit.items.map((item) => ({
+                name: item.name,
                 unit: item.unit,
-                qty: item.finalQty,
-                reason: item.reason,
+                qty: item.qty,
+                reason: item.reason ?? "Jumlah disesuaikan pimpinan.",
               })),
             }
           : null,

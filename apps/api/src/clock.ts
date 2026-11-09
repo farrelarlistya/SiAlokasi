@@ -28,6 +28,11 @@ export class ClockService {
     return new Date(value);
   }
 
+  /** Menggeser waktu bisnis yang sudah dihitung tanpa memakai jam sistem langsung. */
+  shift(base: Date, deltaMs: number): Date {
+    return new Date(base.getTime() + deltaMs);
+  }
+
   /** Waktu bisnis ditambah sejumlah hari, dipakai untuk masa berlaku izin. */
   async afterDays(days: number): Promise<Date> {
     const now = await this.now();

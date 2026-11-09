@@ -18,6 +18,7 @@
     "verify:m1": "npm run verify:m1 -w @sialokasi/api",
     "verify:m2": "npm run verify:m2 -w @sialokasi/api",
     "verify:m3": "npm run verify:m3 -w @sialokasi/api",
+    "verify:m4": "npm run verify:m4 -w @sialokasi/api",
     "db:start": "node scripts/db.mjs start",
     "db:stop": "node scripts/db.mjs stop",
     "db:status": "node scripts/db.mjs status",
