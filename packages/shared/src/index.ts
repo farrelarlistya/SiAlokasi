@@ -5,6 +5,7 @@ export * from "./geo";
 export * from "./incidents";
 export * from "./ml/explain";
 export * from "./ml/predict";
+export * from "./recap";
 export * from "./schemas";
 export * from "./status";
 export * from "./tracking";

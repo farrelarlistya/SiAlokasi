@@ -76,6 +76,45 @@ export type PermitView = {
   posko: { id: string; name: string; regionName: string };
   issuedBy: { name: string };
   items: PermitItemView[];
+  /** Diisi bila izin ini sudah digantikan oleh izin koreksi. */
+  supersededAt: string | null;
+  supersededByNumber: string | null;
+  /** Diisi bila izin ini adalah hasil koreksi dari izin sebelumnya. */
+  replacesNumber: string | null;
+};
+
+export type CorrectionItemView = {
+  aidItemId: string;
+  name: string;
+  unit: string;
+  beforeQty: number;
+  afterQty: number;
+};
+
+export type IncidentCorrectionView = {
+  id: string;
+  reason: string;
+  actorName: string;
+  createdAt: string;
+  previousPermitNumber: string;
+  newPermitNumber: string;
+  items: CorrectionItemView[];
+};
+
+export type StockMovementView = {
+  id: string;
+  poskoId: string;
+  poskoName: string;
+  aidItemId: string;
+  aidItemName: string;
+  unit: string;
+  qtyDelta: number;
+  balanceAfter: number;
+  kind: "RESERVE" | "RELEASE" | "ADJUST";
+  permitNumber: string | null;
+  actorName: string | null;
+  note: string | null;
+  createdAt: string;
 };
 
 export type IncidentDetailView = {
@@ -92,12 +131,14 @@ export type IncidentDetailView = {
   region: { id: string; name: string } | null;
   reporter: { id: string; name: string } | null;
   factors: IncidentFactorsView | null;
+  cancelReason: string | null;
   createdAt: string;
   updatedAt: string;
   recommendation: RecommendationView | null;
   logs: IncidentLogView[];
   permit: PermitView | null;
   decision: DecisionView | null;
+  corrections: IncidentCorrectionView[];
 };
 
 export type PoskoStockView = {

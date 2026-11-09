@@ -26,6 +26,21 @@ export function isTerminal(status: IncidentStatus): boolean {
   return TERMINAL_STATUSES.includes(status);
 }
 
+/** Petugas boleh membatalkan laporannya sendiri selama belum diajukan. */
+export function canCancelByPetugas(status: IncidentStatus): boolean {
+  return status === "BARU" || status === "DIPERIKSA";
+}
+
+/** Pimpinan boleh membatalkan laporan yang sudah masuk antrian. */
+export function canCancelByPimpinan(status: IncidentStatus): boolean {
+  return status === "MENUNGGU_PERSETUJUAN";
+}
+
+/** Setelah disetujui, isi hanya boleh diperbaiki lewat izin koreksi baru. */
+export function canCorrectPermit(status: IncidentStatus): boolean {
+  return status === "DISETUJUI" || status === "SELESAI";
+}
+
 export function canTransition(from: IncidentStatus, to: IncidentStatus): boolean {
   return STATUS_FLOW[from].includes(to);
 }

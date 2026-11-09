@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { RECAP_GROUPS } from "./recap";
 import {
   AID_ICON_NAMES,
   DAMAGE_LEVELS,
@@ -309,6 +310,108 @@ export const userRoleInputSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
+/** Petugas boleh membatalkan laporan tanpa menulis alasan; alasannya opsional. */
+export const cancelIncidentSchema = z.object({
+  reason: z.string().trim().max(300, "Alasan pembatalan maksimal 300 karakter.").optional(),
+});
+
+/** Pimpinan wajib menuliskan alasan saat membatalkan laporan yang sudah diajukan. */
+export const pimpinanCancelSchema = z.object({
+  reason: requiredText("Alasan pembatalan", 5, 300),
+});
+
+const correctionItemSchema = z.object({
+  aidItemId: z.string({ required_error: "Jenis bantuan wajib dipilih." }).trim().min(1),
+  qty: z.coerce
+    .number({ invalid_type_error: "Jumlah koreksi wajib diisi angka." })
+    .int("Jumlah koreksi harus bilangan bulat.")
+    .min(0, "Jumlah koreksi tidak boleh negatif.")
+    .max(1_000_000, "Jumlah koreksi terlalu besar. Periksa kembali angkanya."),
+});
+
+/**
+ * Koreksi setelah izin terbit: izin lama ditandai digantikan, izin baru
+ * diterbitkan. Semua baris boleh dikirim; baris yang tidak dikirim tetap.
+ */
+export const correctionInputSchema = z.object({
+  reason: requiredText("Alasan koreksi", 5, 300),
+  poskoId: z.string({ required_error: "Pilih posko tujuan koreksi." }).trim().min(1),
+  items: z
+    .array(correctionItemSchema)
+    .min(1, "Kirim minimal satu baris bantuan yang dikoreksi.")
+    .max(20, "Terlalu banyak baris bantuan dalam satu koreksi.")
+    .superRefine((items, ctx) => {
+      const seen = new Set<string>();
+      for (const item of items) {
+        if (seen.has(item.aidItemId)) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ["items"],
+            message: "Satu jenis bantuan hanya boleh muncul sekali dalam koreksi.",
+          });
+          return;
+        }
+        seen.add(item.aidItemId);
+      }
+    }),
+});
+
+const optionalQueryText = (max: number) =>
+  z.preprocess(
+    (value) => (value === "" || value === null ? undefined : value),
+    z.string().trim().max(max).optional(),
+  );
+
+const optionalQueryDate = z.preprocess(
+  (value) => (value === "" || value === null ? undefined : value),
+  z
+    .string()
+    .refine((value) => !Number.isNaN(Date.parse(value)), "Tanggal rekap belum valid.")
+    .optional(),
+);
+
+export const recapFilterSchema = z
+  .object({
+    from: optionalQueryDate,
+    to: optionalQueryDate,
+    regionId: optionalQueryText(80),
+    disasterType: z.preprocess(
+      (value) => (value === "" || value === null ? undefined : value),
+      z.enum(DISASTER_TYPES).optional(),
+    ),
+    groupBy: z.preprocess(
+      (value) => (value === "" || value === null || value === undefined ? "region" : value),
+      z.enum(RECAP_GROUPS),
+    ),
+  })
+  .superRefine((value, ctx) => {
+    if (
+      value.from &&
+      value.to &&
+      Date.parse(value.from) > Date.parse(value.to)
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["from"],
+        message: "Tanggal awal tidak boleh setelah tanggal akhir.",
+      });
+    }
+  });
+
+/** Panel demo hanya boleh memajukan waktu secara wajar (maksimal 30 hari). */
+export const devClockSchema = z.object({
+  offsetMinutes: z.coerce
+    .number({ invalid_type_error: "Offset waktu wajib berupa angka." })
+    .int("Offset waktu harus bilangan bulat menit.")
+    .min(-7 * 24 * 60, "Waktu demo tidak boleh mundur lebih dari 7 hari.")
+    .max(30 * 24 * 60, "Waktu demo tidak boleh maju lebih dari 30 hari."),
+});
+
 export type AidItemInput = z.infer<typeof aidItemInputSchema>;
 export type RegionInput = z.infer<typeof regionInputSchema>;
 export type PoskoInput = z.infer<typeof poskoInputSchema>;
+export type CancelIncidentInput = z.infer<typeof cancelIncidentSchema>;
+export type PimpinanCancelInput = z.infer<typeof pimpinanCancelSchema>;
+export type CorrectionInput = z.infer<typeof correctionInputSchema>;
+export type RecapFilter = z.infer<typeof recapFilterSchema>;
+export type DevClockInput = z.infer<typeof devClockSchema>;
