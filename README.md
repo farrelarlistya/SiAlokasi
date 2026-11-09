@@ -88,6 +88,7 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 | `npm run verify:m3` | Memeriksa alur laporan, estimasi, persetujuan, izin, dan kode lacak |
 | `npm run verify:m4` | Memeriksa pembatalan, koreksi, stok anti-minus, audit tetap, rekap, dan reset demo |
 | `npm run verify:m5` | Memeriksa notifikasi, isolasi antar-pengguna, reset, dan kelengkapan berkas siap pamer |
+| `npm run verify:login` | Memeriksa alur keluar lalu masuk dengan peran lain (butuh `npm run dev` + Chrome port 9222) |
 | `npm run share` | Membuka akses lintas perangkat lewat tunnel |
 | `npm run db:start` / `db:stop` / `db:status` | Mengatur PostgreSQL lokal |
 | `npm run db:migrate` | Menerapkan migrasi Prisma |
@@ -157,6 +158,11 @@ Bukti M1–M5 (tangkapan layar, hasil perintah, dan pemeriksaan aksesibilitas) a
 [`docs/bukti/m3.md`](docs/bukti/m3.md), [`docs/bukti/m4.md`](docs/bukti/m4.md), dan
 [`docs/bukti/m5.md`](docs/bukti/m5.md). Tangkapan layar M5 beserta hasil uji tata letak
 tersimpan di [`docs/bukti/m5/`](docs/bukti/m5/).
+
+Untuk memeriksa alur ganti akun (keluar dari halaman pimpinan lalu masuk sebagai petugas),
+jalankan `npm run dev` dan Chrome dengan `--remote-debugging-port=9222`, lalu
+`npm run verify:login`. Hasilnya dicatat di
+[`docs/bukti/perbaikan-ganti-akun.md`](docs/bukti/perbaikan-ganti-akun.md).
 
 ## Catatan
 

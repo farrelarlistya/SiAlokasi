@@ -271,6 +271,29 @@ satu halaman.
 
 ---
 
+## Revisi Antarsesi — Alur Ganti Akun (Selesai 2026-11-09)
+
+**Temuan pemilik:** setelah masuk sebagai Pimpinan, keluar, lalu masuk sebagai Petugas, pengguna
+diarahkan ke `/pimpinan` dan melihat "Halaman ini bukan untuk peran Anda".
+
+**Perbaikan:**
+- `nextPathForRole` memeriksa apakah alamat tujuan boleh dibuka peran yang baru masuk; bila tidak,
+  pengguna diarahkan ke dasbor perannya sendiri. Alamat luar diabaikan.
+- Proses keluar memakai penanda `logout-state`: `RequireRole` tidak menyimpan `next` saat pengguna
+  memang baru keluar, dan `LogoutWatcher` menutup penanda setelah tiba di halaman publik.
+- Alur keluar kini berakhir di beranda publik tanpa `?next=` lama.
+- Pemeriksaan regresi `npm run verify:login` (8 langkah) lulus: keluar bersih, petugas ke
+  `/petugas`, pimpinan tetap ke `/pimpinan`, tujuan lintas peran dan alamat luar diabaikan,
+  `/notifikasi` yang diizinkan tetap terbuka.
+- Bukti: `docs/bukti/perbaikan-ganti-akun.md`.
+
+**Kriteria selesai:**
+- [x] Ganti akun dari Pimpinan ke Petugas tidak lagi memunculkan halaman peran salah.
+- [x] `npm run build` lulus.
+- [x] `npm run verify:login` → 8 lulus, 0 gagal.
+
+---
+
 ## Keputusan Terkunci
 
 | Tanggal | Keputusan | Alasan | Catatan |
@@ -304,6 +327,7 @@ satu halaman.
 | 2026-11-09 | Cetak A4 menyembunyikan **header aplikasi**, bukan semua `header`; kolom catatan hanya di layar | Header dokumen izin ikut tercetak; dokumen muat satu halaman | ADR 0008 |
 | 2026-11-09 | Akses lintas perangkat lewat **satu tunnel web** (API diproxy Vite) | Satu alamat untuk web + API; cookie tetap same-origin | ADR 0008 |
 | 2026-11-09 | Halaman peta **React.lazy** + `manualChunks` | Bundel awal ~213 kB; Leaflet hanya saat halaman peta dibuka | ADR 0008 |
+| 2026-11-09 | Tujuan setelah masuk (`next`) **divalidasi terhadap peran**; keluar tidak menyimpan alamat lama | Ganti akun tidak membawa ke halaman peran lain | `perbaikan-ganti-akun.md` |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
