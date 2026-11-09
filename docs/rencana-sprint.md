@@ -11,7 +11,7 @@
 | `M2` | Akun Semua Peran & Data Master | ✅ Selesai — 2026-11-08 | `docs/bukti/m2.md`, `docs/adr/0004-autentikasi-otp-dan-sesi-cookie.md`, halaman A1/A2/T1/D1–D5 |
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ✅ Selesai — 2026-11-08 | `docs/bukti/m3.md`, `docs/adr/0005-alur-kerja-inti-dan-kunci-persetujuan.md`, halaman T2/T3/T4/L1/L2/L3/P2 |
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ✅ Selesai — 2026-11-09 | `docs/bukti/m4.md`, `docs/adr/0007-stok-ledger-append-only-dan-koreksi-izin.md`, halaman L4/D6/D7 |
-| `M5` | Uji Lintas Perangkat & Siap Pamer | ⏳ Belum dimulai | — |
+| `M5` | Uji Lintas Perangkat & Siap Pamer | ✅ Selesai — 2026-11-09 | `docs/bukti/m5.md`, `docs/adr/0008-notifikasi-cetak-a4-dan-akses-lintas-perangkat.md`, `docs/panduan-demo.md`, `README.md` |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
 
@@ -244,6 +244,33 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 ---
 
+## M5 — Uji Lintas Perangkat & Siap Pamer (Selesai 2026-11-09)
+
+**Hasil:**
+- `packages/shared`: pesan notifikasi untuk semua status + koreksi, skema tandai baca, label jenis — **91 unit test lulus**.
+- `apps/api`: migrasi `m5_notifikasi` (tabel `notifications` per penerima), penulisan notifikasi di transaksi yang sama dengan perubahan status, endpoint daftar/tandai baca dengan isolasi `userId`, reset ikut membersihkan notifikasi, `verify-m5` (**40 pemeriksaan lulus**).
+- `apps/web`: `NotificationBell` + halaman `/notifikasi`, notifikasi di header semua halaman ber-sesi, cetak A4 satu halaman (header aplikasi/nav/toast disembunyikan, kolom catatan hanya di layar), izin koreksi mencantumkan izin pengganti + alasan, halaman peta dimuat terpisah (`React.lazy`) dan bundel dipecah (`manualChunks`).
+- `scripts/share.mjs`: `npm run share` lewat localtunnel; host tunnel diizinkan Vite; satu tunnel untuk web + API.
+- `README.md` ditulis ulang dari nol + `docs/panduan-demo.md` berisi skenario demo 5 menit.
+- Bukti: `docs/bukti/m5.md` + 16 tangkapan layar + 2 PDF A4 + `hasil-uji.json` di `docs/bukti/m5/`; ADR 0008.
+
+**Kriteria selesai:**
+- [x] Semua halaman lulus uji 360/768/1366/1920 px: **23 halaman × 4 lebar = 92 kombinasi**, 0 gulir horizontal, 0 teks <16 px, 0 target <44 px, 0 kesalahan konsol/halaman.
+- [x] README bisa diikuti dari nol; panduan demo 5 menit tersedia.
+- [x] Tidak ada istilah teknis di layar; unit test notifikasi menolak istilah mesin.
+- [x] Setiap perubahan status menambah notifikasi; notifikasi hanya bisa dibaca pemiliknya.
+- [x] Izin A4 dan izin koreksi tercetak rapi satu halaman, tanpa menu aplikasi.
+- [x] `npm run share` diuji lewat tunnel: halaman 200 dan `/api/health` 200.
+- [x] `npm test`, `npm run build`, dan `verify:m1`–`verify:m5` lulus bersih.
+- [x] Reset demo tetap 0 laporan, 0 izin, dan 0 notifikasi.
+
+**Catatan:** Localtunnel adalah dependensi pengembangan dan membutuhkan internet. Panduan demo
+menyediakan alternatif cloudflared/ngrok. Kolom catatan perhitungan tetap tampil di layar; di
+kertas hanya nomor izin, posko, daftar bantuan, dan tanda tangan yang dicetak agar dokumen muat
+satu halaman.
+
+---
+
 ## Keputusan Terkunci
 
 | Tanggal | Keputusan | Alasan | Catatan |
@@ -273,6 +300,10 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | 2026-11-09 | Trigger **append-only** untuk audit, riwayat status, jurnal stok; reset memakai setelan `allow_purge` | Riwayat tidak bisa diubah diam-diam, reset demo tetap cepat | ADR 0007 |
 | 2026-11-09 | Rekap CSV memakai **koma + BOM UTF-8 + CRLF** | Rapi dibuka di Excel Indonesia | ADR 0007 |
 | 2026-11-09 | Panel `/dev` memakai `seedDatabase` yang sama dengan `demo:reset` + 3 contoh asli | Satu sumber kebenaran; hasil demo deterministik | ADR 0007 |
+| 2026-11-09 | Notifikasi **per penerima** ditulis di transaksi yang sama dengan perubahan status | Tidak ada kabar untuk perubahan yang gagal; isolasi antar-pengguna | ADR 0008 |
+| 2026-11-09 | Cetak A4 menyembunyikan **header aplikasi**, bukan semua `header`; kolom catatan hanya di layar | Header dokumen izin ikut tercetak; dokumen muat satu halaman | ADR 0008 |
+| 2026-11-09 | Akses lintas perangkat lewat **satu tunnel web** (API diproxy Vite) | Satu alamat untuk web + API; cookie tetap same-origin | ADR 0008 |
+| 2026-11-09 | Halaman peta **React.lazy** + `manualChunks` | Bundel awal ~213 kB; Leaflet hanya saat halaman peta dibuka | ADR 0008 |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
@@ -283,6 +314,7 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 | :--- | :--- | :--- | :--- |
 | Internet demo lemah | Tile peta tidak muncul | Cache tile + cadangan batas wilayah | Dev |
 | PostgreSQL lokal mati | Aplikasi tidak terbuka | `db:start` + pemeriksaan otomatis | Dev |
+| Layanan tunnel diblokir jaringan | Akses lintas perangkat gagal | Panduan cloudflared/ngrok di README & `share.mjs` | Dev |
 | Scope melebar | Tahap tertunda | Batas lingkup PRD §1.4 | Pemilik |
 | Model terasa "kotak hitam" | Kredibilitas turun | Penjelasan per baris + unit test | Dev |
 
@@ -292,9 +324,12 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 
 Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
 
-**Titik mulai M5 (Uji Lintas Perangkat & Siap Pamer):**
-1. `web`: rapikan pemecahan bundel Leaflet bila memungkinkan, lalu uji semua halaman di 360/768/1366/1920 px.
-2. `api`: adapter notifikasi simulasi (lonceng in-app + log) untuk setiap perubahan status penting.
-3. `web`: finalisasi cetak A4 izin (termasuk izin koreksi) dan notifikasi simulasi.
-4. `scripts/share.mjs` + `npm run share` lewat tunnel; uji alamat publik dari perangkat lain.
-5. `README.md` + panduan demo 5 menit; tulis `docs/bukti/m5.md`, perbarui papan status, lalu commit + tag `m5-selesai`.
+**Status akhir:** semua tahap `D1` dan `M1`–`M5` selesai. Tidak ada pekerjaan milestone yang
+menggantung. Untuk pengembangan lanjutan:
+
+1. Ganti adapter notifikasi simulasi dengan WA/SMS asli bila kredensial tersedia
+   (`apps/api/src/lib/notifications.ts`).
+2. Tambahkan autentikasi tunnel berlapis bila aplikasi dipakai di luar demo lokal.
+3. Perbarui dependensi Prisma/Zod secara terencana; `npm audit` saat ini menandai advisory
+   pada `deepmerge-ts` (bawaan Prisma) dan `zod` versi 3, keduanya butuh upgrade besar.
+4. Jalankan `npm run share` hanya saat demo; tutup tunnel setelah selesai.

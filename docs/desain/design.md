@@ -123,6 +123,8 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 - **`Alert`**: pesan info/sukses/peringatan/bahaya dengan ikon dan langkah lanjutan; dipakai untuk kegagalan API dan mode demo.
 - **`PageHeader`**: judul halaman 28–32 px, keterangan, dan aksi di kanan; dipakai semua halaman peran.
 - **`AidIcon`**: ikon Lucide berdasarkan nama ikon di data master; latar kotak 44 px.
+- **`NotificationBell`**: lonceng 44 px di header dengan lencana angka belum dibaca; membuka `Modal` berisi 8 kabar terbaru dan tautan ke `/notifikasi`. Baris notifikasi selalu memakai ikon, judul, isi, jenis, dan waktu relatif; status "Baru" ditulis sebagai teks, bukan warna saja.
+- **`NotificationItem`**: seluruh baris menjadi target sentuh; membuka laporan/izin terkait sekaligus menandai dibaca. Halaman `/notifikasi` menambahkan saringan "Hanya yang belum dibaca", `Skeleton`, dan `EmptyState`.
 - **`LocationPicker`**: peta Leaflet 256 px di dalam modal posko, klik peta atau isi lintang/bujur; selalu disertai alternatif angka agar tidak bergantung pada tetikus.
 
 ## 7. Perilaku Peta
@@ -211,6 +213,7 @@ Contoh pesan gagal: **"Laporan belum bisa dikirim karena koneksi terputus. Draf 
 - Header: logo teks "SiAlokasi", nomor izin (mono), tanggal.
 - Isi: tujuan posko, daftar bantuan, total, tanda tangan pimpinan (nama + waktu).
 - Tombol "Cetak" di luar dokumen.
+- Saat dicetak: kertas **A4**, margin 12 mm, header aplikasi/navigasi/toast disembunyikan, kolom catatan perhitungan disembunyikan agar dokumen muat satu halaman, dan izin koreksi mencantumkan nomor izin yang digantikan beserta alasannya.
 
 ### 12.7 `P2` — Lacak Status (Tamu)
 - Kartu kiri 560 px: judul, input kode lacak (mono), tombol "Lacak".
@@ -265,6 +268,15 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - **T3/L2** menyediakan pembatalan: petugas untuk `BARU`/`DIPERIKSA`, pimpinan untuk `MENUNGGU_PERSETUJUAN` dengan alasan wajib. Status terminal tetap menampilkan alasan di alert dan riwayat.
 - **P2** membaca daftar bantuan dari izin terbaru, sehingga koreksi langsung terlihat tanpa menampilkan data pribadi.
 - Halaman Rekap, Audit, Panel Demo, Stok, dan Izin lulus uji 360/768/1366/1920 px tanpa gulir horizontal dan tanpa teks/target di bawah standar.
+
+### 12.14 Catatan Implementasi M5 (Siap Pamer)
+
+- **Lonceng notifikasi** ada di header semua halaman ber-sesi (termasuk Beranda publik dan Lacak saat pengguna masuk). Lencana menampilkan jumlah belum dibaca; `Modal` menampilkan 8 kabar terbaru. Halaman `/notifikasi` menjadi log lengkap dengan saringan belum dibaca dan tombol tandai semua.
+- **Notifikasi** ditulis di transaksi yang sama dengan perubahan status. Pelapor menerima setiap perpindahan; pimpinan menerima kabar saat laporan diajukan; koreksi izin memberi kabar ke pelapor dan pimpinan lain. Tidak ada WA/SMS asli.
+- **Cetak izin A4** menyembunyikan header aplikasi (bukan header dokumen), navigasi, toast, dan tombol di luar dokumen. Izin koreksi menampilkan "Menggantikan izin" + alasan koreksi. Hasil PDF satu halaman untuk izin biasa maupun koreksi.
+- **Akses lintas perangkat** memakai `npm run share` (localtunnel) dengan satu tunnel untuk web + API. Host tunnel diizinkan di Vite.
+- **Bundel peta** dipisah dengan `React.lazy` + `manualChunks`; bundel awal turun menjadi sekitar 213 kB dan Leaflet menjadi potongan 155 kB yang dimuat saat halaman peta dibuka.
+- Semua halaman diuji pada 360/768/1366/1920 px: **92 kombinasi** lulus tanpa gulir horizontal, tanpa teks <16 px, tanpa target <44 px, dan tanpa kesalahan konsol/halaman.
 
 > **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog). Layar masuk dan halaman admin M2 mengikuti prinsip yang sama dan didokumentasikan di sini karena belum digambar sebagai board terpisah.
 

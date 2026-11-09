@@ -1,0 +1,963 @@
+{
+  "generatedAt": "2026-11-09T09:13:42.765Z",
+  "baseUrl": "http://localhost:5173",
+  "widths": [
+    360,
+    768,
+    1366,
+    1920
+  ],
+  "pagesChecked": 23,
+  "layoutResults": [
+    {
+      "page": "Beranda publik",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Beranda publik",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Beranda publik",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Beranda publik",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Lacak status",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Lacak status",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Lacak status",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Lacak status",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Masuk",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Masuk",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Masuk",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Masuk",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Daftar petugas",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Daftar petugas",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Daftar petugas",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Daftar petugas",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Pemeriksaan komponen",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Pemeriksaan komponen",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Pemeriksaan komponen",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Pemeriksaan komponen",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Dasbor petugas",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Dasbor petugas",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Dasbor petugas",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Dasbor petugas",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Buat laporan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Buat laporan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Buat laporan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Buat laporan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Faktor & estimasi",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Faktor & estimasi",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Faktor & estimasi",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Faktor & estimasi",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Ajukan laporan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Ajukan laporan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Ajukan laporan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Ajukan laporan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi petugas",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi petugas",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi petugas",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi petugas",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Dasbor pimpinan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Dasbor pimpinan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Dasbor pimpinan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Dasbor pimpinan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Tinjau laporan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Tinjau laporan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Tinjau laporan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Tinjau laporan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Izin distribusi",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Izin distribusi",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Izin distribusi",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Izin distribusi",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Rekap pimpinan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Rekap pimpinan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Rekap pimpinan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Rekap pimpinan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Stok & jurnal",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Stok & jurnal",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Stok & jurnal",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Stok & jurnal",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi pimpinan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi pimpinan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi pimpinan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi pimpinan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Dasbor admin",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Dasbor admin",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Dasbor admin",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Dasbor admin",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Akun & peran",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Akun & peran",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Akun & peran",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Akun & peran",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Jenis bantuan",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Jenis bantuan",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Jenis bantuan",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Jenis bantuan",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Wilayah & posko",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Wilayah & posko",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Wilayah & posko",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Wilayah & posko",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Audit & riwayat",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Audit & riwayat",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Audit & riwayat",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Audit & riwayat",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Panel demo",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Panel demo",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Panel demo",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Panel demo",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi admin",
+      "width": 360,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 360,
+      "innerWidth": 360,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi admin",
+      "width": 768,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 768,
+      "innerWidth": 768,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi admin",
+      "width": 1366,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1366,
+      "innerWidth": 1366,
+      "ok": true
+    },
+    {
+      "page": "Notifikasi admin",
+      "width": 1920,
+      "overflow": false,
+      "smallText": 0,
+      "smallTargets": 0,
+      "scrollWidth": 1920,
+      "innerWidth": 1920,
+      "ok": true
+    }
+  ],
+  "printResults": [
+    {
+      "file": "izin-distribusi-a4.pdf",
+      "pages": 1
+    },
+    {
+      "file": "izin-koreksi-a4.pdf",
+      "pages": 1
+    }
+  ],
+  "printMedia": {
+    "first": {
+      "headerHidden": true,
+      "helperHidden": true,
+      "hasDocument": true,
+      "width": 703
+    },
+    "correction": {
+      "headerHidden": true,
+      "helperHidden": true,
+      "hasDocument": true,
+      "width": 703
+    }
+  },
+  "printPageCounts": {
+    "first": 1,
+    "correction": 1
+  },
+  "consoleErrors": [],
+  "pageErrors": []
+}
