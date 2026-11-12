@@ -3,23 +3,18 @@ import type { ReactNode } from "react";
 type PageHeaderProps = {
   eyebrow?: string;
   title: string;
-  description?: string;
+  /** Fakta atau langkah tindakan, maksimal dua baris. Bukan tagline. */
+  brief?: string;
   actions?: ReactNode;
 };
 
-export function PageHeader({ eyebrow, title, description, actions }: PageHeaderProps) {
+export function PageHeader({ eyebrow, title, brief, actions }: PageHeaderProps) {
   return (
-    <div className="flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
+    <div className="flex flex-col gap-4 border-b border-border pb-5 sm:flex-row sm:items-end sm:justify-between">
       <div className="min-w-0">
-        {eyebrow ? (
-          <p className="text-base font-medium text-info">{eyebrow}</p>
-        ) : null}
-        <h1 className="mt-1 text-[28px] font-bold leading-[36px] text-text sm:text-[32px] sm:leading-[40px]">
-          {title}
-        </h1>
-        {description ? (
-          <p className="mt-2 max-w-3xl text-base text-text-muted">{description}</p>
-        ) : null}
+        {eyebrow ? <p className="text-base text-text-muted">{eyebrow}</p> : null}
+        <h1 className="text-page text-text">{title}</h1>
+        {brief ? <p className="mt-2 max-w-[68ch] text-base text-text-muted">{brief}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap gap-3">{actions}</div> : null}
     </div>

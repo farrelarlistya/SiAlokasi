@@ -24,6 +24,7 @@ export function registerAdminSummaryRoutes(
       incidents,
       recommendations,
       permits,
+      poskos,
     ] = await Promise.all([
       deps.prisma.user.count({ where: { isActive: false } }),
       deps.prisma.user.count({ where: { isActive: true } }),
@@ -33,7 +34,36 @@ export function registerAdminSummaryRoutes(
       deps.prisma.incident.count(),
       deps.prisma.recommendation.count(),
       deps.prisma.permit.count(),
+      deps.prisma.posko.findMany({
+        where: { isActive: true },
+        select: {
+          stocks: {
+            where: { aidItem: { isActive: true } },
+            select: { aidItemId: true, qty: true },
+          },
+        },
+      }),
     ]);
+
+    const maxByItem = new Map<string, number>();
+    for (const posko of poskos) {
+      for (const stock of posko.stocks) {
+        maxByItem.set(
+          stock.aidItemId,
+          Math.max(maxByItem.get(stock.aidItemId) ?? 0, stock.qty),
+        );
+      }
+    }
+
+    let lowStockCount = 0;
+    for (const posko of poskos) {
+      for (const stock of posko.stocks) {
+        const max = maxByItem.get(stock.aidItemId) ?? 0;
+        if (max > 0 && stock.qty <= max * 0.2) {
+          lowStockCount += 1;
+        }
+      }
+    }
 
     const audit = await deps.prisma.auditLog.findMany({
       orderBy: { createdAt: "desc" },
@@ -58,6 +88,7 @@ export function registerAdminSummaryRoutes(
         incidents,
         recommendations,
         permits,
+        lowStockCount,
       },
       audit: audit.map((entry) => ({
         id: entry.id,

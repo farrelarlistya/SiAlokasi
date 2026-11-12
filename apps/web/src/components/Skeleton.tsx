@@ -16,9 +16,9 @@ export function Skeleton({ className, variant = "text" }: SkeletonProps) {
       aria-hidden="true"
       className={cn(
         "skeleton",
-        variant === "text" && "h-4 w-full rounded-sm",
-        variant === "card" && "h-32 w-full rounded-md",
-        variant === "circle" && "h-11 w-11 rounded-full",
+        variant === "text" && "h-4 w-full rounded-none",
+        variant === "card" && "h-32 w-full rounded-none",
+        variant === "circle" && "h-11 w-11 rounded-none",
         className,
       )}
     />

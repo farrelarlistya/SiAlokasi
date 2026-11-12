@@ -16,6 +16,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { Field, SelectInput, TextInput } from "../../components/Field";
 import { Modal } from "../../components/Modal";
 import { PageHeader } from "../../components/PageHeader";
+import { Section } from "../../components/Section";
 import { Skeleton } from "../../components/Skeleton";
 import { useToast } from "../../components/Toast";
 import { AppShell } from "../../layouts/AppShell";
@@ -44,16 +45,12 @@ const EMPTY_EDITOR: EditorState = {
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <span
-      className={cn(
-        "inline-flex min-h-8 items-center gap-2 rounded-full border px-3 text-base",
-        active
-          ? "border-success/30 bg-success/10 text-success"
-          : "border-border bg-hover text-text-muted",
-      )}
-    >
-      <span aria-hidden="true" className="h-2 w-2 rounded-full bg-current" />
-      {active ? "Aktif" : "Nonaktif"}
+    <span className="inline-flex min-h-8 items-center border border-border text-base text-text">
+      <span
+        aria-hidden="true"
+        className={cn("h-8 w-0.5 shrink-0", active ? "bg-info" : "bg-text-disabled")}
+      />
+      <span className="px-2.5">{active ? "Aktif" : "Nonaktif"}</span>
     </span>
   );
 }
@@ -212,9 +209,8 @@ export function AdminAidItemsPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Data master"
         title="Jenis bantuan"
-        description="Atur daftar bantuan yang dipakai saat menghitung kebutuhan. Menonaktifkan item tidak menghapus data laporan lama."
+        brief="Atur nama, satuan, dan status jenis bantuan."
         actions={
           <>
             <Button
@@ -232,28 +228,7 @@ export function AdminAidItemsPage() {
         }
       />
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
-        <div className="rounded-lg border border-border bg-surface p-4">
-          <p className="text-base text-text-muted">Total item</p>
-          <p className="mt-1 text-[28px] font-bold leading-[36px]">
-            {items.isPending ? "…" : formatNumber(items.data?.summary.total ?? 0)}
-          </p>
-        </div>
-        <div className="rounded-lg border border-border bg-surface p-4">
-          <p className="text-base text-text-muted">Aktif</p>
-          <p className="mt-1 text-[28px] font-bold leading-[36px] text-success">
-            {items.isPending ? "…" : formatNumber(items.data?.summary.active ?? 0)}
-          </p>
-        </div>
-        <div className="rounded-lg border border-border bg-surface p-4">
-          <p className="text-base text-text-muted">Nonaktif</p>
-          <p className="mt-1 text-[28px] font-bold leading-[36px] text-text-muted">
-            {items.isPending ? "…" : formatNumber(items.data?.summary.inactive ?? 0)}
-          </p>
-        </div>
-      </div>
-
-      <section aria-label="Saringan jenis bantuan" className="mt-4 rounded-lg border border-border bg-surface p-5">
+      <Section title="Saring jenis bantuan" className="mt-6">
         <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <Field id="aid-search" label="Cari nama atau satuan">
             <TextInput
@@ -279,7 +254,9 @@ export function AdminAidItemsPage() {
           <p className="text-base text-text-muted">
             {items.isPending
               ? "Sedang memuat jenis bantuan…"
-              : `${list.length} item ditampilkan${hasFilter ? " sesuai saringan" : ""}.`}
+              : `${formatNumber(items.data?.summary.active ?? 0)} aktif, ${formatNumber(
+                  items.data?.summary.inactive ?? 0,
+                )} nonaktif, ${formatNumber(items.data?.summary.total ?? 0)} total.`}
           </p>
           {hasFilter ? (
             <Button
@@ -293,9 +270,19 @@ export function AdminAidItemsPage() {
             </Button>
           ) : null}
         </div>
-      </section>
+      </Section>
 
-      <section className="mt-4 overflow-hidden rounded-lg border border-border bg-surface">
+      <Section
+        tone="focus"
+        headingId="daftar-jenis-bantuan"
+        title="Daftar jenis bantuan"
+        actions={
+          <span className="font-mono text-base text-text-muted">
+            {items.isPending ? "…" : `${list.length} item`}
+          </span>
+        }
+        className="mt-4"
+      >
         {items.isPending ? (
           <div className="space-y-3 p-5" aria-busy="true">
             <span className="sr-only">Sedang memuat jenis bantuan</span>
@@ -430,7 +417,7 @@ export function AdminAidItemsPage() {
                         <StatusBadge active={item.isActive} />
                       </div>
                       <p className="mt-1 text-base text-text-muted">
-                        {item.unit} · standar {formatNumber(item.standardPerPerson)} per jiwa
+                        {item.unit}, standar {formatNumber(item.standardPerPerson)} per jiwa
                       </p>
                       <p className="mt-1 text-base text-text-muted">
                         {item.usageCount === 0
@@ -467,7 +454,7 @@ export function AdminAidItemsPage() {
             </ul>
           </>
         )}
-      </section>
+      </Section>
 
       <Modal
         open={editor !== null}

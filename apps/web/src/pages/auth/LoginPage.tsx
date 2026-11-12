@@ -1,6 +1,6 @@
 import { emailSchema, otpCodeSchema, ROLE_LABEL, type Role } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, KeyRound, Mail, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useCallback, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
@@ -113,11 +113,13 @@ export function LoginPage() {
 
   return (
     <AuthLayout
-      title={step === "email" ? "Masuk ke ruang kendali" : "Masukkan kode masuk"}
-      description={
+      title={step === "email" ? "Masuk ke SiAlokasi" : "Masukkan kode masuk"}
+      brief={
         step === "email"
-          ? "Tidak perlu kata sandi. Kami mengirim kode enam angka ke email Anda."
-          : `Kode dikirim ke ${email}. Kode berlaku 10 menit.`
+          ? "Gunakan email dinas yang terdaftar."
+          : demoMode
+            ? "Mode demo: kode selalu 123456."
+            : "Masukkan 6 angka dari email Anda."
       }
       footer={
         <p className="text-base text-text-muted">
@@ -167,7 +169,6 @@ export function LoginPage() {
           <Button
             type="submit"
             size="lg"
-            leadingIcon={<Mail />}
             disabled={sending}
             className="w-full"
           >
@@ -200,12 +201,10 @@ export function LoginPage() {
           <Button
             type="submit"
             size="lg"
-            leadingIcon={<KeyRound />}
             disabled={submitting}
             className="w-full"
           >
             {submitting ? "Sedang memeriksa…" : "Masuk"}
-            {submitting ? null : <ArrowRight aria-hidden="true" className="h-5 w-5" />}
           </Button>
 
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -234,33 +233,37 @@ export function LoginPage() {
       )}
 
       {demoMode && step === "email" ? (
-        <div className="mt-6 rounded-md border border-warning/30 bg-warning/10 p-4">
-          <p className="text-base font-medium text-warning">Mode demo aktif</p>
-          <p className="mt-1 text-base text-text-muted">
-            Pilih salah satu akun di bawah, lalu kode 123456 akan diisikan otomatis.
-          </p>
-          <ul className="mt-3 space-y-2">
+        <div className="mt-8 border-t border-border pt-5">
+          <p className="text-base text-text-muted">Akun demo</p>
+          <ul className="mt-2">
             {DEMO_ACCOUNTS.map((account) => (
-              <li key={account.email}>
+              <li key={account.email} className="border-b border-border last:border-b-0">
                 <button
                   type="button"
                   onClick={() => {
                     setEmail(account.email);
                     setEmailError(undefined);
                   }}
-                  className="flex min-h-11 w-full flex-col items-start gap-1 rounded-md border border-border bg-surface px-3 py-2 text-left text-base transition-colors hover:bg-hover"
+                  className="flex min-h-14 w-full items-center justify-between gap-3 py-3 text-left transition-colors hover:bg-elevated"
                 >
-                  <span className="flex w-full flex-wrap items-center justify-between gap-2">
-                    <span className="font-medium text-text">{account.name}</span>
-                    <span className="rounded-full border border-border bg-elevated px-3 py-1 text-text-muted">
+                  <span className="min-w-0">
+                    <span className="block text-base font-medium text-text">
                       {ROLE_LABEL[account.role]}
                     </span>
+                    <span className="block break-all font-mono text-base text-text-muted">
+                      {account.email}
+                    </span>
                   </span>
-                  <span className="break-all text-text-muted">{account.email}</span>
+                  <span className="shrink-0 text-base font-medium text-text underline underline-offset-4">
+                    Isi
+                  </span>
                 </button>
               </li>
             ))}
           </ul>
+          <p className="mt-3 text-base text-text-muted">
+            Mode demo aktif, kode 123456 diisikan otomatis.
+          </p>
         </div>
       ) : null}
     </AuthLayout>

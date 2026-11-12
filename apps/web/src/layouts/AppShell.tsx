@@ -99,20 +99,19 @@ export function AppShell({
           <>
             <NotificationBell />
             <Button
-              variant="secondary"
+              variant="ghost"
               size="md"
-              leadingIcon={<LogOut />}
               onClick={() => void handleLogout()}
               aria-label="Keluar dari akun"
             >
               <span className="hidden sm:inline">Keluar</span>
+              <LogOut aria-hidden="true" className="h-5 w-5 sm:hidden" />
             </Button>
           </>
         }
         nav={
           <>
             {items.map((item) => {
-              const Icon = item.icon;
               return (
                 <NavLink
                   key={item.to}
@@ -120,14 +119,13 @@ export function AppShell({
                   end={item.to === "/admin" || item.to === "/petugas" || item.to === "/pimpinan"}
                   className={({ isActive }) =>
                     cn(
-                      "inline-flex min-h-11 items-center gap-2 rounded-md px-3 text-base transition-colors",
+                      "inline-flex h-16 items-center border-b-2 px-2 text-base transition-colors",
                       isActive
-                        ? "bg-hover text-text"
-                        : "text-text-muted hover:bg-hover/60 hover:text-text",
+                        ? "border-primary text-text"
+                        : "border-transparent text-text-muted hover:text-text",
                     )
                   }
                 >
-                  <Icon aria-hidden="true" className="h-5 w-5" />
                   {item.label}
                 </NavLink>
               );
@@ -142,7 +140,7 @@ export function AppShell({
           "flex-1",
           fullBleed
             ? "flex min-h-0 w-full flex-col pb-16 lg:pb-0"
-            : "mx-auto w-full max-w-7xl px-4 pb-24 pt-6 sm:px-6 lg:pb-10",
+            : "mx-auto w-full max-w-[1440px] px-4 pb-24 pt-8 sm:px-6 lg:px-12 lg:pb-12",
         )}
       >
         {children}

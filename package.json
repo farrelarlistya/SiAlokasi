@@ -22,6 +22,7 @@
     "verify:m5": "npm run verify:m5 -w @sialokasi/api",
     "verify:login": "node scripts/check-login-switch.mjs",
     "share": "node scripts/share.mjs",
+    "share:cloudflare": "node scripts/share-cloudflare.mjs",
     "db:start": "node scripts/db.mjs start",
     "db:stop": "node scripts/db.mjs stop",
     "db:status": "node scripts/db.mjs status",
@@ -32,6 +33,7 @@
   },
   "devDependencies": {
     "concurrently": "^10.0.7",
+    "esbuild": "^0.25.10",
     "localtunnel": "^2.0.2",
     "typescript": "^5.9.3"
   },

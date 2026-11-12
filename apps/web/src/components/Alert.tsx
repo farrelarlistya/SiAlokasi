@@ -5,14 +5,10 @@ import { cn } from "../lib/cn";
 export type AlertTone = "info" | "success" | "warning" | "danger";
 
 const toneStyles: Record<AlertTone, { wrapper: string; icon: string; Icon: typeof Info }> = {
-  info: { wrapper: "border-info/30 bg-info/10", icon: "text-info", Icon: Info },
-  success: { wrapper: "border-success/30 bg-success/10", icon: "text-success", Icon: CheckCircle2 },
-  warning: {
-    wrapper: "border-warning/30 bg-warning/10",
-    icon: "text-warning",
-    Icon: AlertTriangle,
-  },
-  danger: { wrapper: "border-danger/30 bg-danger/10", icon: "text-danger", Icon: XCircle },
+  info: { wrapper: "border-l-info", icon: "text-info", Icon: Info },
+  success: { wrapper: "border-l-info", icon: "text-info", Icon: CheckCircle2 },
+  warning: { wrapper: "border-l-warning", icon: "text-warning", Icon: AlertTriangle },
+  danger: { wrapper: "border-l-danger", icon: "text-danger", Icon: XCircle },
 };
 
 type AlertProps = {
@@ -31,7 +27,11 @@ export function Alert({ tone = "info", title, children, action, className }: Ale
   return (
     <div
       role={tone === "danger" ? "alert" : "status"}
-      className={cn("flex items-start gap-3 rounded-md border p-4", style.wrapper, className)}
+      className={cn(
+        "flex items-start gap-3 border border-border border-l-2 p-4",
+        style.wrapper,
+        className,
+      )}
     >
       <Icon aria-hidden="true" className={cn("mt-1 h-5 w-5 shrink-0", style.icon)} />
       <div className="min-w-0 flex-1">

@@ -1,4 +1,4 @@
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ChevronDown } from "lucide-react";
 import {
   Children,
   cloneElement,
@@ -73,7 +73,7 @@ export function Field({ id, label, hint, error, required, children, className }:
 }
 
 const controlBase =
-  "w-full rounded-md border border-border bg-elevated px-3 text-base text-text placeholder:text-text-disabled transition-colors hover:border-text-disabled focus:border-accent aria-[invalid=true]:border-danger";
+  "w-full rounded-none border border-border-strong bg-sunken px-4 text-base text-text placeholder:text-text-disabled transition-colors hover:border-text-muted focus:border-accent focus-visible:outline-none aria-[invalid=true]:border-danger";
 
 export function TextInput({ className, ...rest }: InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(controlBase, "min-h-12", className)} {...rest} />;
@@ -81,9 +81,18 @@ export function TextInput({ className, ...rest }: InputHTMLAttributes<HTMLInputE
 
 export function SelectInput({ className, children, ...rest }: SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={cn(controlBase, "min-h-12", className)} {...rest}>
-      {children}
-    </select>
+    <div className="relative w-full">
+      <select
+        className={cn(controlBase, "min-h-12 appearance-none pr-12", className)}
+        {...rest}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-text-muted"
+      />
+    </div>
   );
 }
 

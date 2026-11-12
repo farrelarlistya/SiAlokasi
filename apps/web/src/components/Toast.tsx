@@ -95,7 +95,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <div
               key={item.id}
               className={cn(
-                "toast-enter pointer-events-auto flex w-full items-start gap-3 rounded-md border bg-surface p-4 shadow-panel",
+                "toast-enter pointer-events-auto flex w-full items-start gap-3 rounded-none border border-border-strong border-l-2 bg-surface p-4 shadow-none",
                 tone.border,
               )}
             >
@@ -109,7 +109,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <button
                 type="button"
                 onClick={() => dismiss(item.id)}
-                className="-mr-2 -mt-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-hover hover:text-text"
+                className="-mr-2 -mt-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-none text-text-muted transition-colors hover:bg-hover hover:text-text"
                 aria-label="Tutup pemberitahuan"
               >
                 <X aria-hidden="true" className="h-5 w-5" />

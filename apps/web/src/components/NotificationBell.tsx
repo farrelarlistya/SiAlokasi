@@ -99,7 +99,6 @@ export function NotificationBell() {
         open={open}
         onClose={() => setOpen(false)}
         title="Notifikasi"
-        description="Kabar terbaru tentang laporan dan izin distribusi. Tidak ada pesan WA atau SMS yang dikirim."
         size="lg"
         footer={
           <>

@@ -71,9 +71,7 @@ export function NotificationsPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Kotak masuk"
         title="Notifikasi"
-        description="Setiap perubahan status penting meninggalkan satu kabar di sini. Notifikasi hanya tersimpan di aplikasi, tanpa pesan WA atau SMS."
         actions={
           <>
             <Button
@@ -95,17 +93,17 @@ export function NotificationsPage() {
         }
       />
 
-      <section className="mt-6 overflow-hidden rounded-lg border border-border bg-surface">
+      <section className="mt-6 border-t border-border">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
           <div>
-            <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
+            <h2 className="flex items-center gap-2 text-section text-text/90">
               <Inbox aria-hidden="true" className="h-6 w-6 text-info" />
               Log notifikasi
             </h2>
             <p className="mt-1 text-base text-text-muted">
               {inbox.isPending
                 ? "Sedang memuat notifikasi…"
-                : `${items.length} kabar ditampilkan · ${unreadCount} belum dibaca`}
+                : `${items.length} kabar ditampilkan, ${unreadCount} belum dibaca`}
             </p>
           </div>
 

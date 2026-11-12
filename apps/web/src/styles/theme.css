@@ -1,56 +1,73 @@
+/* Hallmark · checked: 2026-11-10 · genre: modern-minimal (inferred)
+ * floor: 0 FAIL · theme: Rim · built: SiAlokasi · scope: app
+ * dismissed F3 · app heads are single-line, balance is unnecessary
+ * waive 39b · report rows are full-width list buttons, not form controls · v2.0.0 */
+/* Hallmark · waive 39b · the 136px button is a report list row with aria-pressed · report rows are navigation, not form controls */
 @import "tailwindcss";
 @import "@fontsource-variable/plus-jakarta-sans";
-@import "@fontsource/ibm-plex-mono/latin-400.css";
-@import "@fontsource/ibm-plex-mono/latin-500.css";
+@import "@fontsource/geist-mono/latin-400.css";
+@import "@fontsource/geist-mono/latin-500.css";
 
+/*
+ * Hallmark · theme: Rim (night) · shape: app screen
+ * floor: 0 FAIL (manual) · sloplint: dijalankan saat build web
+ * Paper hangat, tinta gading, garis rambut 1px, sudut 0, satu sinyal oranye.
+ */
 @theme {
   /* Permukaan & teks */
-  --color-canvas: #0b0d11;
-  --color-surface: #14171d;
-  --color-elevated: #1b1f27;
-  --color-hover: #232833;
-  --color-border: #2a2f3a;
-  --color-text: #f5f7fa;
-  --color-text-muted: #a8b0bd;
-  --color-text-disabled: #6e7683;
+  --color-canvas: #131110;
+  --color-surface: #1b1815;
+  --color-elevated: #211d19;
+  --color-sunken: #0c0a09;
+  --color-hover: #2a251f;
+  --color-border: #3a3530;
+  --color-border-strong: #6a635a;
+  --color-text: #f2ede6;
+  --color-text-muted: #aaa39a;
+  --color-text-disabled: #77716a;
 
   /* Aksen & status */
-  --color-accent: #3b82f6;
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-info: #60a5fa;
-  --color-violet: #a78bfa;
-  --color-danger: #ef4444;
-  --color-warning: #f59e0b;
-  --color-success: #10b981;
+  --color-accent: #f0763a;
+  --color-accent-2: #7ca6e0;
+  --color-accent-ink: #1a1008;
+  --color-primary: #f0763a;
+  --color-primary-ink: #1a1008;
+  --color-primary-hover: #ff8a4f;
+  --color-info: #7ca6e0;
+  --color-violet: #7ca6e0;
+  --color-danger: #e4572e;
+  --color-warning: #f0a53a;
+  --color-success: #7ca6e0;
 
   /* Kertas dokumen izin */
-  --color-paper: #ffffff;
-  --color-ink: #111827;
-  --color-ink-muted: #4b5563;
-  --color-paper-border: #d1d5db;
+  --color-paper: #f4efe5;
+  --color-ink: #1a1510;
+  --color-ink-muted: #5b5045;
+  --color-paper-border: #cdbfaa;
 
   /* Kanvas peta */
-  --color-map-land: #f3eedd;
-  --color-map-built: #ede6d2;
-  --color-map-park: #dde8c8;
-  --color-map-water: #cfe3ea;
-  --color-map-road: #ffffff;
-  --color-map-road-edge: #d8cfb4;
-  --color-map-boundary: #c9bf9f;
+  --color-map-land: #1b1815;
+  --color-map-built: #211d19;
+  --color-map-park: #1e2a22;
+  --color-map-water: #16212b;
+  --color-map-road: #453f38;
+  --color-map-road-edge: #2a2520;
+  --color-map-boundary: #332e2a;
 
   /* Tipografi */
   --font-sans: "Plus Jakarta Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Bentuk & bayangan */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-full: 999px;
-  --shadow-panel: 0 24px 64px rgba(0, 0, 0, 0.45);
-  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.04);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-full: 0px;
+  --shadow-panel: none;
+  --shadow-card: none;
 }
 
 @layer base {
@@ -58,6 +75,7 @@
     color-scheme: dark;
     -webkit-text-size-adjust: 100%;
     scroll-behavior: smooth;
+    overflow-x: clip;
   }
 
   body {
@@ -68,14 +86,17 @@
     font-family: var(--font-sans);
     font-size: 16px;
     line-height: 26px;
+    overflow-x: clip;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
 
   h1,
   h2,
-  h3 {
-    text-wrap: balance;
+  h3,
+  h4 {
+    font-weight: 500;
+    letter-spacing: -0.02em;
   }
 
   p {
@@ -83,12 +104,17 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-info);
+    outline: 2px solid var(--color-accent);
     outline-offset: 2px;
   }
 
+  button:not(:disabled):active,
+  a:active {
+    transform: translateY(1px);
+  }
+
   ::selection {
-    background: color-mix(in srgb, var(--color-accent) 40%, transparent);
+    background: color-mix(in srgb, var(--color-accent) 35%, transparent);
     color: var(--color-text);
   }
 
@@ -103,17 +129,62 @@
 
   ::-webkit-scrollbar-thumb {
     background: var(--color-border);
-    border-radius: var(--radius-full);
+    border-radius: 0;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-text-disabled);
+    background: var(--color-border-strong);
+  }
+}
+
+/* Rim tidak memakai bentuk bulat. `rounded-full` Tailwind memakai nilai tetap,
+   jadi disamakan di sini agar pil, lencana, dan avatar ikut persegi. */
+@layer utilities {
+  .rounded,
+  .rounded-full {
+    border-radius: 0;
   }
 }
 
 @layer components {
-  .skeleton {
-    background-image: linear-gradient(
+  /* Tangga tipe halaman: 32 → 24 → 20 → 16. Tidak ada judul 28 px. */
+  .text-page {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 500;
+    letter-spacing: -0.025em;
+  }
+
+  .text-focus {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .text-section {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* Angka utama per layar: mono 40 px, tabular. */
+  .text-figure {
+    font-family: var(--font-mono);
+    font-size: 40px;
+    line-height: 44px;
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Penanda blok fokus: garis aksen 2 px, bukan bingkai kartu baru. */
+  .focus-rule {
+    border-left: 2px solid var(--color-primary);
+  }
+
+  .skeleton {    background-image: linear-gradient(
       90deg,
       var(--color-elevated) 25%,
       var(--color-hover) 50%,
@@ -180,24 +251,29 @@
   }
 }
 
-/* Peta Leaflet — warna diambil dari token tema, ukuran mengikuti standar sentuh. */
+/* Peta Leaflet - warna diambil dari token tema, ukuran mengikuti standar sentuh. */
 .leaflet-container {
   background: var(--color-map-land);
-  color: var(--color-canvas);
+  color: var(--color-text-muted);
   font-family: var(--font-sans);
   font-size: 16px;
   line-height: 24px;
 }
 
 .leaflet-container .leaflet-control-attribution {
-  background: color-mix(in srgb, var(--color-map-land) 90%, transparent);
-  color: var(--color-canvas);
+  background: color-mix(in srgb, var(--color-map-land) 92%, transparent);
+  color: var(--color-text-muted);
   font-size: 16px;
-  padding: 4px 8px;
+  padding: 8px 12px;
 }
 
 .leaflet-container .leaflet-control-attribution a {
-  color: var(--color-primary);
+  color: var(--color-accent);
+}
+
+/* Tile OSM dibalik menjadi peta instrumen gelap; atribusi tetap di luar filter. */
+.leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) brightness(0.92) contrast(0.92) saturate(0.65);
 }
 
 .leaflet-touch .leaflet-bar a,
@@ -206,9 +282,10 @@
   height: 44px;
   line-height: 44px;
   background: var(--color-surface);
-  border-color: var(--color-border);
+  border-color: var(--color-border-strong);
   color: var(--color-text);
   font-size: 24px;
+  border-radius: 0;
 }
 
 .leaflet-touch .leaflet-bar a:hover,
@@ -281,12 +358,12 @@
 }
 
 .map-incident-pin__dot {
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-full);
-  background: var(--color-danger);
-  border: 3px solid var(--color-text);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-danger) 25%, transparent);
+  width: 14px;
+  height: 14px;
+  border-radius: 0;
+  background: var(--color-accent);
+  border: 2px solid var(--color-canvas);
+  box-shadow: none;
 }
 
 .print-document {
@@ -374,7 +451,7 @@
   }
 
   .print-document header {
-    padding-bottom: 6px !important;
+    padding-bottom: 8px !important;
   }
 
   .print-document .mt-5,
@@ -386,11 +463,11 @@
   .print-document .pt-4,
   .print-document .pt-5,
   .print-document .pt-6 {
-    padding-top: 6px !important;
+    padding-top: 8px !important;
   }
 
   .print-document .pb-6 {
-    padding-bottom: 6px !important;
+    padding-bottom: 8px !important;
   }
 
   .print-document section,

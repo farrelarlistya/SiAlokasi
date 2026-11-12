@@ -2,8 +2,8 @@ import { MapContainer, TileLayer, useMap } from "react-leaflet";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { cn } from "../../lib/cn";
 
-const OSM_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
-const OSM_ATTRIBUTION =
+const TILE_URL = "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png";
+const TILE_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
 /** Menjaga peta tetap rapi saat panel samping dibuka atau ditutup. */
@@ -55,8 +55,8 @@ export function MapCanvas({ center, zoom = 12, className, children }: MapCanvasP
         className="h-full w-full"
       >
         <TileLayer
-          url={OSM_URL}
-          attribution={OSM_ATTRIBUTION}
+          url={TILE_URL}
+          attribution={TILE_ATTRIBUTION}
           eventHandlers={{
             tileerror: () => {
               errorCount.current += 1;

@@ -26,6 +26,15 @@ import { registerStockRoutes } from "./routes/stock";
 export async function buildApp(): Promise<FastifyInstance> {
   const app = Fastify({
     logger: { level: env.LOG_LEVEL },
+    trustProxy: env.TRUST_PROXY,
+  });
+
+  app.addHook("onSend", async (_request, reply, payload) => {
+    reply.header("X-Content-Type-Options", "nosniff");
+    reply.header("X-Frame-Options", "DENY");
+    reply.header("Referrer-Policy", "strict-origin-when-cross-origin");
+    reply.header("Permissions-Policy", "camera=(), microphone=(), geolocation=()");
+    return payload;
   });
 
   await app.register(cors, {

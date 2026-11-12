@@ -235,6 +235,7 @@ export type AdminSummaryResponse = {
     incidents: number;
     recommendations: number;
     permits: number;
+    lowStockCount: number;
   };
   audit: {
     id: string;

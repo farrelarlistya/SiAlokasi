@@ -176,7 +176,7 @@ export function PermitPage() {
   if (detail.isPending) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Izin distribusi" title="Memuat dokumen izin" />
+        <PageHeader title="Memuat dokumen izin" />
         <div className="mt-6 space-y-4" aria-busy="true">
           <span className="sr-only">Sedang memuat izin distribusi</span>
           <Skeleton variant="card" className="h-16" />
@@ -189,7 +189,7 @@ export function PermitPage() {
   if (detail.isError || !incident) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Izin distribusi" title="Dokumen izin" />
+        <PageHeader title="Dokumen izin" />
         <Alert
           tone="danger"
           title="Dokumen izin belum bisa dimuat."
@@ -240,13 +240,9 @@ export function PermitPage() {
         <PageHeader
           eyebrow={`Laporan ${incident.code}`}
           title="Izin distribusi bantuan"
-          description="Dokumen ini menjadi dasar pengambilan bantuan di posko tujuan. Periksa nomor izin dan daftar bantuan sebelum dicetak."
+          brief="Periksa dokumen, lalu cetak atau tandai selesai."
           actions={
             <>
-              <Link to="/pimpinan" className={buttonStyles("secondary", "md")}>
-                <ArrowLeft aria-hidden="true" className="h-5 w-5" />
-                Antrian
-              </Link>
               <Button
                 variant="secondary"
                 leadingIcon={<Printer />}
@@ -264,22 +260,40 @@ export function PermitPage() {
                   Koreksi izin
                 </Button>
               ) : null}
-              {incident.status === "DISETUJUI" ? (
-                <Button leadingIcon={<CheckCircle2 />} onClick={() => setConfirmCompleteOpen(true)}>
-                  Tandai distribusi selesai
-                </Button>
-              ) : null}
             </>
           }
         />
 
-        <div className="mt-6 flex flex-wrap items-center gap-3">
-          <StatusChip status={incident.status} />
-          <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
-            <Stamp aria-hidden="true" className="h-5 w-5" />
-            {PERMIT_STATUS_LABEL[permit.status] ?? permit.status}
-          </span>
-        </div>
+        <section
+          aria-labelledby="pita-izin"
+          className="focus-rule mt-6 flex flex-wrap items-center justify-between gap-4 bg-surface p-5"
+        >
+          <div className="min-w-0">
+            <p className="text-base text-text-muted">Nomor izin</p>
+            <h2 id="pita-izin" tabIndex={-1} className="text-focus font-mono text-text">
+              {permit.number}
+            </h2>
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              <StatusChip status={incident.status} />
+              <span className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted">
+                <Stamp aria-hidden="true" className="h-5 w-5" />
+                {PERMIT_STATUS_LABEL[permit.status] ?? permit.status}
+              </span>
+            </div>
+          </div>
+
+          {incident.status === "DISETUJUI" ? (
+            <Button size="lg" leadingIcon={<CheckCircle2 />} onClick={() => setConfirmCompleteOpen(true)}>
+              Tandai distribusi selesai
+            </Button>
+          ) : (
+            <p className="max-w-[34ch] text-base text-text-muted">
+              {incident.status === "SELESAI"
+                ? "Distribusi sudah selesai. Dokumen tetap bisa dicetak ulang."
+                : "Izin ini sudah tidak aktif. Periksa catatan di bawah dokumen."}
+            </p>
+          )}
+        </section>
 
         {incident.status === "SELESAI" ? (
           <Alert tone="success" title="Distribusi sudah ditandai selesai." className="mt-4">
@@ -320,9 +334,6 @@ export function PermitPage() {
             <h1 className="mt-1 text-[28px] font-bold leading-[36px] text-ink">
               Izin Distribusi Bantuan
             </h1>
-            <p className="mt-2 text-base text-ink-muted">
-              Ruang kendali darurat bencana Kota Surabaya
-            </p>
           </div>
           <div className="sm:text-right">
             <p className="text-base text-ink-muted">Nomor izin</p>
@@ -346,7 +357,7 @@ export function PermitPage() {
           <div>
             <dt className="text-ink-muted">Posko tujuan</dt>
             <dd className="mt-1 font-medium text-ink">
-              {permit.posko.name} · {permit.posko.regionName}
+              {permit.posko.name}, {permit.posko.regionName}
             </dd>
           </div>
           <div>
@@ -439,7 +450,7 @@ export function PermitPage() {
                     </td>
                     <td className="px-2 py-3 text-ink-muted">{item.unit}</td>
                     <td className="print-optional px-2 py-3 text-ink-muted">
-                      {item.reason ?? "—"}
+                      {item.reason ?? "-"}
                     </td>
                   </tr>
                 ))}
@@ -466,7 +477,7 @@ export function PermitPage() {
       </article>
 
       {incident.corrections.length > 0 ? (
-        <section className="print-hidden mx-auto mt-6 w-full max-w-[760px] rounded-lg border border-border bg-surface p-5">
+        <section className="print-hidden mx-auto mt-6 w-full max-w-[760px] border-t border-border pt-5">
           <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
             <History aria-hidden="true" className="h-6 w-6 text-info" />
             Riwayat koreksi izin
@@ -557,7 +568,7 @@ export function PermitPage() {
               <option value="">Pilih posko tujuan</option>
               {(incident.poskos ?? []).map((posko) => (
                 <option key={posko.id} value={posko.id}>
-                  {posko.name} · {posko.regionName}
+                  {posko.name}, {posko.regionName}
                 </option>
               ))}
             </SelectInput>

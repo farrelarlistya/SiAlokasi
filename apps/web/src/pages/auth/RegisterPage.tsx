@@ -67,7 +67,7 @@ export function RegisterPage() {
     return (
       <AuthLayout
         title="Pendaftaran terkirim"
-        description="Satu langkah lagi sebelum akun Anda bisa dipakai."
+        tone="plain"
         footer={
           <p className="text-base text-text-muted">
             Sudah aktif?{" "}
@@ -102,7 +102,7 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Daftar sebagai petugas"
-      description="Akun petugas dibuat dari sini, lalu diaktifkan admin wilayah sebelum bisa dipakai."
+      brief="Ajukan akun untuk wilayah tugas Anda."
       footer={
         <p className="text-base text-text-muted">
           Sudah punya akun?{" "}

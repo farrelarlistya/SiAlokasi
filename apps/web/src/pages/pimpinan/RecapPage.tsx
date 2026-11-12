@@ -88,9 +88,7 @@ export function RecapPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Rekap pimpinan"
         title="Rekap laporan bantuan"
-        description="Lihat jumlah laporan, jiwa terdampak, dan izin terbit per kecamatan, jenis bencana, atau bulan. Unduh CSV untuk dibuka di Excel."
         actions={
           <>
             <Button
@@ -115,12 +113,12 @@ export function RecapPage() {
 
       <form
         onSubmit={apply}
-        className="mt-6 rounded-lg border border-border bg-surface p-5"
+        className="mt-6 border-t border-border pt-5"
         aria-labelledby="filter-rekap"
       >
         <div className="flex items-center gap-2">
           <Filter aria-hidden="true" className="h-5 w-5 text-info" />
-          <h2 id="filter-rekap" className="text-[22px] font-semibold leading-[30px]">
+          <h2 id="filter-rekap" className="text-section text-text/90">
             Saring data
           </h2>
         </div>
@@ -241,10 +239,10 @@ export function RecapPage() {
         </div>
       </section>
 
-      <section className="mt-6 overflow-hidden rounded-lg border border-border bg-surface">
+      <section className="mt-6 border-t border-border">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
           <div>
-            <h2 className="text-[22px] font-semibold leading-[30px]">
+            <h2 className="text-section text-text/90">
               Rekap per {RECAP_GROUP_LABEL[applied.groupBy].toLowerCase()}
             </h2>
             <p className="mt-1 text-base text-text-muted">
@@ -361,7 +359,7 @@ export function RecapPage() {
                           {formatNumber(row.permits)}
                         </td>
                         <td className="px-4 py-4 text-text-muted">
-                          {row.lastOccurredAt ? formatDateTime(row.lastOccurredAt) : "—"}
+                          {row.lastOccurredAt ? formatDateTime(row.lastOccurredAt) : "-"}
                         </td>
                       </tr>
                     ))}
@@ -392,7 +390,7 @@ export function RecapPage() {
                       <td className="px-4 py-4 text-right font-semibold text-text">
                         {formatNumber(totals?.permits ?? 0)}
                       </td>
-                      <td className="px-4 py-4 text-text-muted">—</td>
+                      <td className="px-4 py-4 text-text-muted">-</td>
                     </tr>
                   </tfoot>
                 </table>

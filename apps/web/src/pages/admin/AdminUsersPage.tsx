@@ -15,6 +15,7 @@ import { EmptyState } from "../../components/EmptyState";
 import { Field, SelectInput, TextInput } from "../../components/Field";
 import { Modal } from "../../components/Modal";
 import { PageHeader } from "../../components/PageHeader";
+import { Section } from "../../components/Section";
 import { Skeleton } from "../../components/Skeleton";
 import { useToast } from "../../components/Toast";
 import { AppShell } from "../../layouts/AppShell";
@@ -23,16 +24,12 @@ import { cn } from "../../lib/cn";
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <span
-      className={cn(
-        "inline-flex min-h-8 items-center gap-2 rounded-full border px-3 text-base",
-        active
-          ? "border-success/30 bg-success/10 text-success"
-          : "border-warning/30 bg-warning/10 text-warning",
-      )}
-    >
-      <span aria-hidden="true" className="h-2 w-2 rounded-full bg-current" />
-      {active ? "Aktif" : "Menunggu aktivasi"}
+    <span className="inline-flex min-h-8 items-center border border-border text-base text-text">
+      <span
+        aria-hidden="true"
+        className={cn("h-8 w-0.5 shrink-0", active ? "bg-info" : "bg-text-disabled")}
+      />
+      <span className="px-2.5">{active ? "Aktif" : "Menunggu aktivasi"}</span>
     </span>
   );
 }
@@ -140,9 +137,8 @@ export function AdminUsersPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Akun & peran"
-        title="Kelola akses semua peran"
-        description="Aktifkan pendaftar petugas, ubah peran, atau nonaktifkan akun. Riwayat laporan tetap tersimpan saat akun dinonaktifkan."
+        title="Akun"
+        brief="Aktifkan pendaftar dan atur peran akun."
         actions={
           <Button
             variant="secondary"
@@ -172,7 +168,7 @@ export function AdminUsersPage() {
         </Alert>
       ) : null}
 
-      <section aria-label="Saringan akun" className="mt-6 rounded-lg border border-border bg-surface p-5">
+      <Section title="Saring akun" className="mt-6">
         <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)_minmax(0,1fr)]">
           <Field id="admin-user-search" label="Cari nama atau email">
             <div className="relative">
@@ -213,21 +209,26 @@ export function AdminUsersPage() {
           </Field>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-base text-text-muted">
-            {isFirstLoad
-              ? "Sedang memuat daftar akun…"
-              : `${list.length} akun ditampilkan${hasFilter ? " sesuai saringan" : ""}.`}
-          </p>
-          {hasFilter ? (
+        {hasFilter ? (
+          <div className="mt-4 flex flex-wrap items-center justify-end gap-3">
             <Button variant="ghost" onClick={resetFilters}>
               Bersihkan saringan
             </Button>
-          ) : null}
-        </div>
-      </section>
+          </div>
+        ) : null}
+      </Section>
 
-      <section className="mt-4 overflow-hidden rounded-lg border border-border bg-surface">
+      <Section
+        tone="focus"
+        headingId="daftar-akun"
+        title="Daftar akun"
+        actions={
+          <span className="font-mono text-base text-text-muted">
+            {isFirstLoad ? "…" : `${list.length} akun`}
+          </span>
+        }
+        className="mt-4"
+      >
         {isFirstLoad ? (
           <div className="space-y-3 p-5" aria-busy="true">
             <span className="sr-only">Sedang memuat daftar akun</span>
@@ -304,7 +305,7 @@ export function AdminUsersPage() {
                           <p className="mt-1 text-text-muted">Terdaftar {formatDate(row.createdAt)}</p>
                         </td>
                         <td className="px-4 py-4">{ROLE_LABEL[row.role]}</td>
-                        <td className="px-4 py-4">{row.region?.name ?? "—"}</td>
+                        <td className="px-4 py-4">{row.region?.name ?? "-"}</td>
                         <td className="px-4 py-4">
                           <StatusBadge active={row.isActive} />
                         </td>
@@ -383,7 +384,7 @@ export function AdminUsersPage() {
                       </div>
                       <div className="flex justify-between gap-3">
                         <dt className="text-text-muted">Kecamatan</dt>
-                        <dd className="text-right text-text">{row.region?.name ?? "—"}</dd>
+                        <dd className="text-right text-text">{row.region?.name ?? "-"}</dd>
                       </div>
                     </dl>
                     <div className="mt-4 flex flex-wrap gap-2">
@@ -430,7 +431,7 @@ export function AdminUsersPage() {
             </ul>
           </>
         )}
-      </section>
+      </Section>
 
       <ConfirmDialog
         open={deactivateTarget !== null}

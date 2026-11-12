@@ -9,6 +9,10 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(3001),
   LOG_LEVEL: z.string().default("info"),
   WEB_ORIGIN: z.string().default("http://localhost:5173"),
+  TRUST_PROXY: z
+    .string()
+    .default("false")
+    .transform((value) => value.toLowerCase() === "true"),
   DEMO_MODE: z
     .string()
     .default("false")

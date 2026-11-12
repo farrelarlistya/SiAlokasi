@@ -27,27 +27,10 @@ export function PetugasDashboardPage() {
   const dashboard = useQuery({ queryKey: ["petugas", "dashboard"], queryFn: api.petugasDashboard });
 
   const counts = dashboard.data?.counts;
-  const firstName = user?.name.split(" ")[0] ?? "Petugas";
 
   return (
     <AppShell>
-      <PageHeader
-        eyebrow="Dasbor Petugas"
-        title={`Selamat datang, ${firstName}`}
-        description="Pantau laporan yang Anda buat dan status terbarunya di satu tempat."
-        actions={
-          <>
-            <Link to="/" className={buttonStyles("secondary", "md")}>
-              <MapPinned aria-hidden="true" className="h-5 w-5" />
-              Lihat peta publik
-            </Link>
-            <Link to="/petugas/laporan/baru" className={buttonStyles("primary", "md")}>
-              <FilePlus2 aria-hidden="true" className="h-5 w-5" />
-              Buat laporan
-            </Link>
-          </>
-        }
-      />
+      <PageHeader title="Dasbor" />
 
       {dashboard.isError ? (
         <Alert
@@ -108,10 +91,10 @@ export function PetugasDashboardPage() {
       </section>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.6fr)]">
-        <section aria-labelledby="laporan-terbaru" className="rounded-lg border border-border bg-surface">
+        <section aria-labelledby="laporan-terbaru" className="border-t border-border">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-5">
             <div>
-              <h2 id="laporan-terbaru" className="text-[22px] font-semibold leading-[30px]">
+              <h2 id="laporan-terbaru" className="text-section text-text/90">
                 Laporan terbaru
               </h2>
               <p className="mt-1 text-base text-text-muted">Lima laporan terakhir dari akun Anda.</p>
@@ -181,8 +164,8 @@ export function PetugasDashboardPage() {
         </section>
 
         <aside className="space-y-4">
-          <div className="rounded-lg border border-border bg-surface p-5">
-            <h2 className="text-[22px] font-semibold leading-[30px]">Profil tugas</h2>
+          <div className="border-t border-border pt-5">
+            <h2 className="text-section text-text/90">Profil tugas</h2>
             <dl className="mt-4 space-y-3 text-base">
               <div>
                 <dt className="text-text-muted">Nama</dt>
@@ -202,8 +185,8 @@ export function PetugasDashboardPage() {
             </dl>
           </div>
 
-          <div className="rounded-lg border border-border bg-surface p-5">
-            <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
+          <div className="border-t border-border pt-5">
+            <h2 className="flex items-center gap-2 text-section text-text/90">
               <Clock3 aria-hidden="true" className="h-6 w-6 text-info" />
               Yang terjadi setelah laporan dikirim
             </h2>

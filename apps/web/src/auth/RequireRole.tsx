@@ -37,7 +37,7 @@ function ForbiddenPage() {
           >
             <ShieldAlert className="h-9 w-9" />
           </span>
-          <h1 className="mt-5 text-[28px] font-bold leading-[36px] text-text">
+          <h1 className="mt-5 text-page text-text">
             Halaman ini bukan untuk peran Anda
           </h1>
           <p className="mt-3 text-base text-text-muted">

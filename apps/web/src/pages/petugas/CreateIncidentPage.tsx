@@ -9,7 +9,7 @@ import {
   type DisasterType,
 } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
-import { AlertTriangle, ArrowLeft, ArrowRight, MapPin, Save, Trash2 } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Alert } from "../../components/Alert";
@@ -17,6 +17,8 @@ import { Button, buttonStyles } from "../../components/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { Field, SelectInput, TextInput } from "../../components/Field";
 import { MapWorkspace } from "../../components/MapWorkspace";
+import { Section } from "../../components/Section";
+import { StepRail } from "../../components/StepRail";
 import { useToast } from "../../components/Toast";
 import {
   IncidentLocationPicker,
@@ -219,46 +221,34 @@ export function CreateIncidentPage() {
 
   return (
     <AppShell fullBleed>
-      <h1 className="sr-only">Buat laporan kejadian</h1>
       <form onSubmit={(event) => void submit(event)} className="flex min-h-0 flex-1 flex-col" noValidate>
         <MapWorkspace
           storageKey="sialokasi.panel.laporan-baru"
           panelLabel="Formulir laporan"
-          panelDescription="Bisa ditutup kapan saja"
           sidebar={
-            <div className="grid gap-5 p-5">
-              <div>
-                <Link to="/petugas" className={buttonStyles("ghost", "md", "-ml-2 mb-1 px-2")}>
-                  <ArrowLeft aria-hidden="true" className="h-5 w-5" />
-                  Dasbor petugas
-                </Link>
-                <h2 className="mt-1 text-[28px] font-bold leading-[36px] text-text">
-                  Tandai kejadian di peta
-                </h2>
+            <div className="flex min-h-full flex-col">
+              <div className="border-b border-border px-6 pb-5 pt-6">
+                <h1 className="text-page text-text">Laporan baru</h1>
                 <p className="mt-2 text-base text-text-muted">
-                  Tentukan titik kejadian dan wilayah terdampak. Setelah tersimpan, Anda bisa
-                  mengisi 8 faktor untuk menghitung kebutuhan bantuan.
+                  Tentukan titik dan radius, lalu lanjut ke faktor.
                 </p>
+                <StepRail
+                  steps={["Titik & wilayah", "Faktor & estimasi", "Ajukan"]}
+                  current={0}
+                  className="mt-5"
+                />
               </div>
 
+              <div className="grid gap-7 px-6 py-5">
               {formError ? (
                 <Alert tone="danger" title="Laporan belum tersimpan.">
                   {formError}
                 </Alert>
               ) : null}
 
-              <section className="grid gap-4 rounded-md border border-border bg-elevated p-4">
-                <div>
-                  <h3 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
-                    <MapPin aria-hidden="true" className="h-5 w-5 text-danger" />
-                    Titik & wilayah
-                  </h3>
-                  <p className="mt-1 text-base text-text-muted">
-                    Klik peta di sebelah, atau isi lintang dan bujur di bawah.
-                  </p>
-                </div>
-
-                <p className="rounded-md border border-border bg-canvas px-3 py-2 font-mono text-base text-info">
+              <Section tone="focus" title="Titik & wilayah">
+                <div className="grid gap-4">
+                <p className="border border-border-strong bg-sunken px-4 py-3 font-mono text-base text-text">
                   {pointLabel}
                 </p>
 
@@ -318,7 +308,9 @@ export function CreateIncidentPage() {
                     <label htmlFor="incident-radius" className="text-base font-medium text-text">
                       Radius wilayah terdampak
                     </label>
-                    <span className="font-mono text-[22px] font-medium text-info">{radiusKm}</span>
+                    <span className="font-mono text-[40px] font-medium leading-[44px] tracking-[-0.03em] text-text">
+                      {radiusKm}
+                    </span>
                   </div>
                   <input
                     id="incident-radius"
@@ -358,7 +350,8 @@ export function CreateIncidentPage() {
                     />
                   </Field>
                 </div>
-              </section>
+                </div>
+              </Section>
 
               {duplicates.length > 0 ? (
                 <Alert
@@ -372,21 +365,15 @@ export function CreateIncidentPage() {
                   <ul className="mt-2 space-y-1">
                     {duplicates.map((incident) => (
                       <li key={incident.id}>
-                        <span className="font-mono text-info">{incident.code}</span> · {incident.title}
+                        <span className="font-mono text-info">{incident.code}</span>, {incident.title}
                       </li>
                     ))}
                   </ul>
                 </Alert>
               ) : null}
 
-              <section className="grid gap-4">
-                <div>
-                  <h3 className="text-[22px] font-semibold leading-[30px]">Detail laporan</h3>
-                  <p className="mt-1 text-base text-text-muted">
-                    Isi singkat dan jelas. Judul akan tampil di peta publik.
-                  </p>
-                </div>
-
+              <Section title="Detail laporan">
+                <div className="grid gap-4">
                 <Field id="incident-title" label="Judul laporan" error={errors.title} required>
                   <TextInput
                     value={form.title}
@@ -460,39 +447,33 @@ export function CreateIncidentPage() {
                     ))}
                   </SelectInput>
                 </Field>
-              </section>
+                </div>
+              </Section>
 
-              <div className="rounded-md border border-border bg-elevated p-4">
-                <p className="text-base font-medium text-text">Draf di perangkat ini</p>
-                <p className="mt-1 text-base text-text-muted">
+              <div className="border-t border-border pt-4">
+                <p className="font-mono text-base text-text-muted">
                   {draftSavedAt
-                    ? `Tersimpan pukul ${formatTime(draftSavedAt)}. Draf tidak hilang bila halaman tertutup.`
-                    : "Isian akan disimpan otomatis di perangkat ini selama Anda mengisi formulir."}
+                    ? `Draf tersimpan ${formatTime(draftSavedAt)}`
+                    : "Draf tersimpan otomatis di perangkat ini."}
                 </p>
                 {draftSavedAt ? (
-                  <Button
-                    variant="ghost"
-                    className="mt-2 px-0"
-                    leadingIcon={<Trash2 />}
+                  <button
+                    type="button"
                     onClick={() => setClearOpen(true)}
+                    className="mt-2 text-base font-medium text-text underline underline-offset-4"
                   >
                     Hapus draf
-                  </Button>
+                  </button>
                 ) : null}
               </div>
+              </div>
 
-              <div className="mt-1 flex flex-col gap-3 border-t border-border pt-4 lg:sticky lg:bottom-0 lg:-mx-5 lg:-mb-5 lg:bg-surface lg:px-5 lg:py-4">
-                <Button
-                  type="submit"
-                  size="lg"
-                  leadingIcon={<Save />}
-                  trailingIcon={<ArrowRight />}
-                  disabled={busy}
-                >
-                  {busy ? "Sedang menyimpan…" : "Simpan & lanjut ke faktor"}
+              <div className="mt-auto flex gap-3 border-t border-border bg-surface px-6 py-4 lg:sticky lg:bottom-0">
+                <Button type="submit" size="lg" className="flex-1" disabled={busy}>
+                  {busy ? "Sedang menyimpan…" : "Simpan & lanjut"}
                 </Button>
-                <Link to="/petugas" className={buttonStyles("secondary", "lg")}>
-                  Batal, kembali ke dasbor
+                <Link to="/petugas" className={buttonStyles("secondary", "lg", "shrink-0")}>
+                  Batal
                 </Link>
               </div>
             </div>

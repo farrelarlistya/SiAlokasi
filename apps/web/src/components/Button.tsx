@@ -5,19 +5,19 @@ export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "outl
 export type ButtonSize = "md" | "lg" | "icon";
 
 const base =
-  "inline-flex items-center justify-center gap-2 rounded-md font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50";
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-none font-medium transition-colors duration-150 disabled:cursor-not-allowed disabled:opacity-50";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-primary text-white hover:bg-primary-hover",
-  secondary: "border border-border bg-elevated text-text hover:bg-hover",
+  primary: "bg-primary text-primary-ink hover:bg-primary-hover",
+  secondary: "border border-border-strong bg-surface text-text hover:bg-hover",
   ghost: "text-text-muted hover:bg-hover hover:text-text",
-  danger: "bg-danger text-white hover:brightness-110",
-  outlineDanger: "border border-danger/60 text-danger hover:bg-danger/10",
+  danger: "border border-danger text-danger hover:bg-danger/10",
+  outlineDanger: "border border-danger text-danger hover:bg-danger/10",
 };
 
 const sizes: Record<ButtonSize, string> = {
-  md: "min-h-11 px-4 text-base",
-  lg: "min-h-12 px-5 text-base",
+  md: "min-h-11 px-5 text-base",
+  lg: "min-h-12 px-6 text-base",
   icon: "min-h-11 min-w-11 px-0 text-base",
 };
 

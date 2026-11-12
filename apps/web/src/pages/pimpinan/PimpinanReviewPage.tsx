@@ -15,16 +15,13 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   AlertTriangle,
-  ArrowLeft,
   Ban,
   CheckCircle2,
   ClipboardCheck,
-  MapPin,
   Package,
   Pencil,
   RefreshCw,
   Users,
-  Warehouse,
   XCircle,
 } from "lucide-react";
 import { useEffect, useMemo, useState, type FormEvent } from "react";
@@ -34,8 +31,10 @@ import { Alert } from "../../components/Alert";
 import { Button, buttonStyles } from "../../components/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
 import { Field, SelectInput, Textarea, TextInput } from "../../components/Field";
+import { IncidentTimeline } from "../../components/IncidentTimeline";
 import { Modal } from "../../components/Modal";
 import { PageHeader } from "../../components/PageHeader";
+import { Section } from "../../components/Section";
 import { Skeleton } from "../../components/Skeleton";
 import { StatusChip } from "../../components/StatusChip";
 import { useToast } from "../../components/Toast";
@@ -59,10 +58,11 @@ export function PimpinanReviewPage() {
   });
 
   const [selectedPoskoId, setSelectedPoskoId] = useState("");
-  const [decisionReason, setDecisionReason] = useState("");
   const [decisionError, setDecisionError] = useState<string | undefined>();
   const [confirmApproveOpen, setConfirmApproveOpen] = useState(false);
-  const [confirmRejectOpen, setConfirmRejectOpen] = useState(false);
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [rejectError, setRejectError] = useState<string | undefined>();
   const [busy, setBusy] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
@@ -172,13 +172,9 @@ export function PimpinanReviewPage() {
 
   const requestReject = () => {
     setDecisionError(undefined);
-    if (decisionReason.trim().length < 5) {
-      setDecisionError(
-        "Tulis alasan penolakan minimal 5 karakter agar petugas tahu apa yang perlu diperbaiki.",
-      );
-      return;
-    }
-    setConfirmRejectOpen(true);
+    setRejectReason("");
+    setRejectError(undefined);
+    setRejectOpen(true);
   };
 
   const approve = async () => {
@@ -187,7 +183,6 @@ export function PimpinanReviewPage() {
       const response = await api.decideIncident(id, {
         decision: "APPROVE",
         poskoId: selectedPoskoId,
-        reason: decisionReason.trim() || undefined,
       });
       queryClient.setQueryData(["pimpinan", "incident", id], { data: response.data });
       await Promise.all([
@@ -211,11 +206,19 @@ export function PimpinanReviewPage() {
   };
 
   const reject = async () => {
+    setRejectError(undefined);
+    if (rejectReason.trim().length < 5) {
+      setRejectError(
+        "Tulis alasan penolakan minimal 5 karakter agar petugas tahu apa yang perlu diperbaiki.",
+      );
+      return;
+    }
+
     setBusy(true);
     try {
       const response = await api.decideIncident(id, {
         decision: "REJECT",
-        reason: decisionReason.trim(),
+        reason: rejectReason.trim(),
       });
       queryClient.setQueryData(["pimpinan", "incident", id], { data: response.data });
       await Promise.all([
@@ -224,15 +227,14 @@ export function PimpinanReviewPage() {
         queryClient.invalidateQueries({ queryKey: ["petugas", "dashboard"] }),
       ]);
       toast.push({ tone: "info", title: response.message });
-      setConfirmRejectOpen(false);
+      setRejectOpen(false);
       navigate("/pimpinan", { replace: true });
     } catch (error) {
-      setDecisionError(
+      setRejectError(
         error instanceof Error
           ? error.message
           : "Penolakan belum bisa disimpan. Periksa koneksi, lalu coba lagi.",
       );
-      setConfirmRejectOpen(false);
     } finally {
       setBusy(false);
     }
@@ -275,11 +277,11 @@ export function PimpinanReviewPage() {
   if (detail.isPending) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Tinjau laporan" title="Memuat rincian laporan" />
-        <div className="mt-6 grid gap-6 xl:grid-cols-2" aria-busy="true">
+        <PageHeader title="Memuat rincian laporan" />
+        <div className="mt-6 space-y-6" aria-busy="true">
           <span className="sr-only">Sedang memuat rincian laporan</span>
-          <Skeleton variant="card" className="h-[420px]" />
           <Skeleton variant="card" className="h-[520px]" />
+          <Skeleton variant="card" className="h-[320px]" />
         </div>
       </AppShell>
     );
@@ -288,13 +290,17 @@ export function PimpinanReviewPage() {
   if (detail.isError || !incident) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Tinjau laporan" title="Rincian laporan" />
+        <PageHeader title="Rincian laporan" />
         <Alert
           tone="danger"
           title="Rincian laporan belum bisa dimuat."
           className="mt-6"
           action={
-            <Button variant="secondary" leadingIcon={<RefreshCw />} onClick={() => void detail.refetch()}>
+            <Button
+              variant="secondary"
+              leadingIcon={<RefreshCw />}
+              onClick={() => void detail.refetch()}
+            >
               Coba lagi
             </Button>
           }
@@ -309,25 +315,15 @@ export function PimpinanReviewPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Tinjau laporan"
-        title={incident.title}
-        description={`${incident.code} · ${DISASTER_LABEL[incident.disasterType]} · ${
+        eyebrow={`${incident.code}, ${DISASTER_LABEL[incident.disasterType]}, ${
           incident.region?.name ?? "Kecamatan belum diisi"
         }`}
+        title={incident.title}
+        brief="Periksa jumlah bantuan, lalu setujui atau tolak."
         actions={
-          <>
-            <Link to="/pimpinan" className={buttonStyles("secondary", "md")}>
-              <ArrowLeft aria-hidden="true" className="h-5 w-5" />
-              Antrian
-            </Link>
-            <Link
-              to={`/lacak?kode=${encodeURIComponent(incident.code)}`}
-              className={buttonStyles("secondary", "md")}
-            >
-              <MapPin aria-hidden="true" className="h-5 w-5" />
-              Lihat publik
-            </Link>
-          </>
+          <Link to="/pimpinan" className={buttonStyles("secondary", "md")}>
+            Kembali ke antrian
+          </Link>
         }
       />
 
@@ -354,7 +350,10 @@ export function PimpinanReviewPage() {
           className="mt-6"
           action={
             incident.permit ? (
-              <Link to={`/pimpinan/izin/${incident.id}`} className={buttonStyles("secondary", "md")}>
+              <Link
+                to={`/pimpinan/izin/${incident.id}`}
+                className={buttonStyles("secondary", "md")}
+              >
                 Buka izin distribusi
               </Link>
             ) : undefined
@@ -371,71 +370,234 @@ export function PimpinanReviewPage() {
         </Alert>
       ) : null}
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <div className="min-w-0 space-y-6">
-          <section className="rounded-lg border border-border bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-[22px] font-semibold leading-[30px]">Lokasi & dampak</h2>
-                <p className="mt-1 text-base text-text-muted">
-                  Titik dan radius sesuai laporan petugas.
-                </p>
-              </div>
-              <StatusChip status={incident.status} />
+      <Section
+        tone="focus"
+        headingId="rekomendasi-bantuan"
+        title="Rekomendasi bantuan"
+        brief="Tinjau setiap baris. Ubah jumlah hanya bila kondisi lapangan menuntut."
+        actions={
+          recommendation ? (
+            <span className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted">
+              <Package aria-hidden="true" className="h-5 w-5" />
+              {recommendation.items.length} jenis
+            </span>
+          ) : undefined
+        }
+        className="mt-6"
+      >
+        {!recommendation ? (
+          <Alert tone="warning" title="Perhitungan bantuan belum tersedia.">
+            Minta petugas menghitung estimasi terlebih dahulu sebelum laporan diputuskan.
+          </Alert>
+        ) : (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-b border-border pb-4 text-base">
+              <p className="text-text-muted">
+                Perhitungan otomatis{" "}
+                <span className="text-text">
+                  {formatModelVersion(recommendation.modelVersion)}
+                </span>
+              </p>
+              <p className="flex items-center gap-2 text-text-muted">
+                <Users aria-hidden="true" className="h-5 w-5" />
+                <span className="font-mono text-text">
+                  {formatNumber(recommendation.totalPeople)}
+                </span>{" "}
+                jiwa
+              </p>
             </div>
 
-            <div className="mt-4">
-              <IncidentFocusMap
-                lat={incident.lat}
-                lng={incident.lng}
-                radiusM={incident.radiusM}
-                title={incident.title}
-              />
+            {incident.corrections.length > 0 ? (
+              <Alert
+                tone="info"
+                title="Jumlah final sudah dikoreksi di dokumen izin."
+                className="mt-4"
+              >
+                Tabel ini menampilkan usulan awal. Jumlah yang berlaku ada pada{" "}
+                <Link
+                  to={`/pimpinan/izin/${incident.id}`}
+                  className="font-medium text-info underline-offset-4 hover:underline"
+                >
+                  izin distribusi terbaru
+                </Link>
+                .
+              </Alert>
+            ) : null}
+
+            <div className="mt-4 overflow-x-auto">
+              <table className="w-full min-w-[700px] table-fixed border-collapse text-left text-base">
+                <caption className="sr-only">Rekomendasi bantuan dan penyesuaiannya</caption>
+                <colgroup>
+                  <col style={{ width: "21%" }} />
+                  <col style={{ width: "9%" }} />
+                  <col style={{ width: "12%" }} />
+                  <col style={{ width: "16%" }} />
+                  <col style={{ width: "26%" }} />
+                  {isWaiting ? <col style={{ width: "16%" }} /> : null}
+                </colgroup>
+                <thead>
+                  <tr className="border-b border-border text-text-muted">
+                    <th scope="col" className="px-2 py-3 font-medium">
+                      Jenis bantuan
+                    </th>
+                    <th scope="col" className="px-2 py-3 text-right font-medium">
+                      Usulan
+                    </th>
+                    <th scope="col" className="px-2 py-3 text-right font-medium">
+                      Final
+                    </th>
+                    <th scope="col" className="px-2 py-3 font-medium">
+                      Stok posko
+                    </th>
+                    <th scope="col" className="px-2 py-3 font-medium">
+                      Alasan
+                    </th>
+                    {isWaiting ? (
+                      <th scope="col" className="px-2 py-3 text-right font-medium">
+                        Tindakan
+                      </th>
+                    ) : null}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {recommendation.items.map((item) => {
+                    const adjusted = item.finalQty !== item.baseQty;
+                    const stock = stockByItem.get(item.aidItemId);
+
+                    return (
+                      <tr key={item.id} className={cn("align-top", adjusted && "bg-accent/5")}>
+                        <th scope="row" className="px-2 py-4 text-left font-medium text-text">
+                          <span className="flex items-start gap-2">
+                            <AidIcon name={item.icon} />
+                            <span className="min-w-0 break-words">
+                              {item.name}
+                              {adjusted ? (
+                                <span className="mt-1 block text-base font-normal text-info">
+                                  Disesuaikan pimpinan
+                                </span>
+                              ) : null}
+                            </span>
+                          </span>
+                        </th>
+                        <td className="px-2 py-4 text-right font-mono text-text-muted">
+                          {formatNumber(item.baseQty)}
+                        </td>
+                        <td className="px-2 py-4 text-right font-mono text-base text-text">
+                          {formatNumber(item.finalQty)}
+                          <span className="block font-sans text-base text-text-muted">
+                            {item.unit}
+                          </span>
+                        </td>
+                        <td className="px-2 py-4">
+                          {stock ? (
+                            stock.shortage > 0 ? (
+                              <span className="inline-flex items-center gap-2 text-base text-warning">
+                                <AlertTriangle aria-hidden="true" className="h-5 w-5" />
+                                Kurang {formatNumber(stock.shortage)} {item.unit}
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-2 text-base text-success">
+                                <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
+                                Cukup
+                              </span>
+                            )
+                          ) : (
+                            <span className="text-base text-text-muted">-</span>
+                          )}
+                        </td>
+                        <td className="break-words px-2 py-4 text-text-muted">
+                          {adjusted && item.adjustReason ? (
+                            <span>
+                              <span className="block text-base font-medium text-text">
+                                Alasan perubahan
+                              </span>
+                              {item.adjustReason}
+                            </span>
+                          ) : (
+                            item.reason
+                          )}
+                        </td>
+                        {isWaiting ? (
+                          <td className="px-2 py-4 text-right">
+                            <Button
+                              variant="secondary"
+                              leadingIcon={<Pencil />}
+                              className="whitespace-nowrap px-3"
+                              onClick={() => openAdjust(item)}
+                            >
+                              Ubah
+                            </Button>
+                          </td>
+                        ) : null}
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
+          </>
+        )}
+      </Section>
 
-            <dl className="mt-4 space-y-3 text-base">
-              <div className="flex justify-between gap-3">
-                <dt className="text-text-muted">Waktu kejadian</dt>
-                <dd className="text-right text-text">{formatDateTime(incident.occurredAt)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-text-muted">Pelapor</dt>
-                <dd className="text-right text-text">{incident.reporter?.name ?? "Tidak tercatat"}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-text-muted">Jiwa terdampak</dt>
-                <dd className="text-right text-text">
-                  {incident.affectedPeople === null
-                    ? "Belum diisi"
-                    : `${formatNumber(incident.affectedPeople)} jiwa`}
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-text-muted">Radius wilayah</dt>
-                <dd className="text-right text-text">{formatDistance(incident.radiusM)}</dd>
-              </div>
-            </dl>
-          </section>
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+        <Section title="Lokasi & dampak">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <p className="text-base text-text-muted">Titik dan radius sesuai laporan petugas.</p>
+            <StatusChip status={incident.status} />
+          </div>
 
+          <div className="mt-4">
+            <IncidentFocusMap
+              lat={incident.lat}
+              lng={incident.lng}
+              radiusM={incident.radiusM}
+              title={incident.title}
+            />
+          </div>
+
+          <dl className="mt-4 space-y-3 text-base">
+            <div className="flex justify-between gap-3">
+              <dt className="text-text-muted">Waktu kejadian</dt>
+              <dd className="text-right text-text">{formatDateTime(incident.occurredAt)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-text-muted">Pelapor</dt>
+              <dd className="text-right text-text">{incident.reporter?.name ?? "Tidak tercatat"}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-text-muted">Jiwa terdampak</dt>
+              <dd className="text-right font-mono text-text">
+                {incident.affectedPeople === null
+                  ? "Belum diisi"
+                  : `${formatNumber(incident.affectedPeople)} jiwa`}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="text-text-muted">Radius wilayah</dt>
+              <dd className="text-right text-text">{formatDistance(incident.radiusM)}</dd>
+            </div>
+          </dl>
+        </Section>
+
+        <div className="space-y-6">
           {incident.factors ? (
-            <section className="rounded-lg border border-border bg-surface p-5">
-              <h2 className="text-[22px] font-semibold leading-[30px]">Delapan faktor lapangan</h2>
-              <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Kerusakan rumah</dt>
-                  <dd className="mt-1 text-base text-text">
+            <Section title="Delapan faktor lapangan">
+              <dl className="grid gap-x-6 gap-y-3 text-base sm:grid-cols-2">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Kerusakan rumah</dt>
+                  <dd className="text-right text-text">
                     {DAMAGE_LABEL[incident.factors.damageLevel]}
                   </dd>
                 </div>
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Lama penanganan</dt>
-                  <dd className="mt-1 text-base text-text">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Lama penanganan</dt>
+                  <dd className="text-right text-text">
                     {formatNumber(incident.factors.handlingDays)} hari
                   </dd>
                 </div>
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Kelompok rentan</dt>
-                  <dd className="mt-1 text-base text-text">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Kelompok rentan</dt>
+                  <dd className="text-right text-text">
                     {formatNumber(
                       incident.factors.vulnerableBabies +
                         incident.factors.vulnerableElderly +
@@ -445,217 +607,56 @@ export function PimpinanReviewPage() {
                     jiwa
                   </dd>
                 </div>
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Akses jalan</dt>
-                  <dd className="mt-1 text-base text-text">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Akses jalan</dt>
+                  <dd className="text-right text-text">
                     {ROAD_ACCESS_LABEL[incident.factors.roadAccess]}
                   </dd>
                 </div>
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Cuaca</dt>
-                  <dd className="mt-1 text-base text-text">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Cuaca</dt>
+                  <dd className="text-right text-text">
                     {WEATHER_LABEL[incident.factors.weather]}
                   </dd>
                 </div>
-                <div className="rounded-md border border-border bg-elevated p-3">
-                  <dt className="text-base text-text-muted">Kepadatan penduduk</dt>
-                  <dd className="mt-1 text-base text-text">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-text-muted">Kepadatan penduduk</dt>
+                  <dd className="text-right text-text">
                     {DENSITY_LABEL[incident.factors.density]}
                   </dd>
                 </div>
               </dl>
-            </section>
+            </Section>
           ) : null}
+
+          <Section title="Riwayat status">
+            <IncidentTimeline
+              timeline={incident.logs.map((log) => ({
+                status: log.toStatus,
+                at: log.createdAt,
+              }))}
+              currentStatus={incident.status}
+            />
+          </Section>
         </div>
+      </div>
 
-        <div className="min-w-0 space-y-6">
-          <section className="rounded-lg border border-border bg-surface">
-            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border p-5">
-              <div>
-                <h2 className="text-[22px] font-semibold leading-[30px]">Rekomendasi bantuan</h2>
-                <p className="mt-1 text-base text-text-muted">
-                  Tinjau setiap baris. Ubah jumlah hanya bila kondisi lapangan menuntut.
-                </p>
-              </div>
-              {recommendation ? (
-                <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
-                  <Package aria-hidden="true" className="h-5 w-5" />
-                  {recommendation.items.length} jenis
-                </span>
-              ) : null}
-            </div>
-
-            <div className="p-5">
-              {!recommendation ? (
-                <Alert tone="warning" title="Perhitungan bantuan belum tersedia.">
-                  Minta petugas menghitung estimasi terlebih dahulu sebelum laporan diputuskan.
-                </Alert>
-              ) : (
-                <>
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-elevated p-3 text-base">
-                    <span className="text-text-muted">
-                      Perhitungan otomatis ·{" "}
-                      <span className="text-text">
-                        {formatModelVersion(recommendation.modelVersion)}
-                      </span>
-                    </span>
-                    <span className="flex items-center gap-2 text-text-muted">
-                      <Users aria-hidden="true" className="h-5 w-5" />
-                      {formatNumber(recommendation.totalPeople)} jiwa
-                    </span>
-                  </div>
-
-                  {incident.corrections.length > 0 ? (
-                    <Alert
-                      tone="info"
-                      title="Jumlah final sudah dikoreksi di dokumen izin."
-                      className="mb-4"
-                    >
-                      Tabel ini menampilkan usulan awal. Jumlah yang berlaku ada pada{" "}
-                      <Link
-                        to={`/pimpinan/izin/${incident.id}`}
-                        className="font-medium text-info underline-offset-4 hover:underline"
-                      >
-                        izin distribusi terbaru
-                      </Link>
-                      .
-                    </Alert>
-                  ) : null}
-
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[700px] table-fixed border-collapse text-left text-base">
-                      <caption className="sr-only">Rekomendasi bantuan dan penyesuaiannya</caption>
-                      <colgroup>
-                        <col style={{ width: "21%" }} />
-                        <col style={{ width: "9%" }} />
-                        <col style={{ width: "12%" }} />
-                        <col style={{ width: "16%" }} />
-                        <col style={{ width: "26%" }} />
-                        {isWaiting ? <col style={{ width: "16%" }} /> : null}
-                      </colgroup>
-                      <thead>
-                        <tr className="border-b border-border text-text-muted">
-                          <th scope="col" className="px-2 py-3 font-medium">Jenis bantuan</th>
-                          <th scope="col" className="px-2 py-3 text-right font-medium">Usulan</th>
-                          <th scope="col" className="px-2 py-3 text-right font-medium">Final</th>
-                          <th scope="col" className="px-2 py-3 font-medium">Stok posko</th>
-                          <th scope="col" className="px-2 py-3 font-medium">Alasan</th>
-                          {isWaiting ? (
-                            <th scope="col" className="px-2 py-3 text-right font-medium">
-                              Tindakan
-                            </th>
-                          ) : null}
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border">
-                        {recommendation.items.map((item) => {
-                          const adjusted = item.finalQty !== item.baseQty;
-                          const stock = stockByItem.get(item.aidItemId);
-
-                          return (
-                            <tr
-                              key={item.id}
-                              className={cn("align-top", adjusted && "bg-accent/5")}
-                            >
-                              <th scope="row" className="px-2 py-4 text-left font-medium text-text">
-                                <span className="flex items-start gap-2">
-                                  <AidIcon name={item.icon} />
-                                  <span className="min-w-0 break-words">
-                                    {item.name}
-                                    {adjusted ? (
-                                      <span className="mt-1 block text-base font-normal text-info">
-                                        Disesuaikan pimpinan
-                                      </span>
-                                    ) : null}
-                                  </span>
-                                </span>
-                              </th>
-                              <td className="px-2 py-4 text-right text-text-muted">
-                                {formatNumber(item.baseQty)}
-                              </td>
-                              <td className="px-2 py-4 text-right text-[22px] font-semibold text-text">
-                                {formatNumber(item.finalQty)}
-                                <span className="block text-base font-normal text-text-muted">
-                                  {item.unit}
-                                </span>
-                              </td>
-                              <td className="px-2 py-4">
-                                {stock ? (
-                                  stock.shortage > 0 ? (
-                                    <span className="inline-flex items-center gap-2 text-base text-warning">
-                                      <AlertTriangle aria-hidden="true" className="h-5 w-5" />
-                                      Kurang {formatNumber(stock.shortage)} {item.unit}
-                                    </span>
-                                  ) : (
-                                    <span className="inline-flex items-center gap-2 text-base text-success">
-                                      <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
-                                      Cukup
-                                    </span>
-                                  )
-                                ) : (
-                                  <span className="text-base text-text-muted">—</span>
-                                )}
-                              </td>
-                              <td className="break-words px-2 py-4 text-text-muted">
-                                {adjusted && item.adjustReason ? (
-                                  <span>
-                                    <span className="block text-base font-medium text-text">
-                                      Alasan perubahan
-                                    </span>
-                                    {item.adjustReason}
-                                  </span>
-                                ) : (
-                                  item.reason
-                                )}
-                              </td>
-                              {isWaiting ? (
-                                <td className="px-2 py-4 text-right">
-                                  <Button
-                                    variant="secondary"
-                                    leadingIcon={<Pencil />}
-                                    className="whitespace-nowrap px-3"
-                                    onClick={() => openAdjust(item)}
-                                  >
-                                    Ubah
-                                  </Button>
-                                </td>
-                              ) : null}
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
-            </div>
-          </section>
-
-          <section className="rounded-lg border border-border bg-surface p-5">
-            <h2 className="flex items-center gap-2 text-[22px] font-semibold leading-[30px]">
-              <Warehouse aria-hidden="true" className="h-6 w-6 text-info" />
-              Keputusan pimpinan
-            </h2>
-            <p className="mt-1 text-base text-text-muted">
-              Pilih posko tujuan, lalu setujui atau tolak laporan ini.
-            </p>
-
-            {isWaiting ? (
-              <div className="mt-5 grid gap-5">
-                <Field
-                  id="posko-tujuan"
-                  label="Posko tujuan distribusi"
-                  hint={
-                    selectedPosko
-                      ? `${selectedPosko.regionName} · ${
-                          shortages.length === 0
-                            ? "semua bantuan tercukupi"
-                            : `${shortages.length} jenis bantuan kurang`
-                        }`
-                      : "Belum ada posko aktif."
-                  }
-                  required
+      {isWaiting ? (
+        <>
+          <div className="fixed inset-x-0 bottom-16 z-20 border-t-2 border-primary bg-surface lg:bottom-0">
+            <div className="mx-auto w-full max-w-[1440px] px-4 pt-3 sm:px-6 lg:px-12">
+              {decisionError ? (
+                <p
+                  role="alert"
+                  className="mb-2 flex items-start gap-2 border-l-2 border-danger bg-danger/10 px-3 py-2 text-base text-text"
                 >
+                  <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0 text-danger" />
+                  <span>{decisionError}</span>
+                </p>
+              ) : null}
+
+              <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+                <Field id="posko-tujuan" label="Posko tujuan distribusi" required>
                   <SelectInput
                     value={selectedPoskoId}
                     disabled={poskos.length === 0}
@@ -667,55 +668,16 @@ export function PimpinanReviewPage() {
                     <option value="">Pilih posko tujuan</option>
                     {poskos.map((posko) => (
                       <option key={posko.id} value={posko.id}>
-                        {posko.name} · {posko.regionName}
+                        {posko.name}, {posko.regionName}
                       </option>
                     ))}
                   </SelectInput>
                 </Field>
 
-                {shortages.length > 0 ? (
-                  <Alert
-                    tone="danger"
-                    title={`Stok di ${selectedPosko?.name ?? "posko terpilih"} belum mencukupi untuk ${shortages.length} jenis bantuan.`}
-                  >
-                    Persetujuan akan ditolak oleh server sampai stok cukup. Pilih posko lain atau
-                    sesuaikan jumlah bantuan terlebih dahulu. Stok diambil otomatis saat izin
-                    terbit.
-                  </Alert>
-                ) : selectedPosko ? (
-                  <Alert tone="success" title={`Stok di ${selectedPosko.name} mencukupi.`}>
-                    Semua bantuan final tersedia dan akan langsung diambil dari posko ini saat izin
-                    terbit.
-                  </Alert>
-                ) : null}
-
-                <Field
-                  id="decision-reason"
-                  label="Catatan keputusan"
-                  hint="Wajib diisi bila menolak. Boleh dikosongkan bila menyetujui."
-                >
-                  <Textarea
-                    value={decisionReason}
-                    placeholder="Contoh: Lokasi belum bisa dipastikan, mohon perbarui titik kejadian."
-                    maxLength={300}
-                    onChange={(event) => {
-                      setDecisionReason(event.target.value);
-                      if (decisionError) setDecisionError(undefined);
-                    }}
-                  />
-                </Field>
-
-                {decisionError ? (
-                  <Alert tone="danger" title="Keputusan belum bisa disimpan.">
-                    {decisionError}
-                  </Alert>
-                ) : null}
-
-                <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:justify-end">
+                <div className="flex flex-wrap gap-2 lg:justify-end">
                   <Button
                     variant="secondary"
-                    size="lg"
-                    leadingIcon={<Ban />}
+                    leadingIcon={<Ban className="hidden sm:block" />}
                     disabled={busy}
                     onClick={() => {
                       setCancelReason("");
@@ -723,12 +685,11 @@ export function PimpinanReviewPage() {
                       setCancelOpen(true);
                     }}
                   >
-                    Batalkan laporan
+                    Batalkan
                   </Button>
                   <Button
                     variant="outlineDanger"
-                    size="lg"
-                    leadingIcon={<XCircle />}
+                    leadingIcon={<XCircle className="hidden sm:block" />}
                     disabled={busy}
                     onClick={requestReject}
                   >
@@ -736,31 +697,48 @@ export function PimpinanReviewPage() {
                   </Button>
                   <Button
                     size="lg"
-                    leadingIcon={<ClipboardCheck />}
+                    leadingIcon={<ClipboardCheck className="hidden sm:block" />}
                     disabled={busy || poskos.length === 0 || shortages.length > 0}
                     onClick={requestApprove}
                   >
-                    Setujui & terbitkan izin
+                    <span className="sm:hidden">Setujui</span>
+                    <span className="hidden sm:inline">Setujui & terbitkan izin</span>
                   </Button>
                 </div>
               </div>
-            ) : (
-              <Alert tone="info" title="Tidak ada keputusan yang perlu diambil." className="mt-5">
-                {incident.permit ? (
-                  <Link
-                    to={`/pimpinan/izin/${incident.id}`}
-                    className="inline-flex min-h-11 items-center font-medium text-info underline-offset-4 hover:underline"
-                  >
-                    Buka izin distribusi {incident.permit.number}
-                  </Link>
-                ) : (
-                  "Laporan ini sudah tidak berada di antrian keputusan."
+
+              <p
+                className={cn(
+                  "mt-2 pb-3 text-base",
+                  shortages.length > 0 || !selectedPosko ? "text-warning" : "text-text-muted",
                 )}
-              </Alert>
+              >
+                {!selectedPosko
+                  ? "Belum ada posko aktif. Tambahkan posko lewat menu admin."
+                  : shortages.length > 0
+                    ? `Stok ${selectedPosko.name} belum cukup untuk ${shortages.length} jenis bantuan.`
+                    : `Stok ${selectedPosko.name} mencukupi.`}
+              </p>
+            </div>
+          </div>
+          <div className="h-[260px] lg:h-[190px]" aria-hidden="true" />
+        </>
+      ) : (
+        <Section title="Keputusan" className="mt-6">
+          <Alert tone="info" title="Tidak ada keputusan yang perlu diambil.">
+            {incident.permit ? (
+              <Link
+                to={`/pimpinan/izin/${incident.id}`}
+                className="inline-flex min-h-11 items-center font-medium text-info underline-offset-4 hover:underline"
+              >
+                Buka izin distribusi {incident.permit.number}
+              </Link>
+            ) : (
+              "Laporan ini sudah tidak berada di antrian keputusan."
             )}
-          </section>
-        </div>
-      </div>
+          </Alert>
+        </Section>
+      )}
 
       <Modal
         open={adjustTarget !== null}
@@ -896,18 +874,48 @@ export function PimpinanReviewPage() {
         cancelLabel="Periksa lagi"
       />
 
-      <ConfirmDialog
-        open={confirmRejectOpen}
-        onClose={() => setConfirmRejectOpen(false)}
-        onConfirm={() => void reject()}
-        busy={busy}
+      <Modal
+        open={rejectOpen}
+        onClose={() => {
+          if (!busy) setRejectOpen(false);
+        }}
         title="Tolak laporan ini?"
-        description={`Laporan akan ditutup dengan status Ditolak. Alasan yang Anda tulis akan dibaca petugas: "${
-          decisionReason.trim() || "belum diisi"
-        }".`}
-        confirmLabel="Ya, tolak laporan"
-        cancelLabel="Kembali"
-      />
+        description="Laporan akan ditutup dengan status Ditolak. Tulis alasan yang bisa dibaca petugas agar laporan bisa diperbaiki."
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setRejectOpen(false)} disabled={busy}>
+              Kembali
+            </Button>
+            <Button variant="danger" onClick={() => void reject()} disabled={busy}>
+              {busy ? "Sedang menolak…" : "Ya, tolak laporan"}
+            </Button>
+          </>
+        }
+      >
+        {rejectError ? (
+          <Alert tone="danger" title="Penolakan belum bisa disimpan." className="mb-4">
+            {rejectError}
+          </Alert>
+        ) : null}
+
+        <Field
+          id="reject-reason"
+          label="Alasan penolakan"
+          hint="Minimal 5 karakter. Jelaskan data yang perlu diperbaiki."
+          required
+        >
+          <Textarea
+            data-autofocus
+            value={rejectReason}
+            placeholder="Contoh: Lokasi belum bisa dipastikan, mohon perbarui titik kejadian."
+            maxLength={300}
+            onChange={(event) => {
+              setRejectReason(event.target.value);
+              if (rejectError) setRejectError(undefined);
+            }}
+          />
+        </Field>
+      </Modal>
     </AppShell>
   );
 }

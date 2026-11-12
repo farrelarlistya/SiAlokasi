@@ -51,7 +51,7 @@ const NAV_ITEMS = [
 
 const CHECKLIST = [
   "Semua teks berukuran minimal 16 px.",
-  "Target sentuh minimal 44 × 44 px.",
+  "Target sentuh minimal 44 �- 44 px.",
   "Fokus keyboard terlihat dengan cincin biru.",
   "Escape menutup dialog dan fokus kembali ke pemicu.",
   "Status disampaikan lewat warna dan teks.",
@@ -138,7 +138,7 @@ export function UiKitPage() {
       <main id="isi-utama" className="mx-auto w-full max-w-6xl flex-1 space-y-5 px-4 py-8 sm:px-6">
         <header className="rounded-lg border border-border bg-surface p-6 sm:p-8">
           <p className="inline-flex items-center gap-2 rounded-full border border-info/30 bg-info/10 px-3 py-1 text-base text-info">
-            Tahap M1 · Pondasi tampilan
+            Tahap M1, Pondasi tampilan
           </p>
           <h1 className="mt-4 text-[28px] font-bold leading-[36px] sm:text-[40px] sm:leading-[48px]">
             Enam komponen dasar, satu bahasa tampilan.
@@ -168,21 +168,22 @@ export function UiKitPage() {
         <Section
           id="tipografi"
           title="Tipografi"
-          description="Plus Jakarta Sans untuk isi, IBM Plex Mono untuk nomor izin dan kode lacak. Tidak ada teks di bawah 16 px."
+          description="Plus Jakarta Sans untuk isi, Geist Mono untuk nomor izin dan kode lacak. Tidak ada teks di bawah 16 px."
         >
           <div className="space-y-4">
-            <p className="text-[40px] font-bold leading-[48px] text-text">40 / 48 — Angka utama</p>
-            <p className="text-[28px] font-bold leading-[36px] text-text">28 / 36 — Judul halaman</p>
-            <p className="text-[22px] font-semibold leading-[30px] text-text">22 / 30 — Judul panel</p>
-            <p className="text-base text-text">16 / 26 — Isi dan label formulir</p>
-            <p className="font-mono text-base font-medium text-info">IZN-20261107-001 · SIA-7K2Q9</p>
+            <p className="text-figure text-text">40 / 44 - Angka utama</p>
+            <p className="text-page text-text">32 / 40 - Judul halaman</p>
+            <p className="text-focus text-text">24 / 32 - Judul fokus</p>
+            <p className="text-section text-text/90">20 / 28 - Judul section</p>
+            <p className="text-base text-text">16 / 26 - Isi dan label formulir</p>
+            <p className="font-mono text-base font-medium text-info">IZN-20261107-001, SIA-7K2Q9</p>
           </div>
         </Section>
 
         <Section
           id="tombol"
           title="Tombol"
-          description="Setiap panel punya satu aksi utama berwarna biru. Aksi berbahaya memakai merah dan selalu dikonfirmasi."
+          description="Setiap panel punya satu aksi utama berwarna oranye. Aksi berbahaya memakai merah dan selalu dikonfirmasi."
         >
           <div className="flex flex-wrap items-center gap-3">
             <Button leadingIcon={<Plus />}>Aksi utama</Button>

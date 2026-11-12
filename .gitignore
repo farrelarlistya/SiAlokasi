@@ -20,6 +20,9 @@ coverage/
 storage/
 *.log
 tmp/
+.hallmark/
+.vercel/
+server/api-app.mjs
 
 # Sistem operasi & editor
 .DS_Store

@@ -10,6 +10,7 @@ type EmptyStateProps = {
   compact?: boolean;
 };
 
+/** Keadaan kosong: ikon garis, satu penjelasan, satu jalan keluar. */
 export function EmptyState({
   icon,
   title,
@@ -21,19 +22,19 @@ export function EmptyState({
   return (
     <div
       className={cn(
-        "flex flex-col items-start gap-4 rounded-lg border border-dashed border-border bg-surface/60 p-6",
+        "flex flex-col items-start gap-4 border border-border p-6",
         compact && "gap-3 p-4",
         className,
       )}
     >
       <span
         aria-hidden="true"
-        className="grid h-16 w-16 place-items-center rounded-md border border-border bg-elevated text-info [&>svg]:h-12 [&>svg]:w-12"
+        className="text-text-muted [&>svg]:h-12 [&>svg]:w-12 [&>svg]:stroke-[1.5]"
       >
         {icon}
       </span>
       <div className="space-y-1">
-        <h3 className={cn("font-semibold leading-[30px] text-text", compact ? "text-base" : "text-[22px]")}>
+        <h3 className={cn("font-medium text-text", compact ? "text-base leading-[26px]" : "text-section")}>
           {title}
         </h3>
         <p className="text-base text-text-muted">{description}</p>

@@ -110,7 +110,7 @@ export function Modal({
 
   return createPortal(
     <div
-      className="overlay-enter fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-canvas/80 p-4 backdrop-blur-sm"
+      className="overlay-enter fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-canvas/85 p-4"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) {
           onClose();
@@ -125,13 +125,13 @@ export function Modal({
         aria-describedby={description ? descriptionId : undefined}
         tabIndex={-1}
         className={cn(
-          "panel-enter my-auto w-full rounded-lg border border-border bg-surface p-6 shadow-panel",
+          "panel-enter my-auto w-full rounded-none border border-border-strong bg-surface p-6 shadow-none",
           size === "lg" ? "max-w-2xl" : "max-w-lg",
         )}
       >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
-            <h2 id={titleId} className="text-[22px] font-semibold leading-[30px] text-text">
+            <h2 id={titleId} className="text-focus text-text">
               {title}
             </h2>
             {description ? (
@@ -145,7 +145,7 @@ export function Modal({
             <button
               type="button"
               onClick={onClose}
-              className="-mr-2 -mt-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-md text-text-muted transition-colors hover:bg-hover hover:text-text"
+              className="-mr-2 -mt-2 inline-flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-none text-text-muted transition-colors hover:bg-hover hover:text-text"
               aria-label="Tutup dialog"
             >
               <X aria-hidden="true" className="h-5 w-5" />

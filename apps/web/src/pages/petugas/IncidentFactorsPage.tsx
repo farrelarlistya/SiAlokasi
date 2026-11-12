@@ -23,7 +23,6 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
-  ArrowRight,
   Ban,
   Calculator,
   CheckCircle2,
@@ -41,16 +40,18 @@ import { AidIcon } from "../../components/AidIcon";
 import { Alert } from "../../components/Alert";
 import { Button, buttonStyles } from "../../components/Button";
 import { ConfirmDialog } from "../../components/ConfirmDialog";
-import { EmptyState } from "../../components/EmptyState";
 import { Field, SelectInput, TextInput } from "../../components/Field";
 import { IncidentTimeline } from "../../components/IncidentTimeline";
 import { PageHeader } from "../../components/PageHeader";
+import { Section } from "../../components/Section";
 import { Skeleton } from "../../components/Skeleton";
+import { StepRail } from "../../components/StepRail";
 import { StatusChip } from "../../components/StatusChip";
 import { useToast } from "../../components/Toast";
 import { IncidentFocusMap } from "../../components/map/IncidentFocusMap";
 import { AppShell } from "../../layouts/AppShell";
 import { api } from "../../lib/api";
+import { focusSection } from "../../lib/focus";
 
 type FactorForm = {
   affectedPeople: string;
@@ -180,6 +181,7 @@ export function IncidentFactorsPage() {
         title: "Estimasi siap.",
         description: "Sepuluh jenis bantuan sudah dihitung. Periksa alasannya sebelum diajukan.",
       });
+      window.requestAnimationFrame(() => focusSection("hasil-estimasi"));
     } catch (error) {
       setFormError(
         error instanceof Error
@@ -222,11 +224,11 @@ export function IncidentFactorsPage() {
   if (detail.isPending) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Laporan" title="Faktor & estimasi" />
-        <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]" aria-busy="true">
+        <PageHeader title="Faktor & estimasi" />
+        <div className="mt-6 space-y-6" aria-busy="true">
           <span className="sr-only">Sedang memuat laporan</span>
+          <Skeleton variant="card" className="h-[360px]" />
           <Skeleton variant="card" className="h-[420px]" />
-          <Skeleton variant="card" className="h-[520px]" />
         </div>
       </AppShell>
     );
@@ -235,7 +237,7 @@ export function IncidentFactorsPage() {
   if (detail.isError || !incident) {
     return (
       <AppShell>
-        <PageHeader eyebrow="Laporan" title="Faktor & estimasi" />
+        <PageHeader title="Faktor & estimasi" />
         <Alert
           tone="danger"
           title="Laporan belum bisa dimuat."
@@ -274,12 +276,179 @@ export function IncidentFactorsPage() {
                 : "Laporan ini dibatalkan dan tidak bisa dilanjutkan."
               : "";
 
+  const factorsForm = (
+    <form onSubmit={(event) => void submit(event)} className="grid gap-5" noValidate>
+      <fieldset disabled={!canEstimate || busy} className="grid gap-5 disabled:opacity-80">
+        <legend className="sr-only">Faktor dampak dan kondisi lapangan</legend>
+
+        <div className="grid gap-5 sm:grid-cols-2">
+          <Field id="factor-people" label="Jiwa terdampak" error={errors.affectedPeople} required>
+            <TextInput
+              type="number"
+              min={1}
+              max={50_000}
+              value={form.affectedPeople}
+              placeholder="Contoh: 420"
+              onChange={(event) => {
+                updateForm({ affectedPeople: event.target.value });
+                if (errors.affectedPeople) {
+                  setErrors((current) => ({ ...current, affectedPeople: undefined }));
+                }
+              }}
+            />
+          </Field>
+
+          <Field id="factor-damage" label="Kerusakan rumah" error={errors.damageLevel} required>
+            <SelectInput
+              value={form.damageLevel}
+              onChange={(event) =>
+                updateForm({ damageLevel: event.target.value as DamageLevel })
+              }
+            >
+              {DAMAGE_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {DAMAGE_LABEL[level]}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+        </div>
+
+        <div>
+          <p className="text-base font-medium text-text">Kelompok rentan</p>
+          <p className="mt-1 text-base text-text-muted">
+            Total kelompok rentan tidak boleh melebihi jumlah jiwa terdampak.
+          </p>
+          <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {(
+              [
+                ["vulnerableBabies", "Bayi"],
+                ["vulnerableElderly", "Lansia"],
+                ["vulnerablePregnant", "Ibu hamil"],
+                ["vulnerableDisabled", "Disabilitas"],
+              ] as const
+            ).map(([key, label]) => (
+              <Field key={key} id={`factor-${key}`} label={label} error={errors[key]}>
+                <TextInput
+                  type="number"
+                  min={0}
+                  max={50_000}
+                  value={form[key]}
+                  onChange={(event) => {
+                    updateForm({ [key]: event.target.value });
+                    if (errors[key]) {
+                      setErrors((current) => ({ ...current, [key]: undefined }));
+                    }
+                  }}
+                />
+              </Field>
+            ))}
+          </div>
+        </div>
+
+        <div className="max-w-xs">
+          <Field
+            id="factor-days"
+            label="Perkiraan lama penanganan"
+            hint="Dalam hari, antara 1 sampai 30."
+            error={errors.handlingDays}
+            required
+          >
+            <TextInput
+              type="number"
+              min={1}
+              max={30}
+              value={form.handlingDays}
+              onChange={(event) => {
+                updateForm({ handlingDays: event.target.value });
+                if (errors.handlingDays) {
+                  setErrors((current) => ({ ...current, handlingDays: undefined }));
+                }
+              }}
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-4 border-t border-border pt-5 sm:grid-cols-3">
+          <Field id="factor-road" label="Akses jalan" error={errors.roadAccess} required>
+            <SelectInput
+              value={form.roadAccess}
+              onChange={(event) =>
+                updateForm({ roadAccess: event.target.value as RoadAccess })
+              }
+            >
+              {ROAD_ACCESS_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {ROAD_ACCESS_LABEL[option]}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+
+          <Field id="factor-weather" label="Cuaca" error={errors.weather} required>
+            <SelectInput
+              value={form.weather}
+              onChange={(event) =>
+                updateForm({ weather: event.target.value as WeatherCondition })
+              }
+            >
+              {WEATHER_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {WEATHER_LABEL[option]}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+
+          <Field id="factor-density" label="Kepadatan penduduk" error={errors.density} required>
+            <SelectInput
+              value={form.density}
+              onChange={(event) => updateForm({ density: event.target.value as DensityLevel })}
+            >
+              {DENSITY_LEVELS.map((level) => (
+                <option key={level} value={level}>
+                  {DENSITY_LABEL[level]}
+                </option>
+              ))}
+            </SelectInput>
+          </Field>
+        </div>
+      </fieldset>
+
+      {canEstimate ? (
+        <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-base text-text-muted">
+            Hasil perhitungan bisa berubah bila faktor diperbaiki. Angka final tetap ditinjau
+            pimpinan.
+          </p>
+          <Button
+            type="submit"
+            size="lg"
+            leadingIcon={<Calculator />}
+            disabled={busy}
+            className="shrink-0"
+          >
+            {busy
+              ? "Sedang menghitung…"
+              : recommendation
+                ? "Hitung ulang estimasi"
+                : "Hitung estimasi"}
+          </Button>
+        </div>
+      ) : null}
+    </form>
+  );
+
   return (
     <AppShell>
       <PageHeader
         eyebrow={`Laporan ${incident.code}`}
-        title="Faktor & estimasi bantuan"
-        description="Isi delapan faktor lapangan, lalu hitung estimasi. Angka yang muncul adalah perkiraan kebutuhan, bukan keputusan akhir."
+        title="Faktor & estimasi"
+        brief={
+          recommendation
+            ? "Periksa hasil, lalu ajukan ke pimpinan."
+            : "Isi 8 faktor, lalu hitung estimasi."
+        }
         actions={
           <>
             <Link to="/petugas" className={buttonStyles("secondary", "md")}>
@@ -307,6 +476,12 @@ export function IncidentFactorsPage() {
         }
       />
 
+      <StepRail
+        steps={["Titik & wilayah", "Faktor & estimasi", "Ajukan"]}
+        current={isLocked ? 2 : 1}
+        className="mt-5"
+      />
+
       {statusMessage ? (
         <Alert
           tone={
@@ -331,7 +506,7 @@ export function IncidentFactorsPage() {
                     ? "Laporan ditolak"
                     : "Laporan dibatalkan"
           }
-          className="mt-6"
+          className="mt-5"
           action={
             status === "DITOLAK" ? (
               <Link to="/petugas/laporan/baru" className={buttonStyles("secondary", "md")}>
@@ -352,414 +527,191 @@ export function IncidentFactorsPage() {
       ) : null}
 
       {formError ? (
-        <Alert tone="danger" title="Estimasi belum bisa dihitung." className="mt-6">
+        <Alert tone="danger" title="Estimasi belum bisa dihitung." className="mt-5">
           {formError}
         </Alert>
       ) : null}
 
-      <div className="mt-6 grid gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="min-w-0 space-y-6">
-          <section className="rounded-lg border border-border bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="text-[22px] font-semibold leading-[30px]">{incident.title}</h2>
-                <p className="mt-1 text-base text-text-muted">
-                  {DISASTER_LABEL[incident.disasterType]} ·{" "}
-                  {incident.region?.name ?? "Kecamatan belum diisi"}
-                </p>
-              </div>
-              <StatusChip status={incident.status} />
+      {recommendation ? (
+        <Section
+          tone="focus"
+          headingId="hasil-estimasi"
+          title="Estimasi bantuan"
+          actions={
+            <span
+              role="status"
+              className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted"
+            >
+              <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
+              Sudah dihitung
+            </span>
+          }
+          className="mt-6"
+        >
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-border pb-4">
+            <div>
+              <p className="text-base text-text-muted">Jiwa terdampak</p>
+              <p className="text-figure text-text">{formatNumber(recommendation.totalPeople)}</p>
             </div>
-
-            <div className="mt-4">
-              <IncidentFocusMap
-                lat={incident.lat}
-                lng={incident.lng}
-                radiusM={incident.radiusM}
-                title={incident.title}
-              />
-            </div>
-
-            <dl className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div className="rounded-md border border-border bg-elevated p-3">
-                <dt className="flex items-center gap-2 text-base text-text-muted">
-                  <Clock3 aria-hidden="true" className="h-5 w-5" />
-                  Waktu kejadian
-                </dt>
-                <dd className="mt-1 text-base text-text">{formatDateTime(incident.occurredAt)}</dd>
-              </div>
-              <div className="rounded-md border border-border bg-elevated p-3">
-                <dt className="flex items-center gap-2 text-base text-text-muted">
-                  <MapPin aria-hidden="true" className="h-5 w-5" />
-                  Wilayah terdampak
-                </dt>
-                <dd className="mt-1 text-base text-text">
-                  {formatDistance(incident.radiusM)} · {incident.region?.name ?? "Belum diisi"}
-                </dd>
-              </div>
-              <div className="rounded-md border border-border bg-elevated p-3">
-                <dt className="flex items-center gap-2 text-base text-text-muted">
-                  <Users aria-hidden="true" className="h-5 w-5" />
-                  Jiwa terdampak
-                </dt>
-                <dd className="mt-1 text-base text-text">
-                  {incident.affectedPeople === null
-                    ? "Belum diisi"
-                    : `${formatNumber(incident.affectedPeople)} jiwa`}
-                </dd>
-              </div>
-              <div className="rounded-md border border-border bg-elevated p-3">
-                <dt className="flex items-center gap-2 text-base text-text-muted">
-                  <FileCheck2 aria-hidden="true" className="h-5 w-5" />
-                  Kode lacak
-                </dt>
-                <dd className="mt-1 font-mono text-base text-info">{incident.code}</dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className="rounded-lg border border-border bg-surface p-5">
-            <h2 className="text-[22px] font-semibold leading-[30px]">Riwayat status</h2>
-            <p className="mt-1 text-base text-text-muted">
-              Catatan perjalanan laporan dari dibuat sampai keputusan terakhir.
+            <p className="text-base text-text-muted">
+              Perhitungan otomatis{" "}
+              <span className="text-text">{formatModelVersion(recommendation.modelVersion)}</span> ·{" "}
+              {recommendation.items.length} jenis bantuan
             </p>
-            <div className="mt-4">
-              <IncidentTimeline
-                timeline={incident.logs.map((log) => ({
-                  status: log.toStatus,
-                  at: log.createdAt,
-                }))}
-                currentStatus={incident.status}
-              />
-            </div>
-          </section>
-        </div>
+          </div>
 
-        <div className="min-w-0 space-y-6">
-          <section className="rounded-lg border border-border bg-surface p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="text-[22px] font-semibold leading-[30px]">Delapan faktor lapangan</h2>
-                <p className="mt-1 text-base text-text-muted">
-                  Faktor dipakai untuk menghitung kebutuhan, bukan untuk menilai siapa yang salah.
-                </p>
-              </div>
-              {isLocked ? (
-                <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
-                  <Lock aria-hidden="true" className="h-5 w-5" />
-                  Terkunci
-                </span>
-              ) : null}
-            </div>
-
-            <form onSubmit={(event) => void submit(event)} className="mt-5 grid gap-5" noValidate>
-              <fieldset disabled={!canEstimate || busy} className="grid gap-5 disabled:opacity-80">
-                <legend className="sr-only">Faktor dampak dan kondisi lapangan</legend>
-
-                <div className="rounded-md border border-border bg-elevated p-4">
-                  <h3 className="text-base font-semibold text-text">Dampak</h3>
-                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                    <Field
-                      id="factor-people"
-                      label="Jiwa terdampak"
-                      error={errors.affectedPeople}
-                      required
-                    >
-                      <TextInput
-                        type="number"
-                        min={1}
-                        max={50_000}
-                        value={form.affectedPeople}
-                        placeholder="Contoh: 420"
-                        onChange={(event) => {
-                          updateForm({ affectedPeople: event.target.value });
-                          if (errors.affectedPeople) {
-                            setErrors((current) => ({ ...current, affectedPeople: undefined }));
-                          }
-                        }}
-                      />
-                    </Field>
-
-                    <Field
-                      id="factor-damage"
-                      label="Kerusakan rumah"
-                      error={errors.damageLevel}
-                      required
-                    >
-                      <SelectInput
-                        value={form.damageLevel}
-                        onChange={(event) =>
-                          updateForm({ damageLevel: event.target.value as DamageLevel })
-                        }
-                      >
-                        {DAMAGE_LEVELS.map((level) => (
-                          <option key={level} value={level}>
-                            {DAMAGE_LABEL[level]}
-                          </option>
-                        ))}
-                      </SelectInput>
-                    </Field>
-                  </div>
-
-                  <div className="mt-4">
-                    <p className="text-base font-medium text-text">Kelompok rentan</p>
-                    <p className="mt-1 text-base text-text-muted">
-                      Total kelompok rentan tidak boleh melebihi jumlah jiwa terdampak.
-                    </p>
-                    <div className="mt-3 grid gap-4 sm:grid-cols-2">
-                      {(
-                        [
-                          ["vulnerableBabies", "Bayi"],
-                          ["vulnerableElderly", "Lansia"],
-                          ["vulnerablePregnant", "Ibu hamil"],
-                          ["vulnerableDisabled", "Disabilitas"],
-                        ] as const
-                      ).map(([key, label]) => (
-                        <Field
-                          key={key}
-                          id={`factor-${key}`}
-                          label={label}
-                          error={errors[key]}
-                        >
-                          <TextInput
-                            type="number"
-                            min={0}
-                            max={50_000}
-                            value={form[key]}
-                            onChange={(event) => {
-                              updateForm({ [key]: event.target.value });
-                              if (errors[key]) {
-                                setErrors((current) => ({ ...current, [key]: undefined }));
-                              }
-                            }}
-                          />
-                        </Field>
-                      ))}
-                    </div>
-                  </div>
-
-                  <div className="mt-4 max-w-xs">
-                    <Field
-                      id="factor-days"
-                      label="Perkiraan lama penanganan"
-                      hint="Dalam hari, antara 1 sampai 30."
-                      error={errors.handlingDays}
-                      required
-                    >
-                      <TextInput
-                        type="number"
-                        min={1}
-                        max={30}
-                        value={form.handlingDays}
-                        onChange={(event) => {
-                          updateForm({ handlingDays: event.target.value });
-                          if (errors.handlingDays) {
-                            setErrors((current) => ({ ...current, handlingDays: undefined }));
-                          }
-                        }}
-                      />
-                    </Field>
-                  </div>
-                </div>
-
-                <div className="rounded-md border border-border bg-elevated p-4">
-                  <h3 className="text-base font-semibold text-text">Kondisi lapangan</h3>
-                  <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                    <Field
-                      id="factor-road"
-                      label="Akses jalan"
-                      error={errors.roadAccess}
-                      required
-                    >
-                      <SelectInput
-                        value={form.roadAccess}
-                        onChange={(event) =>
-                          updateForm({ roadAccess: event.target.value as RoadAccess })
-                        }
-                      >
-                        {ROAD_ACCESS_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {ROAD_ACCESS_LABEL[option]}
-                          </option>
-                        ))}
-                      </SelectInput>
-                    </Field>
-
-                    <Field id="factor-weather" label="Cuaca" error={errors.weather} required>
-                      <SelectInput
-                        value={form.weather}
-                        onChange={(event) =>
-                          updateForm({ weather: event.target.value as WeatherCondition })
-                        }
-                      >
-                        {WEATHER_OPTIONS.map((option) => (
-                          <option key={option} value={option}>
-                            {WEATHER_LABEL[option]}
-                          </option>
-                        ))}
-                      </SelectInput>
-                    </Field>
-
-                    <Field
-                      id="factor-density"
-                      label="Kepadatan penduduk"
-                      error={errors.density}
-                      required
-                    >
-                      <SelectInput
-                        value={form.density}
-                        onChange={(event) =>
-                          updateForm({ density: event.target.value as DensityLevel })
-                        }
-                      >
-                        {DENSITY_LEVELS.map((level) => (
-                          <option key={level} value={level}>
-                            {DENSITY_LABEL[level]}
-                          </option>
-                        ))}
-                      </SelectInput>
-                    </Field>
-                  </div>
-                </div>
-              </fieldset>
-
-              {canEstimate ? (
-                <div className="flex flex-col gap-3">
-                  <Button
-                    type="submit"
-                    size="lg"
-                    leadingIcon={<Calculator />}
-                    disabled={busy}
-                  >
-                    {busy
-                      ? "Sedang menghitung…"
-                      : recommendation
-                        ? "Hitung ulang estimasi"
-                        : "Hitung estimasi"}
-                  </Button>
-                  <p className="text-base text-text-muted">
-                    Hasil perhitungan bisa berubah bila faktor diperbaiki. Angka final tetap
-                    ditinjau pimpinan.
-                  </p>
-                </div>
-              ) : null}
-            </form>
-
-            {isLocked ? (
-              <Alert tone="info" title="Formulir terkunci" className="mt-5">
-                Laporan yang sudah diajukan tidak bisa diubah. Perbaikan data dilakukan lewat
-                laporan baru atau catatan koreksi pada tahap berikutnya.
-              </Alert>
-            ) : null}
-          </section>
-
-          <section className="rounded-lg border border-border bg-surface">
-            <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border p-5">
-              <div>
-                <h2 className="text-[22px] font-semibold leading-[30px]">Estimasi bantuan</h2>
-                <p className="mt-1 text-base text-text-muted">
-                  Sepuluh jenis bantuan beserta alasan singkatnya.
-                </p>
-              </div>
-              {recommendation ? (
-                <span className="inline-flex min-h-9 items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 text-base text-success">
-                  <CheckCircle2 aria-hidden="true" className="h-5 w-5" />
-                  Sudah dihitung
-                </span>
-              ) : null}
-            </div>
-
-            <div className="p-5">
-              {recommendation ? (
-                <>
-                  <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-md border border-border bg-elevated p-3 text-base">
-                    <span className="text-text-muted">
-                      Perhitungan otomatis ·{" "}
-                      <span className="text-text">
-                        {formatModelVersion(recommendation.modelVersion)}
+          <div className="mt-4 overflow-x-auto">
+            <table className="w-full min-w-[560px] border-collapse text-left text-base">
+              <caption className="sr-only">
+                Estimasi kebutuhan bantuan untuk laporan ini
+              </caption>
+              <thead>
+                <tr className="border-b border-border text-text-muted">
+                  <th scope="col" className="px-2 py-3 font-medium">
+                    Jenis bantuan
+                  </th>
+                  <th scope="col" className="px-2 py-3 text-right font-medium">
+                    Jumlah
+                  </th>
+                  <th scope="col" className="px-2 py-3 font-medium">
+                    Satuan
+                  </th>
+                  <th scope="col" className="px-2 py-3 font-medium">
+                    Alasan
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {recommendation.items.map((item) => (
+                  <tr key={item.id} className="align-top">
+                    <th scope="row" className="px-2 py-4 text-left font-medium text-text">
+                      <span className="flex items-center gap-3">
+                        <AidIcon name={item.icon} />
+                        <span>{item.name}</span>
                       </span>
-                    </span>
-                    <span className="text-text-muted">
-                      {formatNumber(recommendation.totalPeople)} jiwa ·{" "}
-                      {recommendation.items.length} jenis bantuan
-                    </span>
-                  </div>
+                    </th>
+                    <td className="px-2 py-4 text-right font-mono text-base text-text">
+                      {formatNumber(item.finalQty)}
+                    </td>
+                    <td className="px-2 py-4 text-text-muted">{item.unit}</td>
+                    <td className="px-2 py-4 text-text-muted">{item.reason}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-                  <div className="overflow-x-auto">
-                    <table className="w-full min-w-[560px] border-collapse text-left text-base">
-                      <caption className="sr-only">
-                        Estimasi kebutuhan bantuan untuk laporan ini
-                      </caption>
-                      <thead>
-                        <tr className="border-b border-border text-text-muted">
-                          <th scope="col" className="px-2 py-3 font-medium">
-                            Jenis bantuan
-                          </th>
-                          <th scope="col" className="px-2 py-3 text-right font-medium">
-                            Jumlah
-                          </th>
-                          <th scope="col" className="px-2 py-3 font-medium">
-                            Satuan
-                          </th>
-                          <th scope="col" className="px-2 py-3 font-medium">
-                            Alasan
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-border">
-                        {recommendation.items.map((item) => (
-                          <tr key={item.id} className="align-top">
-                            <th scope="row" className="px-2 py-4 text-left font-medium text-text">
-                              <span className="flex items-center gap-3">
-                                <AidIcon name={item.icon} />
-                                <span>{item.name}</span>
-                              </span>
-                            </th>
-                            <td className="px-2 py-4 text-right text-[22px] font-semibold text-text">
-                              {formatNumber(item.finalQty)}
-                            </td>
-                            <td className="px-2 py-4 text-text-muted">{item.unit}</td>
-                            <td className="px-2 py-4 text-text-muted">{item.reason}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {canEstimate ? (
-                    <div className="mt-5 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
-                      <p className="text-base text-text-muted">
-                        Sudah yakin dengan hasilnya? Ajukan ke pimpinan untuk ditinjau.
-                      </p>
-                      <Link
-                        to={`/petugas/laporan/${incident.id}/ajukan`}
-                        className={buttonStyles("primary", "lg")}
-                      >
-                        <Send aria-hidden="true" className="h-5 w-5" />
-                        Ajukan ke pimpinan
-                      </Link>
-                    </div>
-                  ) : null}
-                </>
-              ) : (
-                <EmptyState
-                  compact
-                  icon={<Calculator />}
-                  title="Estimasi belum dihitung."
-                  description="Isi delapan faktor di atas, lalu tekan Hitung estimasi. Hasilnya akan muncul di sini beserta alasan setiap baris."
-                  action={
-                    canEstimate ? (
-                      <span className="inline-flex items-center gap-2 text-base text-info">
-                        <ArrowRight aria-hidden="true" className="h-5 w-5" />
-                        Lengkapi faktor di atas
-                      </span>
-                    ) : undefined
-                  }
-                />
-              )}
+          {canEstimate ? (
+            <div className="mt-5 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-base text-text-muted">
+                Sudah yakin dengan hasilnya? Ajukan ke pimpinan untuk ditinjau.
+              </p>
+              <Link
+                to={`/petugas/laporan/${incident.id}/ajukan`}
+                className={buttonStyles("primary", "lg")}
+              >
+                <Send aria-hidden="true" className="h-5 w-5" />
+                Ajukan ke pimpinan
+              </Link>
             </div>
-          </section>
-        </div>
+          ) : null}
+        </Section>
+      ) : null}
+
+      <Section
+        tone={recommendation ? "default" : "focus"}
+        headingId={recommendation ? undefined : "faktor-lapangan"}
+        title="Delapan faktor lapangan"
+        brief="Faktor dipakai untuk menghitung kebutuhan, bukan untuk menilai siapa yang salah."
+        actions={
+          isLocked ? (
+            <span className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted">
+              <Lock aria-hidden="true" className="h-5 w-5" />
+              Terkunci
+            </span>
+          ) : undefined
+        }
+        className="mt-6"
+      >
+        {factorsForm}
+
+        {isLocked ? (
+          <Alert tone="info" title="Formulir terkunci" className="mt-5">
+            Laporan yang sudah diajukan tidak bisa diubah. Perbaikan data dilakukan lewat laporan
+            baru atau catatan koreksi pada tahap berikutnya.
+          </Alert>
+        ) : null}
+      </Section>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+        <Section title="Lokasi & dampak">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="min-w-0">
+              <p className="text-base font-medium text-text">{incident.title}</p>
+              <p className="mt-1 text-base text-text-muted">
+                {DISASTER_LABEL[incident.disasterType]} ·{" "}
+                {incident.region?.name ?? "Kecamatan belum diisi"}
+              </p>
+            </div>
+            <StatusChip status={incident.status} />
+          </div>
+
+          <div className="mt-4">
+            <IncidentFocusMap
+              lat={incident.lat}
+              lng={incident.lng}
+              radiusM={incident.radiusM}
+              title={incident.title}
+            />
+          </div>
+
+          <dl className="mt-4 space-y-3 text-base">
+            <div className="flex justify-between gap-3">
+              <dt className="flex items-center gap-2 text-text-muted">
+                <Clock3 aria-hidden="true" className="h-5 w-5" />
+                Waktu kejadian
+              </dt>
+              <dd className="text-right text-text">{formatDateTime(incident.occurredAt)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="flex items-center gap-2 text-text-muted">
+                <MapPin aria-hidden="true" className="h-5 w-5" />
+                Wilayah terdampak
+              </dt>
+              <dd className="text-right text-text">
+                {formatDistance(incident.radiusM)}, {incident.region?.name ?? "Belum diisi"}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="flex items-center gap-2 text-text-muted">
+                <Users aria-hidden="true" className="h-5 w-5" />
+                Jiwa terdampak
+              </dt>
+              <dd className="text-right font-mono text-text">
+                {incident.affectedPeople === null
+                  ? "Belum diisi"
+                  : `${formatNumber(incident.affectedPeople)} jiwa`}
+              </dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt className="flex items-center gap-2 text-text-muted">
+                <FileCheck2 aria-hidden="true" className="h-5 w-5" />
+                Kode lacak
+              </dt>
+              <dd className="text-right font-mono text-info">{incident.code}</dd>
+            </div>
+          </dl>
+        </Section>
+
+        <Section title="Riwayat status">
+          <IncidentTimeline
+            timeline={incident.logs.map((log) => ({
+              status: log.toStatus,
+              at: log.createdAt,
+            }))}
+            currentStatus={incident.status}
+          />
+        </Section>
       </div>
 
       <ConfirmDialog

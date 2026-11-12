@@ -23,6 +23,7 @@ import { Field, SelectInput, TextInput } from "../../components/Field";
 import { LocationPicker } from "../../components/map/LocationPicker";
 import { Modal } from "../../components/Modal";
 import { PageHeader } from "../../components/PageHeader";
+import { Section } from "../../components/Section";
 import { Skeleton } from "../../components/Skeleton";
 import { useToast } from "../../components/Toast";
 import { AppShell } from "../../layouts/AppShell";
@@ -55,16 +56,12 @@ type ConfirmTarget =
 
 function StatusBadge({ active }: { active: boolean }) {
   return (
-    <span
-      className={cn(
-        "inline-flex min-h-8 items-center gap-2 rounded-full border px-3 text-base",
-        active
-          ? "border-success/30 bg-success/10 text-success"
-          : "border-border bg-hover text-text-muted",
-      )}
-    >
-      <span aria-hidden="true" className="h-2 w-2 rounded-full bg-current" />
-      {active ? "Aktif" : "Nonaktif"}
+    <span className="inline-flex min-h-8 items-center border border-border text-base text-text">
+      <span
+        aria-hidden="true"
+        className={cn("h-8 w-0.5 shrink-0", active ? "bg-info" : "bg-text-disabled")}
+      />
+      <span className="px-2.5">{active ? "Aktif" : "Nonaktif"}</span>
     </span>
   );
 }
@@ -282,9 +279,8 @@ export function AdminRegionsPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow="Data master"
         title="Wilayah & posko"
-        description="Kelola kecamatan dan titik posko. Data yang dinonaktifkan tidak muncul di pilihan baru, tetapi laporan lama tetap utuh."
+        brief="Kelola kecamatan dan titik posko tujuan distribusi."
         actions={
           <>
             <Button
@@ -350,7 +346,23 @@ export function AdminRegionsPage() {
         </div>
       </div>
 
-      <section className="mt-4 overflow-hidden rounded-lg border border-border bg-surface">
+      <Section
+        tone="focus"
+        headingId="daftar-wilayah"
+        title={isRegionTab ? "Daftar kecamatan" : "Daftar posko"}
+        actions={
+          <span className="font-mono text-base text-text-muted">
+            {isRegionTab
+              ? regions.isPending
+                ? "…"
+                : `${formatNumber(regionList.length)} kecamatan`
+              : poskos.isPending
+                ? "…"
+                : `${formatNumber(poskoList.length)} posko`}
+          </span>
+        }
+        className="mt-4"
+      >
         {isRegionTab ? (
           regions.isPending ? (
             <div className="space-y-3 p-5" aria-busy="true">
@@ -462,7 +474,7 @@ export function AdminRegionsPage() {
                       <div>
                         <p className="font-medium text-text">{region.name}</p>
                         <p className="mt-1 text-base text-text-muted">
-                          {formatNumber(region.poskoCount)} posko · {formatNumber(region.incidentCount)} laporan
+                          {formatNumber(region.poskoCount)} posko, {formatNumber(region.incidentCount)} laporan
                         </p>
                       </div>
                       <StatusBadge active={region.isActive} />
@@ -569,7 +581,7 @@ export function AdminRegionsPage() {
                         {posko.lat.toFixed(5)}, {posko.lng.toFixed(5)}
                       </td>
                       <td className="px-4 py-4">
-                        {formatNumber(posko.stockRows)} baris stok · {formatNumber(posko.permitCount)} izin
+                        {formatNumber(posko.stockRows)} baris stok, {formatNumber(posko.permitCount)} izin
                       </td>
                       <td className="px-4 py-4"><StatusBadge active={posko.isActive} /></td>
                       <td className="px-4 py-4">
@@ -648,7 +660,7 @@ export function AdminRegionsPage() {
             </ul>
           </>
         )}
-      </section>
+      </Section>
 
       <Modal
         open={regionEditor !== null}
