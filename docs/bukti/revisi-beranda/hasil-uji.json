@@ -1,0 +1,79 @@
+{
+  "date": "2026-11-10T11:01:39.371Z",
+  "checks": [
+    {
+      "name": "Latar Aurora aktif di Beranda",
+      "passed": true
+    },
+    {
+      "name": "Transisi konten selesai dan terlihat",
+      "passed": true
+    },
+    {
+      "name": "Subtulisan yang dihapus tidak tampil",
+      "passed": true
+    },
+    {
+      "name": "Tanpa gulir horizontal — 01-beranda-1440.png",
+      "passed": true
+    },
+    {
+      "name": "Tanpa gulir horizontal — 02-beranda-390.png",
+      "passed": true
+    },
+    {
+      "name": "Ilustrasi masuk tampil utuh di dalam panel",
+      "passed": true,
+      "detail": {
+        "fullyContained": true,
+        "ratio": 1.5384969385712788,
+        "expectedRatio": 1.5384615384615385,
+        "width": 586.2250366210938,
+        "height": 381.0375061035156
+      }
+    },
+    {
+      "name": "Rasio ilustrasi masuk tidak berubah",
+      "passed": true,
+      "detail": {
+        "fullyContained": true,
+        "ratio": 1.5384969385712788,
+        "expectedRatio": 1.5384615384615385,
+        "width": 586.2250366210938,
+        "height": 381.0375061035156
+      }
+    },
+    {
+      "name": "Tanpa gulir horizontal — 03-masuk-1280.png",
+      "passed": true
+    },
+    {
+      "name": "Tanpa gulir horizontal — 04-masuk-1024.png",
+      "passed": true
+    },
+    {
+      "name": "Tanpa gulir horizontal — 05-masuk-390.png",
+      "passed": true
+    },
+    {
+      "name": "Konten tetap terlihat dengan gerak minimal",
+      "passed": true
+    },
+    {
+      "name": "Tanpa gulir horizontal — 06-beranda-gerak-minimal.png",
+      "passed": true
+    },
+    {
+      "name": "Tanpa kesalahan konsol",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "Tanpa kesalahan halaman",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": []
+}

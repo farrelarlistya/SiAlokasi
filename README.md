@@ -89,7 +89,8 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 | `npm run verify:m4` | Memeriksa pembatalan, koreksi, stok anti-minus, audit tetap, rekap, dan reset demo |
 | `npm run verify:m5` | Memeriksa notifikasi, isolasi antar-pengguna, reset, dan kelengkapan berkas siap pamer |
 | `npm run verify:login` | Memeriksa alur keluar lalu masuk dengan peran lain (butuh `npm run dev` + Chrome port 9222) |
-| `npm run share` | Membuka akses lintas perangkat lewat tunnel |
+| `npm run share` | Membuka akses lintas perangkat lewat localtunnel |
+| `npm run share:cloudflare` | Membuka Cloudflare Quick Tunnel (`trycloudflare.com`) |
 | `npm run db:start` / `db:stop` / `db:status` | Mengatur PostgreSQL lokal |
 | `npm run db:migrate` | Menerapkan migrasi Prisma |
 | `npm run db:seed` | Data master bersih (0 laporan, 0 notifikasi) |
@@ -141,8 +142,11 @@ alamat tunnel cukup untuk web dan API. Buka alamat `https://....loca.lt` yang te
 terminal dari HP/laptop lain. Bila muncul halaman pengingat localtunnel, masukkan kata sandi
 yang ikut tercetak (alamat IP publik komputer demo).
 
-- Tunnel membutuhkan internet. Bila localtunnel diblokir jaringan, pakai
-  `cloudflared tunnel --url http://localhost:5173` atau `ngrok http 5173`.
+- Tunnel membutuhkan internet. Bila localtunnel diblokir jaringan, jalankan
+  `npm run share:cloudflare` (Cloudflare Quick Tunnel, tautan `https://....trycloudflare.com`)
+  atau `ngrok http 5173`.
+- `npm run share:cloudflare` mengunduh `cloudflared` ke `storage/` bila belum ada, lalu membuka
+  tunnel ke `http://localhost:5173`. Set `WEB_URL=http://localhost:5174` bila Vite memakai port lain.
 - Halaman web mengizinkan host `.loca.lt`, `.trycloudflare.com`, dan `.ngrok-free.app`.
 - Perubahan kode memicu muat ulang otomatis; bila tautan HMR terputus, muat ulang halaman.
 
@@ -150,6 +154,31 @@ yang ikut tercetak (alamat IP publik komputer demo).
 
 Skenario lengkap ada di [`docs/panduan-demo.md`](docs/panduan-demo.md): persiapan, urutan
 demo dari kondisi nol transaksi, akun tiap peran, cetak izin, dan pembersihan setelah demo.
+
+## Komponen Gerak & MCP React Bits
+
+Beranda memakai tiga komponen gratis dari registry **React Bits** melalui shadcn MCP:
+`AnimatedContent` (transisi panel), `GlareHover` (kilau kartu), dan `Aurora` (latar ringkasan).
+Sumber dan lisensi dicatat di [`docs/desain/gambar/CREDITS.md`](docs/desain/gambar/CREDITS.md).
+
+- MCP sudah terdaftar secara lokal di `opencode.json` dengan nama `shadcn`. Bila konfigurasi
+  hilang, jalankan dari akar proyek:
+
+  ```bash
+  opencode mcp add shadcn -- npx shadcn@latest mcp
+  ```
+
+- Registry React Bits terdaftar di `components.json`; OpenCode memuat ulang konfigurasi MCP
+  tanpa perlu memulai ulang aplikasi.
+- Menambah komponen lain (pilih varian **TS-CSS** dan hanya komponen gratis):
+
+  ```bash
+  npx shadcn@latest add @react-bits/NamaKomponen-TS-CSS
+  ```
+
+- Komponen hasil unduhan disimpan di `apps/web/src/components/react-bits/`. Jangan menambah
+  efek ke halaman selain Beranda tanpa persetujuan pemilik. Semua efek wajib menghormati
+  `prefers-reduced-motion`.
 
 ## Pengujian Antarmuka
 
@@ -163,6 +192,17 @@ Untuk memeriksa alur ganti akun (keluar dari halaman pimpinan lalu masuk sebagai
 jalankan `npm run dev` dan Chrome dengan `--remote-debugging-port=9222`, lalu
 `npm run verify:login`. Hasilnya dicatat di
 [`docs/bukti/perbaikan-ganti-akun.md`](docs/bukti/perbaikan-ganti-akun.md).
+
+## Deploy ke Vercel
+
+Repo ini siap untuk satu proyek Vercel: web statis + API Fastify sebagai Node Function, dengan PostgreSQL terkelola (Neon/Supabase). Panduan langkah demi langkah ada di [`docs/production-vercel.md`](docs/production-vercel.md).
+
+```bash
+vercel link
+vercel --prod
+```
+
+Variabel minimum di dashboard: `DATABASE_URL` (pooler), `DEMO_MODE`, `WEB_ORIGIN`, `TRUST_PROXY=true`. Migrasi dijalankan manual dengan `npx prisma migrate deploy` memakai URL direct sebelum deploy.
 
 ## Catatan
 

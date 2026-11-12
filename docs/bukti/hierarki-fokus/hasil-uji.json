@@ -1,0 +1,2367 @@
+{
+  "date": "2026-11-10T16:22:24.146Z",
+  "total": 240,
+  "passed": 240,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "P1 kosong 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar kejadian",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 kosong 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P1 kosong 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P1 kosong 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 kosong 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P1 kosong 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar kejadian",
+        "size": 24
+      }
+    },
+    {
+      "name": "P1 kosong 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar kejadian",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 kosong 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P1 kosong 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P1 kosong 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 kosong 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P1 kosong 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar kejadian",
+        "size": 24
+      }
+    },
+    {
+      "name": "A1 masuk 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": null,
+        "focusTitleSize": null,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Masuk ke SiAlokasi"
+      }
+    },
+    {
+      "name": "A1 masuk 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "A1 masuk 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "A1 masuk 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Masuk ke SiAlokasi"
+      }
+    },
+    {
+      "name": "A1 masuk 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "A1 masuk 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": null,
+        "focusTitleSize": null,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Masuk ke SiAlokasi"
+      }
+    },
+    {
+      "name": "A1 masuk 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "A1 masuk 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "A1 masuk 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Masuk ke SiAlokasi"
+      }
+    },
+    {
+      "name": "A1 masuk 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "A2 daftar 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": null,
+        "focusTitleSize": null,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Daftar sebagai petugas"
+      }
+    },
+    {
+      "name": "A2 daftar 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "A2 daftar 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "A2 daftar 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Daftar sebagai petugas"
+      }
+    },
+    {
+      "name": "A2 daftar 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "A2 daftar 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": null,
+        "focusTitleSize": null,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Daftar sebagai petugas"
+      }
+    },
+    {
+      "name": "A2 daftar 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "A2 daftar 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "A2 daftar 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Daftar sebagai petugas"
+      }
+    },
+    {
+      "name": "A2 daftar 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "Data contoh demo terisi",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "incidents": 3,
+          "elapsedMs": 207,
+          "message": "3 laporan contoh sudah dibuat: 1 menunggu keputusan, 1 disetujui, dan 1 selesai."
+        }
+      }
+    },
+    {
+      "name": "P1: memilih baris memindahkan fokus ke rincian",
+      "passed": true,
+      "detail": {
+        "selectedTitle": "Banjir di Wonokromo RW 03",
+        "focusState": {
+          "activeId": "rincian-kejadian",
+          "activeText": "Banjir di Wonokromo RW 03",
+          "headingText": "Banjir di Wonokromo RW 03"
+        }
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Banjir di Wonokromo RW 03",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P1 terpilih 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Banjir di Wonokromo RW 03",
+        "size": 24
+      }
+    },
+    {
+      "name": "P1 terpilih 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Banjir di Wonokromo RW 03",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 terpilih 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P1 terpilih 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P1 terpilih 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kejadian aktif"
+      }
+    },
+    {
+      "name": "P1 terpilih 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P1 terpilih 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Banjir di Wonokromo RW 03",
+        "size": 24
+      }
+    },
+    {
+      "name": "T2: rel langkah menandai langkah 1",
+      "passed": true,
+      "detail": [
+        "Titik & wilayah"
+      ]
+    },
+    {
+      "name": "T2 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Titik & wilayah",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Laporan baru"
+      }
+    },
+    {
+      "name": "T2 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T2 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T2 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Laporan baru"
+      }
+    },
+    {
+      "name": "T2 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T2 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Titik & wilayah",
+        "size": 24
+      }
+    },
+    {
+      "name": "T2 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Titik & wilayah",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Laporan baru"
+      }
+    },
+    {
+      "name": "T2 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T2 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T2 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Laporan baru"
+      }
+    },
+    {
+      "name": "T2 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T2 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Titik & wilayah",
+        "size": 24
+      }
+    },
+    {
+      "name": "Ada kecamatan untuk draf",
+      "passed": true,
+      "detail": 8
+    },
+    {
+      "name": "Draf laporan dibuat",
+      "passed": true,
+      "detail": {
+        "status": 201,
+        "body": {
+          "data": {
+            "id": "cmwawdsyg0259hyq0kj8niz7h",
+            "code": "SIA-MP9SR",
+            "title": "Banjir di Wonokromo RW 03",
+            "disasterType": "BANJIR",
+            "lat": -7.3015,
+            "lng": 112.738,
+            "radiusM": 800,
+            "occurredAt": "2026-11-10T16:21:38.366Z",
+            "status": "BARU",
+            "affectedPeople": null,
+            "region": {
+              "id": "region_benowo",
+              "name": "Benowo"
+            },
+            "reporter": {
+              "id": "user_petugas",
+              "name": "Rina Kusuma"
+            },
+            "factors": null,
+            "cancelReason": null,
+            "createdAt": "2026-11-10T16:21:38.392Z",
+            "updatedAt": "2026-11-10T16:21:38.392Z",
+            "recommendation": null,
+            "logs": [],
+            "permit": null,
+            "decision": null,
+            "corrections": []
+          },
+          "message": "Laporan tersimpan dengan kode lacak SIA-MP9SR. Lanjutkan mengisi 8 faktor untuk menghitung estimasi."
+        }
+      }
+    },
+    {
+      "name": "T3 faktor 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Delapan faktor lapangan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 faktor 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T3 faktor 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T3 faktor 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 faktor 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T3 faktor 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Delapan faktor lapangan",
+        "size": 24
+      }
+    },
+    {
+      "name": "Estimasi berhasil dihitung",
+      "passed": true,
+      "detail": {
+        "status": 200,
+        "body": {
+          "data": {
+            "id": "cmwawdsyg0259hyq0kj8niz7h",
+            "code": "SIA-MP9SR",
+            "title": "Banjir di Wonokromo RW 03",
+            "disasterType": "BANJIR",
+            "lat": -7.3015,
+            "lng": 112.738,
+            "radiusM": 800,
+            "occurredAt": "2026-11-10T16:21:38.366Z",
+            "status": "DIPERIKSA",
+            "affectedPeople": 420,
+            "region": {
+              "id": "region_benowo",
+              "name": "Benowo"
+            },
+            "reporter": {
+              "id": "user_petugas",
+              "name": "Rina Kusuma"
+            },
+            "factors": {
+              "affectedPeople": 420,
+              "damageLevel": "SEDANG",
+              "vulnerableBabies": 5,
+              "vulnerableElderly": 20,
+              "vulnerablePregnant": 4,
+              "vulnerableDisabled": 2,
+              "handlingDays": 3,
+              "roadAccess": "TERBUKA",
+              "weather": "CERAH",
+              "density": "SEDANG"
+            },
+            "cancelReason": null,
+            "createdAt": "2026-11-10T16:21:38.392Z",
+            "updatedAt": "2026-11-10T16:21:40.590Z",
+            "recommendation": {
+              "id": "cmwawdunr025ghyq08xj35iap",
+              "modelVersion": "sialokasi-ridge-1.1.0",
+              "totalPeople": 420,
+              "generatedAt": "2026-11-10T16:21:40.588Z",
+              "items": [
+                {
+                  "id": "cmwawduns025ihyq0so12bspj",
+                  "aidItemId": "aid_tenda_keluarga",
+                  "name": "Tenda keluarga",
+                  "icon": "tent",
+                  "unit": "unit",
+                  "baseQty": 14,
+                  "finalQty": 14,
+                  "reason": "1 tenda untuk sekitar 33 jiwa, ditambah 10% karena rusak sedang.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025jhyq0epexkmqc",
+                  "aidItemId": "aid_air_bersih",
+                  "name": "Air bersih",
+                  "icon": "droplets",
+                  "unit": "liter",
+                  "baseQty": 18968,
+                  "finalQty": 18968,
+                  "reason": "420 jiwa × 15 liter per hari selama 3 hari, dibulatkan ke satuan terdekat.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025khyq0jevg4hyp",
+                  "aidItemId": "aid_makanan_siap_saji",
+                  "name": "Makanan siap saji",
+                  "icon": "utensils",
+                  "unit": "paket",
+                  "baseQty": 3792,
+                  "finalQty": 3792,
+                  "reason": "420 jiwa × 3 paket per hari selama 3 hari, dibulatkan ke satuan terdekat.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025lhyq0xbvqq5yw",
+                  "aidItemId": "aid_obat_p3k",
+                  "name": "Obat & P3K",
+                  "icon": "briefcase-medical",
+                  "unit": "kit",
+                  "baseQty": 9,
+                  "finalQty": 9,
+                  "reason": "1 kit untuk sekitar 50 jiwa, ditambah 10% karena rusak sedang.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025mhyq04o22596s",
+                  "aidItemId": "aid_selimut",
+                  "name": "Selimut",
+                  "icon": "bed-double",
+                  "unit": "lembar",
+                  "baseQty": 219,
+                  "finalQty": 219,
+                  "reason": "1 selimut untuk setiap 2 jiwa, ditambah 4% karena kepadatan penduduk sedang.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025nhyq09ufjxnxf",
+                  "aidItemId": "aid_sanitasi",
+                  "name": "Sanitasi (toilet portabel)",
+                  "icon": "toilet",
+                  "unit": "unit",
+                  "baseQty": 3,
+                  "finalQty": 3,
+                  "reason": "1 toilet portabel untuk sekitar 200 jiwa, ditambah 4% karena kepadatan penduduk sedang.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025ohyq0vamq5oqb",
+                  "aidItemId": "aid_susu_bayi",
+                  "name": "Susu bayi",
+                  "icon": "milk",
+                  "unit": "kaleng",
+                  "baseQty": 8,
+                  "finalQty": 8,
+                  "reason": "5 bayi × 1 kaleng per 2 hari selama 3 hari, dibulatkan ke satuan terdekat.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025phyq0urtblctb",
+                  "aidItemId": "aid_pembalut",
+                  "name": "Pembalut",
+                  "icon": "heart-pulse",
+                  "unit": "paket",
+                  "baseQty": 52,
+                  "finalQty": 52,
+                  "reason": "1 paket untuk setiap 10 jiwa, ditambah kebutuhan ibu hamil, ditambah 4% karena kepadatan penduduk sedang.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025qhyq064b5j38l",
+                  "aidItemId": "aid_genset",
+                  "name": "Genset",
+                  "icon": "zap",
+                  "unit": "unit",
+                  "baseQty": 1,
+                  "finalQty": 1,
+                  "reason": "1 genset untuk sekitar 500 jiwa, dibulatkan ke satuan terdekat.",
+                  "adjustReason": null
+                },
+                {
+                  "id": "cmwawduns025rhyq0h0muw2yt",
+                  "aidItemId": "aid_tenda_pleton",
+                  "name": "Tenda pleton",
+                  "icon": "tent-tree",
+                  "unit": "unit",
+                  "baseQty": 2,
+                  "finalQty": 2,
+                  "reason": "1 tenda pleton untuk sekitar 250 jiwa, ditambah 10% karena rusak sedang.",
+                  "adjustReason": null
+                }
+              ]
+            },
+            "logs": [
+              {
+                "id": "cmwawdsyx025bhyq0xjwk8j5g",
+                "fromStatus": null,
+                "toStatus": "BARU",
+                "note": "Laporan dibuat.",
+                "actorName": "Rina Kusuma",
+                "createdAt": "2026-11-10T16:21:38.387Z"
+              },
+              {
+                "id": "cmwawduol025thyq07tdle8u6",
+                "fromStatus": "BARU",
+                "toStatus": "DIPERIKSA",
+                "note": "Delapan faktor diisi dan estimasi dihitung.",
+                "actorName": "Rina Kusuma",
+                "createdAt": "2026-11-10T16:21:40.588Z"
+              }
+            ],
+            "permit": null,
+            "decision": null,
+            "corrections": []
+          },
+          "message": "Estimasi siap. Periksa sepuluh jenis bantuan dan alasannya sebelum diajukan ke pimpinan."
+        }
+      }
+    },
+    {
+      "name": "T3 hasil 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Estimasi bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 hasil 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T3 hasil 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T3 hasil 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 hasil 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T3 hasil 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Estimasi bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "T3 hasil 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Estimasi bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 hasil 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T3 hasil 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T3 hasil 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Faktor & estimasi"
+      }
+    },
+    {
+      "name": "T3 hasil 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T3 hasil 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Estimasi bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Bantuan yang diajukan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Ajukan laporan ke pimpinan"
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Ajukan laporan ke pimpinan"
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "T4 ajukan 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Bantuan yang diajukan",
+        "size": 24
+      }
+    },
+    {
+      "name": "L1 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Perlu keputusan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "L1 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L1 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L1 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "L1 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L1 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Perlu keputusan",
+        "size": 24
+      }
+    },
+    {
+      "name": "L1 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Perlu keputusan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "L1 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L1 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L1 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "L1 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L1 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Perlu keputusan",
+        "size": 24
+      }
+    },
+    {
+      "name": "Ada laporan menunggu keputusan",
+      "passed": true,
+      "detail": {
+        "waitingCount": 1,
+        "activeCount": 3,
+        "affectedPeople": 690,
+        "permitsToday": 2,
+        "lowStockCount": 0,
+        "waitingAidTotal": 11619
+      }
+    },
+    {
+      "name": "L2: bilah keputusan terlihat tanpa menggulir",
+      "passed": true,
+      "detail": {
+        "visible": true,
+        "top": 862,
+        "bottom": 1000
+      }
+    },
+    {
+      "name": "L2 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Rekomendasi bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L2 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L2 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L2 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Rekomendasi bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "L2: dialog penolakan terbuka",
+      "passed": true,
+      "detail": {
+        "rejectOpened": true,
+        "rejectDialog": true
+      }
+    },
+    {
+      "name": "L2 tolak 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Rekomendasi bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 tolak 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L2 tolak 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L2 tolak 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 tolak 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L2 tolak 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Rekomendasi bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "L2: Escape menutup dialog penolakan",
+      "passed": true
+    },
+    {
+      "name": "L2 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Rekomendasi bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L2 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L2 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Banjir di Wonokromo RW 03"
+      }
+    },
+    {
+      "name": "L2 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L2 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Rekomendasi bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "Ada izin distribusi untuk L3",
+      "passed": true,
+      "detail": [
+        {
+          "id": "cmwawdsyg0259hyq0kj8niz7h",
+          "code": "SIA-MP9SR",
+          "title": "Banjir di Wonokromo RW 03",
+          "disasterType": "BANJIR",
+          "lat": -7.3015,
+          "lng": 112.738,
+          "radiusM": 800,
+          "occurredAt": "2026-11-10T16:21:38.366Z",
+          "status": "DIPERIKSA",
+          "affectedPeople": 420,
+          "region": {
+            "id": "region_benowo",
+            "name": "Benowo"
+          }
+        },
+        {
+          "id": "cmwawdm22020xhyq0p4gxhvh0",
+          "code": "SIA-DEMO1",
+          "title": "Banjir di Wonokromo RW 03",
+          "disasterType": "BANJIR",
+          "lat": -7.3002,
+          "lng": 112.7382,
+          "radiusM": 1200,
+          "occurredAt": "2026-11-10T11:21:29.449Z",
+          "status": "MENUNGGU_PERSETUJUAN",
+          "affectedPeople": 180,
+          "region": {
+            "id": "region_wonokromo",
+            "name": "Wonokromo"
+          }
+        },
+        {
+          "id": "cmwawdm36021ohyq0a3dsyb0j",
+          "code": "SIA-DEMO2",
+          "title": "Kebakaran permukiman di Tambaksari",
+          "disasterType": "KEBAKARAN",
+          "lat": -7.245,
+          "lng": 112.771,
+          "radiusM": 500,
+          "occurredAt": "2026-11-09T14:21:29.449Z",
+          "status": "DISETUJUI",
+          "affectedPeople": 90,
+          "region": {
+            "id": "region_tambaksari",
+            "name": "Tambaksari"
+          }
+        }
+      ]
+    },
+    {
+      "name": "L3 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "IZN-20261110-001",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Izin distribusi bantuan"
+      }
+    },
+    {
+      "name": "L3 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L3 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L3 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Izin distribusi bantuan"
+      }
+    },
+    {
+      "name": "L3 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L3 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "IZN-20261110-001",
+        "size": 24
+      }
+    },
+    {
+      "name": "L3 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "IZN-20261110-001",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Izin distribusi bantuan"
+      }
+    },
+    {
+      "name": "L3 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "L3 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "L3 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Izin distribusi bantuan"
+      }
+    },
+    {
+      "name": "L3 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "L3 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "IZN-20261110-001",
+        "size": 24
+      }
+    },
+    {
+      "name": "P2 kode 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Kode lacak",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Lacak laporan"
+      }
+    },
+    {
+      "name": "P2 kode 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P2 kode 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P2 kode 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Lacak laporan"
+      }
+    },
+    {
+      "name": "P2 kode 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P2 kode 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Kode lacak",
+        "size": 24
+      }
+    },
+    {
+      "name": "P2 hasil 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Status laporan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kebakaran permukiman di Tambaksari"
+      }
+    },
+    {
+      "name": "P2 hasil 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P2 hasil 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P2 hasil 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kebakaran permukiman di Tambaksari"
+      }
+    },
+    {
+      "name": "P2 hasil 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P2 hasil 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Status laporan",
+        "size": 24
+      }
+    },
+    {
+      "name": "P2 hasil 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Status laporan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Kebakaran permukiman di Tambaksari"
+      }
+    },
+    {
+      "name": "P2 hasil 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "P2 hasil 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "P2 hasil 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Kebakaran permukiman di Tambaksari"
+      }
+    },
+    {
+      "name": "P2 hasil 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "P2 hasil 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Status laporan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D1 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Perlu tindakan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "D1 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D1 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D1 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "D1 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D1 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Perlu tindakan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D2 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar akun",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Akun"
+      }
+    },
+    {
+      "name": "D2 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D2 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D2 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Akun"
+      }
+    },
+    {
+      "name": "D2 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D2 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar akun",
+        "size": 24
+      }
+    },
+    {
+      "name": "D3 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar jenis bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Jenis bantuan"
+      }
+    },
+    {
+      "name": "D3 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D3 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D3 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Jenis bantuan"
+      }
+    },
+    {
+      "name": "D3 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D3 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar jenis bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D4 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar kecamatan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Wilayah & posko"
+      }
+    },
+    {
+      "name": "D4 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D4 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D4 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Wilayah & posko"
+      }
+    },
+    {
+      "name": "D4 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D4 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar kecamatan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D5 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Matriks stok",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Stok bantuan"
+      }
+    },
+    {
+      "name": "D5 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D5 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D5 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Stok bantuan"
+      }
+    },
+    {
+      "name": "D5 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D5 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Matriks stok",
+        "size": 24
+      }
+    },
+    {
+      "name": "D6 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Waktu layanan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Panel demo"
+      }
+    },
+    {
+      "name": "D6 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D6 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D6 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Panel demo"
+      }
+    },
+    {
+      "name": "D6 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D6 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Waktu layanan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D7 1440: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Catatan perubahan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Audit"
+      }
+    },
+    {
+      "name": "D7 1440: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D7 1440: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D7 1440: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Audit"
+      }
+    },
+    {
+      "name": "D7 1440: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D7 1440: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Catatan perubahan",
+        "size": 24
+      }
+    },
+    {
+      "name": "Skip link 'Lewati ke isi utama' tersedia",
+      "passed": true,
+      "detail": "Lewati ke isi utama"
+    },
+    {
+      "name": "Dialog ubah peran bisa dibuka",
+      "passed": true,
+      "detail": {
+        "dialogOpened": true,
+        "dialogVisible": true
+      }
+    },
+    {
+      "name": "Escape menutup dialog",
+      "passed": true
+    },
+    {
+      "name": "D1 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Perlu tindakan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "D1 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D1 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D1 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Dasbor"
+      }
+    },
+    {
+      "name": "D1 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D1 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Perlu tindakan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D2 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar akun",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Akun"
+      }
+    },
+    {
+      "name": "D2 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D2 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D2 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Akun"
+      }
+    },
+    {
+      "name": "D2 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D2 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar akun",
+        "size": 24
+      }
+    },
+    {
+      "name": "D3 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar jenis bantuan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Jenis bantuan"
+      }
+    },
+    {
+      "name": "D3 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D3 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D3 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Jenis bantuan"
+      }
+    },
+    {
+      "name": "D3 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D3 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar jenis bantuan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D4 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Daftar kecamatan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Wilayah & posko"
+      }
+    },
+    {
+      "name": "D4 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D4 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D4 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Wilayah & posko"
+      }
+    },
+    {
+      "name": "D4 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D4 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Daftar kecamatan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D5 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Matriks stok",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Stok bantuan"
+      }
+    },
+    {
+      "name": "D5 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D5 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D5 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Stok bantuan"
+      }
+    },
+    {
+      "name": "D5 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D5 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Matriks stok",
+        "size": 24
+      }
+    },
+    {
+      "name": "D6 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Waktu layanan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Panel demo"
+      }
+    },
+    {
+      "name": "D6 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D6 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D6 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Panel demo"
+      }
+    },
+    {
+      "name": "D6 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D6 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Waktu layanan",
+        "size": 24
+      }
+    },
+    {
+      "name": "D7 390: tanpa gulir horizontal",
+      "passed": true,
+      "detail": {
+        "overflow": false,
+        "smallText": 0,
+        "smallTargets": 0,
+        "focusBlocks": 1,
+        "focusTitle": "Catatan perubahan",
+        "focusTitleSize": 24,
+        "h1Count": 1,
+        "h1Size": 32,
+        "h1Text": "Audit"
+      }
+    },
+    {
+      "name": "D7 390: tanpa teks < 16 px",
+      "passed": true,
+      "detail": {
+        "smallText": 0
+      }
+    },
+    {
+      "name": "D7 390: target sentuh ≥ 44 px",
+      "passed": true,
+      "detail": {
+        "smallTargets": 0
+      }
+    },
+    {
+      "name": "D7 390: satu judul h1",
+      "passed": true,
+      "detail": {
+        "h1Count": 1,
+        "h1Text": "Audit"
+      }
+    },
+    {
+      "name": "D7 390: satu blok fokus",
+      "passed": true,
+      "detail": {
+        "focusBlocks": 1
+      }
+    },
+    {
+      "name": "D7 390: judul fokus 24 px",
+      "passed": true,
+      "detail": {
+        "title": "Catatan perubahan",
+        "size": 24
+      }
+    },
+    {
+      "name": "Tanpa kesalahan konsol",
+      "passed": true,
+      "detail": []
+    },
+    {
+      "name": "Tanpa kesalahan halaman",
+      "passed": true,
+      "detail": []
+    }
+  ],
+  "screenshots": [
+    "01-p1-kosong-1440.png",
+    "02-p1-kosong-390.png",
+    "03-a1-masuk-1440.png",
+    "04-a1-masuk-390.png",
+    "05-a2-daftar-1440.png",
+    "32-a2-daftar-390.png",
+    "06-p1-terpilih-1440.png",
+    "07-p1-terpilih-390.png",
+    "08-t2-laporan-baru-1440.png",
+    "09-t2-laporan-baru-390.png",
+    "10-t3-faktor-1440.png",
+    "11-t3-hasil-1440.png",
+    "12-t3-hasil-390.png",
+    "31-t4-ajukan-1440.png",
+    "13-l1-dasbor-1440.png",
+    "14-l1-dasbor-390.png",
+    "15-l2-tinjau-1440.png",
+    "38-l2-tolak-1440.png",
+    "16-l2-tinjau-390.png",
+    "17-l3-izin-1440.png",
+    "18-l3-izin-390.png",
+    "19-p2-kode-1440.png",
+    "20-p2-hasil-1440.png",
+    "21-p2-hasil-390.png",
+    "22-d1-dasbor-1440.png",
+    "23-d2-akun-1440.png",
+    "24-d3-bantuan-1440.png",
+    "25-d4-wilayah-1440.png",
+    "26-d5-stok-1440.png",
+    "27-d6-demo-1440.png",
+    "28-d7-audit-1440.png",
+    "29-d1-dasbor-390.png",
+    "30-d2-akun-390.png",
+    "33-d3-bantuan-390.png",
+    "34-d4-wilayah-390.png",
+    "35-d5-stok-390.png",
+    "36-d6-demo-390.png",
+    "37-d7-audit-390.png"
+  ],
+  "consoleErrors": [],
+  "pageErrors": []
+}

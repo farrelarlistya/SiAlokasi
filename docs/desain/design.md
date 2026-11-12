@@ -1,5 +1,7 @@
 # Panduan Desain — SiAlokasi
 
+> **Revisi 10 November 2026:** sistem yang berlaku sekarang adalah **"Rim"** di [`design-rim.md`](design-rim.md) (kertas hitam hangat, oranye, sudut 0, Geist Mono). Dokumen ini disimpan sebagai arsip sistem lama dan acuan alur/status yang masih berlaku. Keputusan: `docs/adr/0010-redesign-rim-hallmark.md`.
+
 > Acuan tunggal untuk tampilan. Semua warna **wajib** memakai token di `@theme`; tidak boleh ada nilai hex lepas di halaman. Semua keputusan di sini sudah dikunci pada Sesi 1 (`D1`).
 
 ## 1. Konsep Visual
@@ -71,6 +73,8 @@ Referensi pemilik: tangkapan layar GIS gelap dengan panel kiri mengapung, kanvas
 
 **Aturan mutlak:** tidak ada teks di bawah **16 px**. Jika terasa terlalu besar, kurangi jumlah teks — jangan perkecil font.
 
+**Judul berdiri sendiri:** jangan menambahkan tagline, subjudul, atau kalimat penjelas dekoratif tepat di bawah judul/label bagian. Teks pendukung hanya dipertahankan untuk petunjuk tindakan, syarat penting, privasi, status, konfirmasi, pemulihan, dan keadaan kosong; jangan mengulang informasi yang sudah jelas dari judul atau tombol.
+
 Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 
 ## 4. Bentuk, Jarak, & Bayangan
@@ -121,7 +125,7 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 - **Tabel bantuan**: kolom Jenis, Satuan, Jumlah, Alasan. Baris bisa diubah hanya oleh Pimpinan; sel yang diubah diberi penanda dan wajib alasan.
 - **Slider radius**: nilai angka + satuan selalu terlihat, langkah 100 m, rentang 100 m–5 km.
 - **`Alert`**: pesan info/sukses/peringatan/bahaya dengan ikon dan langkah lanjutan; dipakai untuk kegagalan API dan mode demo.
-- **`PageHeader`**: judul halaman 28–32 px, keterangan, dan aksi di kanan; dipakai semua halaman peran.
+- **`PageHeader`**: judul halaman 28–32 px dan aksi di kanan, tanpa keterangan di bawah judul; metadata singkat bila perlu menjadi `eyebrow` di atas judul.
 - **`AidIcon`**: ikon Lucide berdasarkan nama ikon di data master; latar kotak 44 px.
 - **`NotificationBell`**: lonceng 44 px di header dengan lencana angka belum dibaca; membuka `Modal` berisi 8 kabar terbaru dan tautan ke `/notifikasi`. Baris notifikasi selalu memakai ikon, judul, isi, jenis, dan waktu relatif; status "Baru" ditulis sebagai teks, bukan warna saja.
 - **`NotificationItem`**: seluruh baris menjadi target sentuh; membuka laporan/izin terkait sekaligus menandai dibaca. Halaman `/notifikasi` menambahkan saringan "Hanya yang belum dibaca", `Skeleton`, dan `EmptyState`.
@@ -152,10 +156,11 @@ Contoh pesan gagal: **"Laporan belum bisa dikirim karena koneksi terputus. Draf 
 
 ## 9. Gerak (Motion)
 
-- Durasi 150–200 ms, easing `cubic-bezier(0.2, 0, 0, 1)`.
-- Panel masuk: geser 12 px + fade.
-- Tidak ada animasi yang berulang tanpa henti kecuali indikator memuat.
-- Hormati `prefers-reduced-motion`.
+- Durasi transisi antarmuka 150–450 ms, easing mengikuti komponen dan tetap terasa cepat.
+- Panel masuk: geser 8–16 px + fade, tanpa menunggu gulir pada konten yang sudah terlihat.
+- **Khusus Beranda:** React Bits `AnimatedContent` untuk transisi panel/rincian, `GlareHover` untuk kilau kartu kejadian, dan `Aurora` untuk latar biru yang lambat di panel ringkasan. Latar diberi lapisan `surface/85` agar teks tetap kontras.
+- Efek tidak menyebar ke halaman lain tanpa persetujuan pemilik. Tidak ada kilau berulang otomatis, percikan yang playful, atau gerak yang menghalangi peta dan formulir.
+- Semua efek menghormati `prefers-reduced-motion`; konten harus langsung terlihat dan latar menjadi statis saat gerak minimal dipilih.
 
 ## 10. Ikonografi
 
@@ -229,7 +234,8 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - `Field` error — garis merah + pesan tepat di bawah kolom.
 
 ### 12.9 `A1` — Masuk & `A2` — Daftar Petugas (M2)
-- Dua kolom di desktop: panel kiri berisi merek, tiga jaminan singkat, dan ilustrasi peta; panel kanan berisi kartu formulir.
+- Dua kolom di desktop: panel kiri berisi merek dan ilustrasi peta yang **tampil utuh** di dalam bingkai; panel kanan berisi kartu formulir.
+- Ilustrasi memakai rasio asli `800:520`, lebar penuh bingkai, tanpa posisi negatif, rotasi, atau pemotongan. Bingkai berada di alur layout agar tidak terpotong di bawah.
 - `A1` dua langkah: email → kode. Mode demo menampilkan tiga akun contoh; memilih akun mengisi email, lalu kode `123456` diisikan otomatis.
 - `A2` meminta nama, email, dan kecamatan. Setelah terkirim, tampil langkah "menunggu aktivasi admin" — bukan pesan sukses kosong.
 - Di ponsel hanya kartu formulir yang tampil, dengan tombol kembali ke peta di atas.
@@ -278,6 +284,15 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - **Bundel peta** dipisah dengan `React.lazy` + `manualChunks`; bundel awal turun menjadi sekitar 213 kB dan Leaflet menjadi potongan 155 kB yang dimuat saat halaman peta dibuka.
 - Semua halaman diuji pada 360/768/1366/1920 px: **92 kombinasi** lulus tanpa gulir horizontal, tanpa teks <16 px, tanpa target <44 px, dan tanpa kesalahan konsol/halaman.
 
+### 12.15 Catatan Implementasi Gerak Beranda (Revisi 2026-11-10)
+
+- Sumber komponen: registry React Bits melalui shadcn MCP (`@react-bits`), versi TypeScript + CSS gratis.
+- `AnimatedContent` memakai GSAP untuk transisi panel Beranda dan rincian kejadian; dipicu saat mount, bukan menunggu gulir, dengan jarak 8–16 px dan durasi 250–350 ms.
+- `GlareHover` memberi kilau tipis pada kartu kejadian saat kursor masuk/keluar. Tidak ada kilau berulang otomatis. Fokus keyboard tetap terlihat lewat `:focus-within` pada bingkai.
+- `Aurora` menjadi latar lambat di blok ringkasan saja, memakai token `--color-primary`, `--color-accent`, dan `--color-info`. Lapisan `surface/85` menjaga kontras teks; tanpa WebGL, latar tetap memakai `surface`.
+- Saat `prefers-reduced-motion: reduce`, konten langsung terlihat dan Aurora berhenti pada satu bingkai.
+- Komponen hanya diimpor oleh `HomePage`; halaman lain tidak ikut memuat GSAP, WebGL, atau efek kilau.
+
 > **Berkas desain:** semua board di atas tersedia di `SiAlokasi.figcraft` pada halaman `01 · Fondasi & Layar Inti` (Fondasi, P1, T2, T3, L1, L2, L3, P2, State & Dialog). Layar masuk dan halaman admin M2 mengikuti prinsip yang sama dan didokumentasikan di sini karena belum digambar sebagai board terpisah.
 
 ## 13. Larangan
@@ -286,4 +301,7 @@ Menampilkan empat perilaku wajib dalam satu papan:
 - Tidak ada warna status yang dipakai sebagai latar teks panjang.
 - Tidak ada ikon tanpa label pada navigasi utama.
 - Tidak ada teks di bawah 16 px, termasuk di dalam peta dan tabel.
+- Tidak ada tagline atau subjudul dekoratif tepat di bawah judul/label bagian.
+- Tidak ada ilustrasi yang terpotong, keluar dari bingkai, atau memakai posisi negatif pada halaman masuk.
+- Tidak ada efek React Bits di halaman selain Beranda, kecuali disetujui pemilik.
 - Tidak ada dialog bawaan browser.

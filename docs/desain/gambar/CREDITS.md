@@ -18,6 +18,13 @@ Semua aset yang dipakai aplikasi wajib tercatat di sini beserta lisensinya.
 
 Daftar ikon bantuan: tenda keluarga, air bersih, makanan siap saji, obat & P3K, selimut, sanitasi, susu bayi, pembalut, genset, tenda pleton.
 
+## Komponen Gerak
+
+| Aset | Sumber | Lisensi | Catatan |
+| :--- | :--- | :--- | :--- |
+| `AnimatedContent`, `Aurora`, `GlareHover` | [React Bits](https://reactbits.dev) melalui registry shadcn `@react-bits` | MIT + Commons Clause | Komponen gratis, diambil versi TypeScript + CSS pada 2026-11-10; hanya dipakai di Beranda |
+| GSAP | [GreenSock](https://gsap.com) | GSAP Standard License | Dipakai oleh `AnimatedContent` untuk transisi yang menghormati gerak minimal |
+
 ## Font
 
 | Aset | Sumber | Lisensi |

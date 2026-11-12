@@ -12,6 +12,7 @@
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ✅ Selesai — 2026-11-08 | `docs/bukti/m3.md`, `docs/adr/0005-alur-kerja-inti-dan-kunci-persetujuan.md`, halaman T2/T3/T4/L1/L2/L3/P2 |
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ✅ Selesai — 2026-11-09 | `docs/bukti/m4.md`, `docs/adr/0007-stok-ledger-append-only-dan-koreksi-izin.md`, halaman L4/D6/D7 |
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ✅ Selesai — 2026-11-09 | `docs/bukti/m5.md`, `docs/adr/0008-notifikasi-cetak-a4-dan-akses-lintas-perangkat.md`, `docs/panduan-demo.md`, `README.md` |
+| `R1` | Revisi Hierarki & Fokus Section | ✅ Selesai — 2026-11-10 | `docs/bukti/hierarki-fokus/`, `docs/adr/0011-hierarki-fokus.md`, `docs/desain/design-rim.md` §3–§10 |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
 
@@ -294,6 +295,39 @@ diarahkan ke `/pimpinan` dan melihat "Halaman ini bukan untuk peran Anda".
 
 ---
 
+## Revisi Antarsesi — Bahasa Visual, Halaman Masuk, & Gerak Beranda (Selesai 2026-11-10)
+
+**Permintaan pemilik:** kurangi subjudul/penjelasan dekoratif setelah judul, perbaiki ilustrasi
+halaman masuk yang terpotong, lalu sambungkan React Bits melalui shadcn MCP dan terapkan
+transisi, interaksi mikro, latar, serta animasi gratis **hanya di Beranda**.
+
+**Hasil:**
+- Aturan "judul berdiri sendiri" ditulis di `AGENTS.md` global dan lokal. `PageHeader` tidak lagi
+  menampilkan keterangan; metadata penting dipindah ke `eyebrow`. Tagline header, subjudul panel,
+  paragraf pembuka halaman masuk, dan kalimat "Tidak perlu masuk" dihapus.
+- Halaman masuk memakai ilustrasi dalam aliran layout dengan rasio asli `800:520`, tanpa offset
+  negatif/rotasi, sehingga gambar utuh pada 1024/1280/1440 px.
+- MCP `shadcn` terdaftar lokal di `opencode.json`; registry `@react-bits` ada di
+  `components.json`. Komponen gratis `AnimatedContent`, `GlareHover`, dan `Aurora` (TS + CSS)
+  dipasang di `apps/web/src/components/react-bits/`.
+- Aurora memakai token warna, diberi lapisan `surface/85` agar kontras, dan berhenti saat gerak
+  minimal. `GlareHover` memberi fokus keyboard yang terlihat. Ketiga komponen hanya diimpor
+  `HomePage`.
+- `gsap` dicatat sebagai dependensi `@sialokasi/web`; `README.md`, `CREDITS.md`, `design.md`,
+  ADR 0009, dan bukti uji diperbarui.
+
+**Kriteria selesai:**
+- [x] Tiga contoh subjudul dekoratif tidak lagi tampil.
+- [x] Ilustrasi masuk utuh dan rasio asli terjaga; tidak ada gulir horizontal 390–1440 px.
+- [x] MCP shadcn + registry React Bits aktif dan komponen gratis berhasil dipasang.
+- [x] Transisi, kilau kartu, dan latar Aurora berjalan hanya di Beranda.
+- [x] Konten tetap terlihat dan latar berhenti dengan `prefers-reduced-motion`.
+- [x] `npm run build` lulus; 14 pemeriksaan peramban lulus; 0 kesalahan konsol/halaman.
+- [x] Bukti: [`docs/bukti/revisi-beranda.md`](bukti/revisi-beranda.md) + 6 tangkapan layar +
+  `hasil-uji.json`; ADR [`0009`](adr/0009-gerak-beranda-react-bits-dan-bahasa-visual.md).
+
+---
+
 ## Keputusan Terkunci
 
 | Tanggal | Keputusan | Alasan | Catatan |
@@ -328,6 +362,15 @@ diarahkan ke `/pimpinan` dan melihat "Halaman ini bukan untuk peran Anda".
 | 2026-11-09 | Akses lintas perangkat lewat **satu tunnel web** (API diproxy Vite) | Satu alamat untuk web + API; cookie tetap same-origin | ADR 0008 |
 | 2026-11-09 | Halaman peta **React.lazy** + `manualChunks` | Bundel awal ~213 kB; Leaflet hanya saat halaman peta dibuka | ADR 0008 |
 | 2026-11-09 | Tujuan setelah masuk (`next`) **divalidasi terhadap peran**; keluar tidak menyimpan alamat lama | Ganti akun tidak membawa ke halaman peran lain | `perbaikan-ganti-akun.md` |
+| 2026-11-10 | **Judul tanpa subjudul dekoratif**; metadata penting menjadi `eyebrow`; teks pendukung hanya untuk tindakan/status/konfirmasi/keadaan kosong | Layar lebih tenang dan mudah dipindai | ADR 0009; `AGENTS.md` global §4.6 |
+| 2026-11-10 | Ilustrasi halaman masuk memakai **aliran layout + rasio asli** `800:520` | Gambar tidak terpotong pada tinggi layar mana pun | ADR 0009 |
+| 2026-11-10 | **React Bits lewat shadcn MCP**, komponen gratis TS+CSS, hanya di Beranda: `AnimatedContent`, `GlareHover`, `Aurora` | Transisi/interaksi/latar tanpa mengganggu halaman kerja | ADR 0009 |
+| 2026-11-10 | Aurora memakai **token warna + lapisan `surface/85`** dan berhenti saat gerak minimal; tanpa WebGL kembali ke `surface` | Kontras teks dan aksesibilitas tetap aman | ADR 0009 |
+| 2026-11-10 | **Tangga tipe 32 → 24 → 20 → 16** dan **satu blok fokus per keadaan** | Mata punya tujuan baca dan satu langkah berikutnya | ADR 0011 |
+| 2026-11-10 | **Bilah keputusan L2 `fixed` di atas navigasi bawah**; alasan tolak di dialog | Keputusan selalu terlihat tanpa menggulir, bilah tetap ringkas di ponsel | ADR 0011 |
+| 2026-11-10 | **`lowStockCount` ditambahkan ke ringkasan admin** untuk blok "Perlu tindakan" | Angka stok menipis tidak perlu query kedua di klien | ADR 0011 |
+| 2026-11-10 | **Ponsel menyembunyikan wordmark & nama pengguna di header**; filter P1 dilipat | Header tidak bertumpuk; blok fokus tampil lebih dulu | ADR 0011 |
+| 2026-11-11 | **Panel merek A1/A2 memakai alur tiga langkah**, bukan hitungan data awal | Angka seed tidak membantu keputusan masuk | `docs/bukti/revisi-login.md` |
 | 2026-11-07 | Tanpa WA/SMS asli, tanpa pelacakan armada, tanpa mobile native, stok ringkas | Menjaga fokus & waktu | PRD §1.4 |
 
 ---
@@ -341,6 +384,8 @@ diarahkan ke `/pimpinan` dan melihat "Halaman ini bukan untuk peran Anda".
 | Layanan tunnel diblokir jaringan | Akses lintas perangkat gagal | Panduan cloudflared/ngrok di README & `share.mjs` | Dev |
 | Scope melebar | Tahap tertunda | Batas lingkup PRD §1.4 | Pemilik |
 | Model terasa "kotak hitam" | Kredibilitas turun | Penjelasan per baris + unit test | Dev |
+| Potongan Beranda bertambah karena GSAP/React Bits | Muat pertama Beranda lebih berat | `HomePage` tetap `React.lazy`; efek tidak dipakai di halaman lain | Dev |
+| Peramban tanpa WebGL2 | Latar Aurora tidak muncul | Lapisan `surface/85` + latar `surface` menjadi cadangan; isi tetap terbaca | Dev |
 
 ---
 
@@ -357,3 +402,95 @@ menggantung. Untuk pengembangan lanjutan:
 3. Perbarui dependensi Prisma/Zod secara terencana; `npm audit` saat ini menandai advisory
    pada `deepmerge-ts` (bawaan Prisma) dan `zod` versi 3, keduanya butuh upgrade besar.
 4. Jalankan `npm run share` hanya saat demo; tutup tunnel setelah selesai.
+
+---
+
+## Revisi Redesign "Rim" (2026-11-10)
+
+**Keputusan:** material Hallmark "Rim" (kertas hitam hangat, oranye, garis 1 px, sudut 0, Geist Mono) menggantikan sistem gelap-biru lama. Catatan lengkap: `docs/adr/0010-redesign-rim-hallmark.md`, `docs/desain/design-rim.md`.
+
+**Aset desain:** `SiAlokasi-Redesign.figcraft` — halaman `00 · Sistem`, `01 · Alur inti` (P1, T2, T3, L1, L2, L3, P2), `02 · Admin & masuk` (A1, A2, D1–D7), `03 · Status & ponsel` (state & dialog, P1 ponsel). Pratinjau PNG: `docs/desain/redesign/`.
+
+**Kode yang sudah dieksekusi:**
+- Token, radius, font, dan peta gelap di `apps/web/src/styles/theme.css`.
+- Komponen inti: Button, StatusChip, Field, AppHeader, BottomNav, StatCard, PageHeader, Modal, Toast, EmptyState, Alert, MapWorkspace.
+- Halaman: Beranda publik, Buat laporan, Masuk/Daftar, Dasbor admin, Dasbor pimpinan, Lacak laporan. Halaman lain mewarisi token dan komponen; perincian layout menyusul.
+- Logo 32 px ditampilkan di header semua halaman ber-sesi dan halaman masuk.
+
+**Bukti:** `npm run build` lulus, `npm test` 91/91 lulus, tangkapan layar 1440/390 px diperiksa manual. Sisa pekerjaan: menyamakan layout T3/L2/L3/D2–D7 dengan board, lalu menjalankan `sloplint` pada HTML/CSS hasil build.
+
+**Tindak lanjut (2026-11-10):**
+- T3, L2, L3, D2–D7 dirapikan mengikuti board (judul pendek, tanpa kartu bertumpuk, badge status batang kiri).
+- `sloplint --scope app --render` pada `apps/web/src` + `http://localhost:5174`: **0 FAIL, 1 WARN F3** (disengaja). Bukti di `docs/bukti/redesign-rim/`.
+- Siap Vercel: `vercel.json`, `api/[...path].ts`, bundel `server/api-app.mjs`, CSP/header keamanan, `TRUST_PROXY`, dan panduan `docs/production-vercel.md`.
+- API serverless diuji lokal: `/api/health` 200 (`database: ok`) dan `POST /api/auth/request-code` 200.
+
+**Rencana berikutnya:** revisi hierarki & fokus section — **selesai 2026-11-10**, lihat bagian
+berikut dan ADR 0011.
+
+---
+
+## Revisi Hierarki & Fokus (Selesai 2026-11-10)
+
+**Permintaan/rencana:** `docs/rencana-hierarki-fokus.md` — setiap layar punya satu blok fokus yang
+berubah sesuai keadaan, dengan tangga tipe 32 → 24 → 20 → 16 dan satu aksi primer.
+
+**Hasil:**
+- Utility tipe baru di `apps/web/src/styles/theme.css`: `.text-page`, `.text-focus`, `.text-section`,
+  `.text-figure`, `.focus-rule`.
+- Komponen baru: `Section` (`focus`/`default`/`quiet`, `aria-labelledby`, judul fokus `tabIndex=-1`),
+  `StepRail` (tiga langkah, penanda 8 px), `lib/focus.ts` (`focusSection`, hormati gerak minimal).
+- `PageHeader` mendapat `brief` (maks. dua baris), judul 32/40. Tidak ada lagi judul 28 px.
+- `StatCard` mendapat `size="sm"` (20 px) untuk metrik pendukung.
+- Layar yang direstrukturisasi: P1 (kosong/terpilih), T2, T3 (faktor → hasil), T4, L1 (Perlu
+  keputusan), L2 (tabel + bilah keputusan selalu terlihat; alasan tolak di dialog), L3 (pita nomor
+  izin), P2 (kode → status/timeline), A1/A2 (formulir fokus), D1 (Perlu tindakan), D2–D7 (tabel
+  fokus, filter 20), D6 (waktu 40, reset sekunder).
+- P1 ponsel: filter dilipat, ringkasan di dalam gulungan; header ponsel menyembunyikan wordmark dan
+  nama pengguna agar tidak bertumpuk.
+- API `GET /api/admin/summary` menambahkan `lowStockCount` untuk blok "Perlu tindakan" D1.
+- Bukti: `docs/bukti/hierarki-fokus/` — 38 tangkapan (1440/390), `hasil-uji.json`
+  (**240/240 lulus**), `sloplint.txt` (**0 FAIL, 1 WARN F3** disengaja). `npm run build` lulus,
+  `npm test` 91/91 lulus, `verify:m2` 49/49, `verify:m4` 99/99. ADR 0011.
+
+**Kriteria selesai:**
+- [x] Satu judul halaman 32 dan satu judul fokus 24 per layar; tidak ada teks < 16 px.
+- [x] Satu blok fokus per keadaan; perpindahan fokus hanya saat keadaan berubah.
+- [x] Satu aksi primer per layar; L2 punya bilah keputusan yang terlihat tanpa menggulir.
+- [x] Angka "menunggu keputusan" tidak lagi tampil dua kali di L1.
+- [x] Ponsel: blok fokus tampil pertama di panel; filter P1 dilipat; tanpa gulir horizontal.
+- [x] `npm run build`, `npm test`, dan sloplint lulus (0 FAIL).
+- [x] ADR 0011 dan `design-rim.md` §3–§10 diperbarui.
+
+**Catatan:** render tier sloplint tidak berjalan karena `puppeteer-core` tidak tersedia di sesi ini;
+tangkapan 1440/390 dilakukan lewat Chrome DevTools Protocol dan tetap memeriksa overflow, teks,
+target sentuh, jumlah `<h1>`, dan jumlah blok fokus.
+
+---
+
+**Rencana berikutnya:** tidak ada yang menggantung. Revisi hierarki & fokus sudah dieksekusi dan
+didokumentasikan di ADR 0011.
+
+---
+
+## Revisi Copy Halaman Masuk (Selesai 2026-11-11)
+
+**Permintaan:** panel kiri halaman masuk memuat hitungan data awal yang tidak relevan; ganti dengan
+copy yang menjelaskan pekerjaan yang dibantu aplikasi.
+
+**Hasil:**
+- Judul panel merek: "Dari laporan lapangan ke izin distribusi."
+- Tiga angka data awal (3 peran, 10 jenis bantuan, 8 kecamatan) diganti tiga langkah alur: catat
+  kejadian, periksa estimasi, setujui dan terbitkan izin.
+- Panel merek dipasangi `sticky top-0 h-dvh self-start` agar catatan bawah tetap terlihat saat
+  formulir lebih tinggi dari layar (1280×800).
+- Tidak ada perubahan formulir, tautan, akun demo, rute, atau logika masuk.
+
+**Bukti:** `docs/bukti/revisi-login.md` — tangkapan 1440/1280/390 dan halaman daftar; `npm run build`
+lulus, `npm test` 91/91 lulus, `sloplint` 0 FAIL (1 WARN F3 disengaja). `design-rim.md` A1/A2 diperbarui.
+
+**Kriteria selesai:**
+- [x] Tidak ada hitungan data awal di halaman masuk.
+- [x] Copy memakai istilah kamus proyek: laporan lapangan, estimasi bantuan, izin distribusi.
+- [x] Tanpa tagline dekoratif, angka karangan, atau istilah teknis.
+- [x] Formulir dan akun demo tetap berfungsi; tidak ada gulir horizontal di 390 px.
