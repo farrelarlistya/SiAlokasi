@@ -138,7 +138,6 @@ export function AdminUsersPage() {
     <AppShell>
       <PageHeader
         title="Akun"
-        brief="Aktifkan pendaftar dan atur peran akun."
         actions={
           <Button
             variant="secondary"

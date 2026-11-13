@@ -55,7 +55,7 @@ export function LocationPicker({ value, onChange, className }: LocationPickerPro
         </MapCanvas>
       </div>
       <p className="mt-2 text-base text-text-muted">
-        Klik peta untuk memindahkan titik posko. Angka lintang dan bujur di atas ikut berubah.
+        Klik peta untuk memindahkan titik posko.
       </p>
     </div>
   );

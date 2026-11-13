@@ -184,9 +184,6 @@ export function HomePage() {
             <div className="flex h-full min-h-0 flex-col bg-surface">
               <div className="border-b border-border px-6 pb-5 pt-6">
                 <h1 className="text-page text-text">Kejadian aktif</h1>
-                <p className="mt-2 max-w-[42ch] text-base text-text-muted">
-                  Pilih kejadian di peta atau daftar untuk melihat rinciannya.
-                </p>
 
                 <div className="mt-5 hidden gap-3 [grid-template-columns:repeat(auto-fit,minmax(160px,1fr))] sm:grid">
                   <SelectInput

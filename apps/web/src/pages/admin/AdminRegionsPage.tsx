@@ -280,7 +280,6 @@ export function AdminRegionsPage() {
     <AppShell>
       <PageHeader
         title="Wilayah & posko"
-        brief="Kelola kecamatan dan titik posko tujuan distribusi."
         actions={
           <>
             <Button

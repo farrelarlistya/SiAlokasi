@@ -56,7 +56,6 @@ export function StockPage() {
     <AppShell>
       <PageHeader
         title="Stok bantuan"
-        brief="Pantau ketersediaan bantuan per posko."
         actions={
           <Button
             variant="secondary"

@@ -235,7 +235,7 @@ export function UiKitPage() {
             <Field
               id="contoh-catatan"
               label="Catatan lapangan"
-              hint="Boleh dikosongkan. Tulis kondisi yang perlu diketahui pimpinan."
+              hint="Boleh dikosongkan."
             >
               <Textarea
                 value={note}

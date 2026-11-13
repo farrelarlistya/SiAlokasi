@@ -129,7 +129,6 @@ export function SubmitIncidentPage() {
       <PageHeader
         eyebrow={`Laporan ${incident.code}`}
         title="Ajukan laporan ke pimpinan"
-        brief="Periksa rincian bantuan, lalu ajukan ke pimpinan."
         actions={
           <Link to={`/petugas/laporan/${incident.id}`} className={buttonStyles("secondary", "md")}>
             <ArrowLeft aria-hidden="true" className="h-5 w-5" />

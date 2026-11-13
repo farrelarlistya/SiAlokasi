@@ -240,7 +240,6 @@ export function PermitPage() {
         <PageHeader
           eyebrow={`Laporan ${incident.code}`}
           title="Izin distribusi bantuan"
-          brief="Periksa dokumen, lalu cetak atau tandai selesai."
           actions={
             <>
               <Button
@@ -483,8 +482,7 @@ export function PermitPage() {
             Riwayat koreksi izin
           </h2>
           <p className="mt-1 text-base text-text-muted">
-            Izin lama tidak dihapus. Setiap koreksi menyimpan alasan, pelaku, dan perubahan
-            jumlahnya.
+            Izin lama tidak dihapus; setiap koreksi mencatat alasan dan pelakunya.
           </p>
           <ul className="mt-4 divide-y divide-border">
             {incident.corrections.map((correction) => (
@@ -652,7 +650,6 @@ export function PermitPage() {
           <Field
             id="correction-reason"
             label="Alasan koreksi"
-            hint="Jelaskan kenapa jumlah atau posko berubah agar riwayat mudah diperiksa."
             required
           >
             <Textarea

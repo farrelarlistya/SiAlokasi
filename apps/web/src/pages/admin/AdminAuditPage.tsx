@@ -116,7 +116,6 @@ export function AdminAuditPage() {
     <AppShell>
       <PageHeader
         title="Audit"
-        brief="Periksa perubahan data dan riwayat status laporan."
         actions={
           <Button
             variant="secondary"

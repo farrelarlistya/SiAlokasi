@@ -346,7 +346,6 @@ export function PimpinanReviewPage() {
           incident.disasterDetail,
         )}, ${incident.region?.name ?? "Kecamatan belum diisi"}`}
         title={incident.title}
-        brief="Periksa jumlah bantuan, lalu setujui atau tolak."
         actions={
           <Link to="/pimpinan" className={buttonStyles("secondary", "md")}>
             Kembali ke antrian
@@ -413,7 +412,6 @@ export function PimpinanReviewPage() {
         tone="focus"
         headingId="rekomendasi-bantuan"
         title="Rekomendasi bantuan"
-        brief="Tinjau setiap baris. Ubah jumlah hanya bila kondisi lapangan menuntut."
         actions={
           recommendation ? (
             <span className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted">
@@ -830,7 +828,6 @@ export function PimpinanReviewPage() {
             <Field
               id="adjust-reason"
               label="Alasan perubahan"
-              hint="Jelaskan singkat kenapa jumlahnya berbeda dari usulan perhitungan."
               error={adjustErrors.reason}
               required
             >
@@ -945,7 +942,7 @@ export function PimpinanReviewPage() {
         <Field
           id="reject-reason"
           label="Alasan penolakan"
-          hint="Minimal 5 karakter. Jelaskan data yang perlu diperbaiki."
+          hint="Minimal 5 karakter."
           required
         >
           <Textarea

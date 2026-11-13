@@ -69,7 +69,6 @@ export function PetugasDashboardPage() {
             loading={dashboard.isPending}
             icon={FilePlus2}
             tone="info"
-            hint="Masih bisa disunting sebelum diajukan."
           />
           <StatCard
             label="Menunggu persetujuan"
@@ -77,7 +76,6 @@ export function PetugasDashboardPage() {
             loading={dashboard.isPending}
             icon={Send}
             tone="warning"
-            hint="Sudah terkunci dan menunggu keputusan pimpinan."
           />
           <StatCard
             label="Selesai"
@@ -85,7 +83,6 @@ export function PetugasDashboardPage() {
             loading={dashboard.isPending}
             icon={ShieldCheck}
             tone="success"
-            hint="Distribusi sudah dilakukan."
           />
         </div>
       </section>
@@ -97,7 +94,6 @@ export function PetugasDashboardPage() {
               <h2 id="laporan-terbaru" className="text-section text-text/90">
                 Laporan terbaru
               </h2>
-              <p className="mt-1 text-base text-text-muted">Lima laporan terakhir dari akun Anda.</p>
             </div>
             <span className="inline-flex min-h-9 items-center rounded-full border border-border bg-elevated px-3 text-base text-text-muted">
               {dashboard.isPending ? "Memuat…" : `${formatNumber(dashboard.data?.total ?? 0)} total`}

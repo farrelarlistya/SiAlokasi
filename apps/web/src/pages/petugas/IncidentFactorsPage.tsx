@@ -417,11 +417,6 @@ export function IncidentFactorsPage() {
       <PageHeader
         eyebrow={`Laporan ${incident.code}`}
         title="Faktor & estimasi"
-        brief={
-          recommendation
-            ? "Periksa hasil, lalu ajukan ke pimpinan."
-            : "Isi faktor lapangan, lalu hitung estimasi."
-        }
         actions={
           <>
             <Link to="/petugas" className={buttonStyles("secondary", "md")}>
@@ -595,7 +590,6 @@ export function IncidentFactorsPage() {
         tone={recommendation ? "default" : "focus"}
         headingId={recommendation ? undefined : "faktor-lapangan"}
         title="Faktor lapangan"
-        brief="Faktor dipakai untuk menghitung kebutuhan, bukan untuk menilai siapa yang salah."
         actions={
           isLocked ? (
             <span className="inline-flex min-h-9 items-center gap-2 border border-border px-3 text-base text-text-muted">

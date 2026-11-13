@@ -138,6 +138,39 @@ async function main(): Promise<void> {
   );
   check("tidak ada warna hex lepas di halaman", hexHits.length === 0, hexHits.join(", "));
 
+  // Gaya teks: tanpa kalimat penggantung (AGENTS.md §7 "Batasan copy").
+  const bannedCopy = [
+    "Tentukan titik dan radius",
+    "Pilih kejadian di peta atau daftar",
+    "Sebutkan sendiri, misalnya",
+    "Masih bisa disunting sebelum diajukan",
+    "Sudah terkunci dan menunggu keputusan pimpinan",
+    "Distribusi sudah dilakukan.",
+    "Lima laporan terakhir dari akun Anda",
+    "Isi faktor lapangan, lalu hitung estimasi",
+    "bukan untuk menilai siapa yang salah",
+    "Kecamatan terdampak · otomatis",
+  ];
+  const bannedPattern = new RegExp(
+    bannedCopy.map((phrase) => phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|"),
+  );
+  const copyHits = await findInFiles(path.join(root, "apps/web/src"), bannedPattern);
+  check(
+    "tidak ada kalimat penggantung terlarang",
+    copyHits.length === 0,
+    copyHits.length > 0 ? copyHits.join(", ") : `${bannedCopy.length} frasa dipantau`,
+  );
+
+  const stepCopyHits = await findInFiles(
+    path.join(root, "apps/web/src"),
+    /(?:brief|hint)=\{?"?[^"}]*\b(?:lalu|untuk melihat|agar)\b/i,
+  );
+  check(
+    "brief/hint tidak menulis ulang langkah pengguna",
+    stepCopyHits.length === 0,
+    stepCopyHits.join(", "),
+  );
+
   console.log("\nRingkasan");
   console.log(`  ${passes.length} pemeriksaan lulus, ${failures.length} gagal`);
 

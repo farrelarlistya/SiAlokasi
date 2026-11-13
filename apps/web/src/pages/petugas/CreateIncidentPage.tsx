@@ -237,9 +237,6 @@ export function CreateIncidentPage() {
             <div className="flex min-h-full flex-col">
               <div className="border-b border-border px-6 pb-5 pt-6">
                 <h1 className="text-page text-text">Laporan baru</h1>
-                <p className="mt-2 text-base text-text-muted">
-                  Tentukan titik dan radius, lalu lanjut ke faktor.
-                </p>
                 <StepRail
                   steps={["Titik & wilayah", "Faktor & estimasi", "Ajukan"]}
                   current={0}
@@ -301,9 +298,7 @@ export function CreateIncidentPage() {
                 </div>
 
                 <div className="flex items-center justify-between gap-3 border border-border-strong bg-sunken px-4 py-3">
-                  <span className="text-base text-text-muted">
-                    Kecamatan terdampak · otomatis
-                  </span>
+                  <span className="text-base text-text-muted">Kecamatan terdampak</span>
                   <span
                     className={
                       detectedRegion ? "text-base font-medium text-text" : "text-base font-medium text-danger"
@@ -416,7 +411,6 @@ export function CreateIncidentPage() {
                   <Field
                     id="incident-disaster-detail"
                     label="Jenis bencana lainnya"
-                    hint="Sebutkan sendiri, misalnya: tanah longsor atau letusan gunung."
                     error={errors.disasterDetail}
                     required
                   >

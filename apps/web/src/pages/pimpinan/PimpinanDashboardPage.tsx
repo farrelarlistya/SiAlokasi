@@ -43,7 +43,7 @@ export function PimpinanDashboardPage() {
 
   return (
     <AppShell>
-      <PageHeader title="Dasbor" brief="Tinjau laporan yang menunggu keputusan." />
+      <PageHeader title="Dasbor" />
 
       {summary.isError ? (
         <Alert
@@ -219,9 +219,6 @@ export function PimpinanDashboardPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-base text-text-muted">
-            Jumlah dihitung terpisah per jenis, karena satuannya berbeda.
-          </p>
         </Section>
       ) : null}
 
@@ -253,7 +250,7 @@ export function PimpinanDashboardPage() {
         </Section>
 
         {queue.length > 0 ? (
-          <Section title="Antrian keputusan" brief="Laporan yang sudah diajukan, urut terbaru.">
+          <Section title="Antrian keputusan">
             <ul>
               {queue.map((incident) => (
                 <li key={incident.id} className="border-t border-border first:border-t-0">

@@ -219,7 +219,7 @@ async function main() {
     await setField("#incident-title", "Banjir di Wonokromo RW 03");
     await setField("#incident-lat", "-7.3002");
     await setField("#incident-lng", "112.7382");
-    await waitForText("Kecamatan terdampak · otomatis");
+    await waitForText("Kecamatan terdampak");
     await waitForText("Wonokromo");
     await screenshot("01-t2-buat-laporan.png", 1440, 1000);
 

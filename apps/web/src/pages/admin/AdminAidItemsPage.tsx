@@ -210,7 +210,6 @@ export function AdminAidItemsPage() {
     <AppShell>
       <PageHeader
         title="Jenis bantuan"
-        brief="Atur nama, satuan, dan status jenis bantuan."
         actions={
           <>
             <Button
@@ -535,7 +534,7 @@ export function AdminAidItemsPage() {
             <Field
               id="aid-standard"
               label="Standar per jiwa"
-              hint="Angka acuan untuk perhitungan otomatis. Boleh desimal, hasil akhir tetap bilangan bulat."
+              hint="Boleh desimal; hasil akhir tetap bilangan bulat."
               error={errors.standardPerPerson}
               required
             >

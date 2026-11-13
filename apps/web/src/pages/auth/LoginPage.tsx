@@ -116,7 +116,7 @@ export function LoginPage() {
       title={step === "email" ? "Masuk ke SiAlokasi" : "Masukkan kode masuk"}
       brief={
         step === "email"
-          ? "Gunakan email dinas yang terdaftar."
+          ? undefined
           : demoMode
             ? "Mode demo: kode selalu 123456."
             : "Masukkan 6 angka dari email Anda."

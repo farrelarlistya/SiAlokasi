@@ -139,7 +139,6 @@ export function DevPage() {
     <AppShell>
       <PageHeader
         title="Panel demo"
-        brief="Majukan waktu, isi contoh, atau reset untuk demo baru."
         actions={
           <Button
             variant="secondary"
@@ -298,7 +297,6 @@ export function DevPage() {
 
       <Section
         title="Tiga contoh laporan"
-        brief="Satu laporan untuk setiap tahap demo: antrian pimpinan, izin terbit, dan distribusi selesai. Semua memakai perhitungan bantuan yang sama dengan alur asli."
         actions={
           <span className="font-mono text-base text-text-muted">
             {status.isPending ? "…" : `${data?.examples.length ?? 0} contoh`}

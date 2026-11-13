@@ -102,7 +102,6 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Daftar sebagai petugas"
-      brief="Ajukan akun untuk wilayah tugas Anda."
       footer={
         <p className="text-base text-text-muted">
           Sudah punya akun?{" "}
@@ -137,7 +136,6 @@ export function RegisterPage() {
         <Field
           id="register-email"
           label="Alamat email"
-          hint="Gunakan email yang aktif. Kode masuk akan dikirim ke alamat ini."
           error={errors.email}
           required
         >
@@ -156,7 +154,6 @@ export function RegisterPage() {
         <Field
           id="register-region"
           label="Kecamatan tempat bertugas"
-          hint="Pilih wilayah yang paling sering Anda tangani."
           error={errors.regionId}
           required
         >

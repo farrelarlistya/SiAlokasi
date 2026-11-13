@@ -232,7 +232,7 @@ async function main() {
     await setField("#incident-lat", "-7.3002");
     await setField("#incident-lng", "112.7382");
     await setField("#incident-radius", "1200");
-    await waitForText("Kecamatan terdampak · otomatis");
+    await waitForText("Kecamatan terdampak");
     await waitForText("Wonokromo");
     check("kecamatan terdeteksi otomatis dari titik", true, "Wonokromo");
     await screenshot("01-formulir-titik-otomatis.png");
@@ -289,7 +289,9 @@ async function main() {
     await waitForText("Bantuan menunggu keputusan");
     check(
       "angka gabungan 'Bantuan menunggu' diganti rincian per jenis",
-      await evaluate(`document.body.innerText.includes("Jumlah dihitung terpisah per jenis")`),
+      await evaluate(
+        `document.body.innerText.includes("Jenis bantuan menunggu") && document.body.innerText.includes("Bantuan menunggu keputusan")`,
+      ),
     );
     await screenshot("04-dasbor-antrian.png");
 

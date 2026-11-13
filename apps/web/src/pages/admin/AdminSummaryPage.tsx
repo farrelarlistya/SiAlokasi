@@ -89,7 +89,6 @@ export function AdminSummaryPage() {
     <AppShell>
       <PageHeader
         title="Dasbor"
-        brief="Selesaikan antrian aktivasi dan stok menipis."
         actions={
           <Button
             variant="secondary"
