@@ -189,12 +189,16 @@ jalankan `npm run dev` dan Chrome dengan `--remote-debugging-port=9222`, lalu
 
 Repo ini siap untuk satu proyek Vercel: web statis + API Fastify sebagai Node Function, dengan PostgreSQL terkelola (Neon/Supabase). Panduan langkah demi langkah ada di [`docs/production-vercel.md`](docs/production-vercel.md).
 
+Contoh hasil pemasangan: **https://sialokasi.vercel.app** (Neon Postgres, region `sin1`).
+
 ```bash
 vercel link
 vercel --prod
 ```
 
 Variabel minimum di dashboard: `DATABASE_URL` (pooler), `DEMO_MODE`, `WEB_ORIGIN`, `TRUST_PROXY=true`. Migrasi dijalankan manual dengan `npx prisma migrate deploy` memakai URL direct sebelum deploy.
+
+Dua pengaturan yang mudah terlewat: rewrite `/api/:path*` → `/api/[...path]` (jalur API bersarang) dan `regions` yang sama dengan region database (kalau berbeda benua, transaksi bisa melewati batas waktu).
 
 ## Catatan
 

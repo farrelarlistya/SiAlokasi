@@ -13,7 +13,14 @@ Browser
                                 └─ PostgreSQL terkelola
 ```
 
-`api/[...path].ts` meneruskan seluruh permintaan ke Fastify setelah `app.ready()`; tidak ada `listen()` di serverless. Prisma dibiarkan eksternal dan mesin query-nya disertakan lewat `includeFiles` di `vercel.json`.
+`api/[...path].ts` meneruskan seluruh permintaan ke Fastify setelah `app.ready()`; tidak ada `listen()` di serverless. Prisma dibiarkan eksternal; berkas `.prisma/client` disertakan otomatis oleh bundel esbuild di `scripts/build-vercel-api.mjs`.
+
+Dua hal yang wajib ada di `vercel.json`:
+
+- **Rewrite** `{ "source": "/api/:path*", "destination": "/api/[...path]" }` — tanpa ini, fungsi catch-all hanya cocok untuk satu segmen (`/api/health`) dan jalur bersarang (`/api/auth/me`) dijawab 404 oleh Vercel sebelum fungsi dipanggil.
+- **`regions: ["sin1"]`** — samakan dengan region database. Fungsi di `iad1` (Amerika) dengan database di Singapura membuat setiap kueri menempuh ±230 ms; reset demo yang biasanya 70 kueri memakan 21 detik dan gagal karena batas transaksi. Setelah berada di region yang sama, reset selesai 0,3 detik.
+
+`apps/api/src/prisma.ts` memberi batas waktu transaksi lebih longgar (`maxWait` 15 detik, `timeout` 20 detik) karena instans serverless yang baru "dingin" butuh beberapa detik untuk koneksi pertama.
 
 ## 1. Siapkan database
 
@@ -21,6 +28,8 @@ Pakai PostgreSQL 15+ terkelola. Untuk Vercel + Prisma, gunakan **connection pool
 
 - Neon: `postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/db?sslmode=require&pgbouncer=true&connection_limit=1`
 - Supabase: port `6543` (pooler) untuk aplikasi, port `5432` untuk migrasi.
+
+Kalau memakai Neon CLI, `neon init` sudah menuliskan `DATABASE_URL` (pooler) dan `DATABASE_URL_UNPOOLED` (langsung) ke `.env.local`. Berkas itu tidak di-commit.
 
 Migrasi dijalankan sekali dari mesin lokal dengan URL **direct** (bukan pooler):
 
@@ -71,6 +80,7 @@ Kalau build gagal karena Prisma, pastikan `DATABASE_URL` tersedia saat build dan
 
 ```bash
 curl https://<project>.vercel.app/api/health
+curl https://<project>.vercel.app/api/auth/me      # harus 200, bukan 404
 ```
 
 Lalu buka halaman masuk, gunakan akun demo (`petugas@sialokasi.demo`, kode `123456` bila `DEMO_MODE=true`), dan cek:
@@ -86,5 +96,6 @@ Lalu buka halaman masuk, gunakan akun demo (`petugas@sialokasi.demo`, kode `1234
 - **Demo mode.** Saat `DEMO_MODE=true`, OTP `123456` selalu diterima dan `/api/dev` aktif. Matikan untuk produksi nyata.
 - **Serverless.** Setiap instans fungsi punya memori sendiri; rate limit in-memory tidak lintas instans. Bila perlu, tambahkan rate limit di edge/WAF.
 - **Koneksi.** Gunakan pooler + `connection_limit=1` agar tidak menghabiskan koneksi PostgreSQL saat banyak fungsi dingin.
+- **Region.** Tempatkan fungsi di region yang sama dengan database (`regions` di `vercel.json`). Beda benua membuat setiap kueri lambat dan transaksi bisa melewati batas waktu.
 - **Print A4** memakai `window.print()` di browser; tidak butuh layanan tambahan.
 - **Rollback.** Vercel menyimpan deployment sebelumnya; rollback lewat dashboard. Migrasi database bersifat maju (tidak otomatis mundur).

@@ -510,3 +510,38 @@ proyek (konfigurasi asisten kode dan laporan audit tampilan bawaannya).
 
 **Bukti:** `npm run build` lulus, `npm test` 91/91 lulus; pencarian kata kunci alat internal pada
 berkas ter-track hanya menyisakan baris `.gitignore`.
+
+---
+
+## Deployment Produksi Vercel + Neon (Selesai 2026-11-13)
+
+**Permintaan:** memasang aplikasi di hosting agar bisa dibuka lewat tautan, memakai database
+terkelola, lalu memverifikasi seluruh alur kerja.
+
+**Hasil:**
+- Proyek Vercel `sialokasi` aktif di `https://sialokasi.vercel.app`; web statis dan API berada di
+  origin yang sama sehingga cookie sesi bekerja tanpa konfigurasi CORS tambahan.
+- Database Neon Postgres branch `production` (region `ap-southeast-1`); migrasi 5 berkas diterapkan
+  dan seed bersih dijalankan (10 jenis bantuan, 8 kecamatan, 3 posko, 30 baris stok, 0 transaksi).
+- Variabel lingkungan produksi: `DATABASE_URL` (pooler), `DEMO_MODE`, `WEB_ORIGIN`, `LOG_LEVEL`,
+  `TRUST_PROXY`. Nilai rahasia tidak masuk repo.
+- `vercel.json`: rewrite `/api/:path*` → `/api/[...path]` (memperbaiki 404 pada jalur bersarang),
+  `regions: ["sin1"]` (menyamakan region dengan database), dan `maxDuration` 30 detik.
+- `api/[...path].ts`: mengalirkan ulang badan permintaan dengan `content-length` yang benar dan
+  menunggu `finish`/`close` sebelum selesai.
+- `apps/api/src/prisma.ts`: `transactionOptions` (`maxWait` 15 detik, `timeout` 20 detik).
+- Uji tulis penuh di produksi: laporan → 8 faktor & estimasi → pengajuan → persetujuan
+  (`IZN-20261113-001`) → distribusi selesai → reset demo kembali 0 transaksi.
+
+**Kriteria selesai:**
+- [x] Halaman web dan seluruh jalur `/api/*` (termasuk bersarang) menjawab 200.
+- [x] Masuk dengan tiga akun demo dan kode `123456` berhasil; pembatasan peran berjalan.
+- [x] Alur kerja inti berjalan dari laporan sampai izin distribusi di database produksi.
+- [x] Publikasi lacak menampilkan status tanpa data pribadi pelapor.
+- [x] `POST /api/dev/reset` mengembalikan aplikasi ke 0 laporan, 0 izin, 0 notifikasi.
+- [x] `npm run build` lulus dan `npm test` 91/91 lulus.
+
+**Bukti:** `docs/bukti/deploy-vercel-2026-11-13.md`. Keputusan teknis: ADR 0012.
+
+**Rencana berikutnya:** tidak ada yang menggantung. Untuk pemakaian nyata, ubah `DEMO_MODE=false`
+dan jalankan migrasi dengan `DATABASE_URL_UNPOOLED` sebelum deploy yang mengubah skema.
