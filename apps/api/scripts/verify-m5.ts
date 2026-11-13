@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import type { Response as InjectResponse } from "light-my-request";
+import { DEMO_PASSWORD } from "@sialokasi/shared";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,7 +10,7 @@ import { seedDatabase } from "../prisma/seed";
 process.env.LOG_LEVEL = "silent";
 
 const { buildApp } = await import("../src/app");
-const { DEMO_CODE, SESSION_COOKIE } = await import("../src/lib/auth");
+const { SESSION_COOKIE } = await import("../src/lib/auth");
 
 const prisma = new PrismaClient();
 const app = await buildApp();
@@ -39,7 +40,7 @@ async function login(email: string): Promise<{ cookie: string; statusCode: numbe
   const response = await app.inject({
     method: "POST",
     url: "/api/auth/login",
-    payload: { email, code: DEMO_CODE },
+    payload: { email, password: DEMO_PASSWORD },
   });
 
   return { cookie: cookieFrom(response), statusCode: response.statusCode };

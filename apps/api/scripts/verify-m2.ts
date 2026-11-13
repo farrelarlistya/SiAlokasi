@@ -1,13 +1,13 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import type { Response as InjectResponse } from "light-my-request";
-import { SURABAYA_REGION_COUNT } from "@sialokasi/shared";
+import { DEMO_PASSWORD, SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { seedDatabase } from "../prisma/seed";
 
 process.env.LOG_LEVEL = "silent";
 
 const { buildApp } = await import("../src/app");
-const { DEMO_CODE, SESSION_COOKIE } = await import("../src/lib/auth");
+const { SESSION_COOKIE } = await import("../src/lib/auth");
 
 const prisma = new PrismaClient();
 const app = await buildApp();
@@ -30,11 +30,14 @@ function cookieFrom(response: { cookies: { name: string; value: string }[] }): s
   return cookie ? `${SESSION_COOKIE}=${cookie.value}` : "";
 }
 
-async function login(email: string): Promise<{ cookie: string; statusCode: number; body: unknown }> {
+async function login(
+  email: string,
+  password: string = DEMO_PASSWORD,
+): Promise<{ cookie: string; statusCode: number; body: unknown }> {
   const response = await app.inject({
     method: "POST",
     url: "/api/auth/login",
-    payload: { email, code: DEMO_CODE },
+    payload: { email, password },
   });
 
   return {
@@ -82,15 +85,18 @@ async function main(): Promise<void> {
   console.log("Pemeriksaan M2 — Akun Semua Peran & Data Master\n");
   await seedDatabase(prisma);
 
-  console.log("[1] Masuk dengan kode demo dan sesi cookie");
+  console.log("\n[1] Masuk dengan email dan kata sandi, sesi cookie");
   const adminLogin = await login("admin@sialokasi.demo");
   const petugasLogin = await login("petugas@sialokasi.demo");
   const pimpinanLogin = await login("pimpinan@sialokasi.demo");
 
-  check("akun admin bisa masuk dengan kode 123456", adminLogin.statusCode === 200);
-  check("akun petugas bisa masuk dengan kode 123456", petugasLogin.statusCode === 200);
-  check("akun pimpinan bisa masuk dengan kode 123456", pimpinanLogin.statusCode === 200);
+  check("akun admin bisa masuk dengan kata sandi demo", adminLogin.statusCode === 200);
+  check("akun petugas bisa masuk dengan kata sandi demo", petugasLogin.statusCode === 200);
+  check("akun pimpinan bisa masuk dengan kata sandi demo", pimpinanLogin.statusCode === 200);
   check("cookie sesi dipasang saat masuk", adminLogin.cookie.length > 0);
+
+  const wrongPassword = await login("petugas@sialokasi.demo", "kata-sandi-salah");
+  check("kata sandi salah ditolak", wrongPassword.statusCode === 401);
 
   const me = await get("/api/auth/me", adminLogin.cookie);
   const meBody = me.json() as { user?: { role?: string } };
@@ -137,11 +143,12 @@ async function main(): Promise<void> {
   const registration = await post("/api/auth/register", undefined, {
     name: "Calon Petugas Uji",
     email: "calon.petugas@sialokasi.demo",
+    password: "calonpetugas123",
     regionId: "region_gubeng",
   });
   check("pendaftaran petugas diterima", registration.statusCode === 201);
 
-  const beforeActivation = await login("calon.petugas@sialokasi.demo");
+  const beforeActivation = await login("calon.petugas@sialokasi.demo", "calonpetugas123");
   check("akun baru belum bisa masuk sebelum diaktifkan", beforeActivation.statusCode === 403);
 
   const pendingUser = await prisma.user.findUnique({
@@ -160,7 +167,7 @@ async function main(): Promise<void> {
   );
   check("admin bisa mengaktifkan akun", activation.statusCode === 200);
 
-  const afterActivation = await login("calon.petugas@sialokasi.demo");
+  const afterActivation = await login("calon.petugas@sialokasi.demo", "calonpetugas123");
   check("akun yang sudah aktif bisa masuk", afterActivation.statusCode === 200);
 
   const roleChange = await patch(

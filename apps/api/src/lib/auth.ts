@@ -7,7 +7,6 @@ import {
 
 export const SESSION_COOKIE = "sialokasi_session";
 export const SESSION_TTL_MINUTES = 12 * 60;
-export const DEMO_CODE = "123456";
 
 export type SessionUser = {
   id: string;

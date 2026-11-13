@@ -1,7 +1,9 @@
 ﻿import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
+import { DEMO_PASSWORD } from "@sialokasi/shared";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { hashPassword } from "../src/lib/password";
 import { AID_ITEMS, DEMO_USERS, POSKOS, REGIONS, STOCKS } from "./seed-data";
 
 export type SeedResult = {
@@ -24,6 +26,8 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
   const demoRegionIds = REGIONS.map((region) => region.id);
   const demoPoskoIds = POSKOS.map((posko) => posko.id);
   const demoAidItemIds = AID_ITEMS.map((item) => item.id);
+  // Kata sandi akun demo dipakai ulang setiap seed agar reset selalu bisa masuk.
+  const demoPasswordHash = hashPassword(DEMO_PASSWORD);
 
   // Jarak jauh (Neon) membuat transaksi seed lebih lambat daripada lokal,
   // jadi waktunya diberi napas agar reset demo tidak gagal di tengah.
@@ -45,7 +49,6 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
       await tx.stock.deleteMany();
       await tx.auditLog.deleteMany();
       await tx.session.deleteMany();
-      await tx.otpCode.deleteMany();
 
       await tx.user.deleteMany({ where: { email: { notIn: demoEmails } } });
       await tx.posko.deleteMany({ where: { id: { notIn: demoPoskoIds } } });
@@ -68,8 +71,13 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
             role: user.role,
             isActive: true,
             regionId: user.regionId ?? null,
+            passwordHash: demoPasswordHash,
           },
-          create: { ...user, regionId: user.regionId ?? null },
+          create: {
+            ...user,
+            regionId: user.regionId ?? null,
+            passwordHash: demoPasswordHash,
+          },
         });
       }
 

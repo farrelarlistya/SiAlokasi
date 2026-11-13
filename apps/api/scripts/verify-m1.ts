@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { SURABAYA_BOUNDS, SURABAYA_REGION_COUNT } from "@sialokasi/shared";
+import { DEMO_PASSWORD, SURABAYA_BOUNDS, SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -116,6 +116,15 @@ async function main(): Promise<void> {
   check(
     "setiap peran punya satu akun demo",
     ["PETUGAS", "PIMPINAN", "ADMIN"].every((role) => users.some((user) => user.role === role)),
+  );
+  check(
+    "kata sandi akun demo disimpan sebagai hash",
+    users.every((user) => user.passwordHash?.startsWith("scrypt:")),
+    `${users.filter((user) => user.passwordHash?.startsWith("scrypt:")).length} dari ${users.length}`,
+  );
+  check(
+    "kata sandi tidak tersimpan sebagai teks biasa",
+    users.every((user) => !JSON.stringify(user).includes(DEMO_PASSWORD)),
   );
 
   console.log("\n[3] Aturan kode");

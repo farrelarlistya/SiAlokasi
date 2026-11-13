@@ -77,10 +77,11 @@ enum StockMovementKind {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String
-  email     String   @unique
-  role      Role
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String?
+  role         Role
   isActive  Boolean  @default(true)
   regionId  String?
   region    Region?  @relation(fields: [regionId], references: [id])
@@ -92,7 +93,6 @@ model User {
   decisions      Decision[]           @relation("DecisionDecider")
   permits        Permit[]             @relation("PermitIssuer")
   auditLogs      AuditLog[]           @relation("AuditActor")
-  otpCodes       OtpCode[]
   sessions       Session[]
   stockMovements StockMovement[]
   corrections    IncidentCorrection[]
@@ -112,19 +112,6 @@ model Session {
 
   @@index([userId, expiresAt])
   @@map("sessions")
-}
-
-model OtpCode {
-  id        String    @id @default(cuid())
-  userId    String
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  codeHash  String
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@index([userId, expiresAt])
-  @@map("otp_codes")
 }
 
 model Region {

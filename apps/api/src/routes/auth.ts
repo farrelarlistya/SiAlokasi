@@ -1,11 +1,9 @@
 import type { PrismaClient } from "@prisma/client";
-import { loginSchema, otpRequestSchema, registerPetugasSchema } from "@sialokasi/shared";
+import { loginSchema, registerPetugasSchema } from "@sialokasi/shared";
 import type { FastifyInstance } from "fastify";
-import { randomInt } from "node:crypto";
 import type { ClockService } from "../clock";
 import {
   createSession,
-  DEMO_CODE,
   hashValue,
   SESSION_COOKIE,
   SESSION_TTL_MINUTES,
@@ -13,6 +11,7 @@ import {
   userSelect,
 } from "../lib/auth";
 import { writeAudit } from "../lib/audit";
+import { hashPassword, verifyPassword } from "../lib/password";
 import { getSessionUser } from "../lib/rbac";
 
 type AuthDependencies = {
@@ -39,78 +38,22 @@ function firstIssueMessage(result: {
 }
 
 export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies): void {
-  app.post("/api/auth/request-code", async (request, reply) => {
-    const parsed = otpRequestSchema.safeParse(request.body);
-    if (!parsed.success) {
-      return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
-    }
-
-    const { email } = parsed.data;
-    const user = await deps.prisma.user.findUnique({ where: { email } });
-
-    if (!user) {
-      return {
-        sent: true,
-        demoMode: deps.demoMode,
-        demoCode: deps.demoMode ? DEMO_CODE : undefined,
-        message:
-          "Kalau email ini terdaftar, kode masuk akan dikirim dalam satu menit. Periksa juga folder spam.",
-      };
-    }
-
-    if (!user.isActive) {
-      return reply.code(403).send({
-        error: {
-          message:
-            "Akun ini belum diaktifkan admin. Hubungi admin wilayah agar akun Anda bisa dipakai.",
-        },
-      });
-    }
-
-    const code = deps.demoMode ? DEMO_CODE : String(randomInt(0, 1_000_000)).padStart(6, "0");
-    const now = await deps.clock.now();
-
-    await deps.prisma.otpCode.deleteMany({ where: { userId: user.id, usedAt: null } });
-    await deps.prisma.otpCode.create({
-      data: {
-        userId: user.id,
-        codeHash: hashValue(code),
-        expiresAt: await deps.clock.afterMinutes(10),
-        createdAt: now,
-      },
-    });
-
-    if (!deps.demoMode) {
-      // Pengiriman asli belum dipasang; adapter notifikasi menulis ke log server.
-      request.log.info({ email }, `Kode masuk untuk ${email}: ${code}`);
-    }
-
-    return {
-      sent: true,
-      demoMode: deps.demoMode,
-      demoCode: deps.demoMode ? DEMO_CODE : undefined,
-      message: deps.demoMode
-        ? "Mode demo aktif. Gunakan kode 123456 untuk masuk."
-        : "Kode masuk sudah dikirim. Kode berlaku 10 menit.",
-    };
-  });
-
   app.post("/api/auth/login", async (request, reply) => {
     const parsed = loginSchema.safeParse(request.body);
     if (!parsed.success) {
       return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
     }
 
-    const { email, code } = parsed.data;
+    const { email, password } = parsed.data;
     const user = await deps.prisma.user.findUnique({
       where: { email },
-      select: { ...userSelect, isActive: true },
+      select: { ...userSelect, isActive: true, passwordHash: true },
     });
 
-    if (!user) {
+    if (!user || !verifyPassword(password, user.passwordHash)) {
       return reply.code(401).send({
         error: {
-          message: "Email dan kode masuk belum cocok. Periksa kembali, lalu coba lagi.",
+          message: "Email atau kata sandi belum cocok. Periksa kembali, lalu coba lagi.",
         },
       });
     }
@@ -120,38 +63,6 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
         error: {
           message:
             "Akun ini belum diaktifkan admin. Hubungi admin wilayah agar akun Anda bisa dipakai.",
-        },
-      });
-    }
-
-    const now = await deps.clock.now();
-    let accepted = deps.demoMode && code === DEMO_CODE;
-
-    if (!accepted) {
-      const otp = await deps.prisma.otpCode.findFirst({
-        where: {
-          userId: user.id,
-          codeHash: hashValue(code),
-          usedAt: null,
-          expiresAt: { gt: now },
-        },
-        orderBy: { createdAt: "desc" },
-      });
-
-      if (otp) {
-        await deps.prisma.otpCode.update({
-          where: { id: otp.id },
-          data: { usedAt: now },
-        });
-        accepted = true;
-      }
-    }
-
-    if (!accepted) {
-      return reply.code(401).send({
-        error: {
-          message:
-            "Kode masuk belum cocok atau sudah kedaluwarsa. Minta kode baru, lalu masukkan lagi.",
         },
       });
     }
@@ -193,7 +104,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
       return reply.code(400).send({ error: { message: firstIssueMessage(parsed) } });
     }
 
-    const { name, email, regionId } = parsed.data;
+    const { name, email, password, regionId } = parsed.data;
     const region = await deps.prisma.region.findFirst({
       where: { id: regionId, isActive: true },
       select: { id: true, name: true },
@@ -216,7 +127,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
       return reply.code(409).send({
         error: {
           message:
-            "Email ini sudah terdaftar dan aktif. Masuk dengan kode, atau daftar memakai email lain.",
+            "Email ini sudah terdaftar dan aktif. Masuk memakai email dan kata sandi Anda, atau daftar dengan email lain.",
         },
       });
     }
@@ -224,7 +135,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
     if (existing) {
       await deps.prisma.user.update({
         where: { id: existing.id },
-        data: { name, regionId },
+        data: { name, regionId, passwordHash: hashPassword(password) },
       });
 
       await writeAudit(deps.prisma, deps.clock, {
@@ -237,7 +148,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
 
       return reply.code(200).send({
         message:
-          "Pendaftaran Anda sudah tercatat sebelumnya. Admin akan mengaktifkan akun ini; Anda bisa masuk setelah menerima pemberitahuan.",
+          "Pendaftaran Anda sudah tercatat sebelumnya. Admin akan mengaktifkan akun ini; setelah aktif, masuk memakai email dan kata sandi yang Anda pilih.",
       });
     }
 
@@ -245,6 +156,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
       data: {
         name,
         email,
+        passwordHash: hashPassword(password),
         role: "PETUGAS",
         isActive: false,
         regionId,
@@ -262,7 +174,7 @@ export function registerAuthRoutes(app: FastifyInstance, deps: AuthDependencies)
 
     return reply.code(201).send({
       message:
-        "Pendaftaran terkirim. Admin akan mengaktifkan akun Anda. Setelah aktif, masuk memakai email dan kode dari admin.",
+        "Pendaftaran terkirim. Admin akan mengaktifkan akun Anda; setelah aktif, masuk memakai email dan kata sandi yang Anda pilih.",
     });
   });
 }
