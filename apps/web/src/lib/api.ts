@@ -65,6 +65,7 @@ export type PublicIncident = {
   code: string;
   title: string;
   disasterType: string;
+  disasterDetail: string | null;
   lat: number;
   lng: number;
   radiusM: number;
@@ -255,6 +256,7 @@ export type PetugasDashboard = {
     code: string;
     title: string;
     disasterType: string;
+    disasterDetail: string | null;
     status: IncidentStatus;
     occurredAt: string;
     affectedPeople: number;
@@ -270,13 +272,18 @@ export type PimpinanSummary = {
     affectedPeople: number;
     permitsToday: number;
     lowStockCount: number;
-    waitingAidTotal: number;
+  };
+  /** Rincian bantuan yang menunggu keputusan, per jenis dan satuan. */
+  waitingAid: {
+    itemCount: number;
+    items: { name: string; unit: string; qty: number }[];
   };
   queue: {
     id: string;
     code: string;
     title: string;
     disasterType: string;
+    disasterDetail: string | null;
     status: IncidentStatus;
     occurredAt: string;
     affectedPeople: number;
@@ -286,6 +293,19 @@ export type PimpinanSummary = {
     region: { name: string } | null;
     reporter: { name: string };
   }[];
+  /** Laporan yang sudah disetujui dan menunggu penandaan selesai. */
+  approved: {
+    id: string;
+    code: string;
+    title: string;
+    disasterType: string;
+    disasterDetail: string | null;
+    occurredAt: string;
+    approvedAt: string;
+    regionName: string | null;
+    permitNumber: string | null;
+    poskoName: string | null;
+  }[];
 };
 
 export type PetugasIncidentList = {
@@ -294,6 +314,7 @@ export type PetugasIncidentList = {
     code: string;
     title: string;
     disasterType: string;
+    disasterDetail: string | null;
     status: IncidentStatus;
     occurredAt: string;
     affectedPeople: number;

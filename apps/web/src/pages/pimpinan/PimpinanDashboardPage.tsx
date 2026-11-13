@@ -1,13 +1,15 @@
 import {
-  DISASTER_LABEL,
+  disasterLabel,
   formatDateTime,
   formatDistance,
   formatNumber,
   SURABAYA_CENTER,
+  type DisasterType,
 } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowRight,
+  BadgeCheck,
   ClipboardCheck,
   FileCheck2,
   Package,
@@ -97,7 +99,7 @@ export function PimpinanDashboardPage() {
               <p className="mt-1 text-section text-text">{top.title}</p>
               <p className="mt-1 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-text-muted">
                 <span className="font-mono text-info">{top.code}</span>
-                <span>{DISASTER_LABEL[top.disasterType as keyof typeof DISASTER_LABEL] ?? top.disasterType}</span>
+                <span>{disasterLabel(top.disasterType as DisasterType, top.disasterDetail)}</span>
                 <span>{top.region?.name ?? "Kecamatan belum diisi"}</span>
                 <span>{formatNumber(top.affectedPeople)} jiwa</span>
                 <span>Radius {formatDistance(top.radiusM)}</span>
@@ -138,6 +140,44 @@ export function PimpinanDashboardPage() {
         </Alert>
       ) : null}
 
+      {summary.data && summary.data.approved.length > 0 ? (
+        <Section title="Menunggu distribusi" className="mt-6">
+          <ul>
+            {summary.data.approved.map((incident) => (
+              <li key={incident.id} className="border-t border-border first:border-t-0">
+                <Link
+                  to={`/pimpinan/laporan/${incident.id}`}
+                  className="block py-4 transition-colors hover:bg-elevated/50"
+                >
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <p className="min-w-0 text-base font-semibold text-text">{incident.title}</p>
+                    <span className="inline-flex items-center gap-2 border border-success/40 px-2 py-1 font-mono text-base text-success">
+                      <BadgeCheck aria-hidden="true" className="h-4 w-4" />
+                      {incident.permitNumber ?? "Izin terbit"}
+                    </span>
+                  </div>
+                  <p className="mt-1 text-base text-text-muted">
+                    {disasterLabel(
+                      incident.disasterType as DisasterType,
+                      incident.disasterDetail,
+                    )} ·{" "}
+                    {incident.regionName ?? "Kecamatan belum diisi"}
+                    {incident.poskoName ? ` · ${incident.poskoName}` : ""}
+                  </p>
+                  <p className="mt-1 text-base text-text-muted">
+                    Disetujui {formatDateTime(incident.approvedAt)}
+                  </p>
+                  <span className="mt-2 inline-flex min-h-11 items-center gap-2 text-base font-medium text-info">
+                    Buka untuk menandai selesai
+                    <ArrowRight aria-hidden="true" className="h-5 w-5" />
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      ) : null}
+
       <Section title="Ringkasan lain" className="mt-6">
         <div className="grid gap-x-6 gap-y-6 sm:grid-cols-3">
           <StatCard
@@ -148,8 +188,8 @@ export function PimpinanDashboardPage() {
             size="sm"
           />
           <StatCard
-            label="Bantuan menunggu"
-            value={summary.data?.summary.waitingAidTotal}
+            label="Jenis bantuan menunggu"
+            value={summary.data?.waitingAid.itemCount}
             loading={summary.isPending}
             icon={Package}
             size="sm"
@@ -163,6 +203,27 @@ export function PimpinanDashboardPage() {
           />
         </div>
       </Section>
+
+      {summary.data && summary.data.waitingAid.items.length > 0 ? (
+        <Section title="Bantuan menunggu keputusan" className="mt-6">
+          <ul className="divide-y divide-border">
+            {summary.data.waitingAid.items.map((item) => (
+              <li
+                key={`${item.name}-${item.unit}`}
+                className="flex flex-wrap items-baseline justify-between gap-3 py-3"
+              >
+                <span className="text-base text-text">{item.name}</span>
+                <span className="font-mono text-base text-text">
+                  {formatNumber(item.qty)} {item.unit}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-base text-text-muted">
+            Jumlah dihitung terpisah per jenis, karena satuannya berbeda.
+          </p>
+        </Section>
+      ) : null}
 
       <div className="mt-6 grid gap-6 xl:grid-cols-2">
         <Section
@@ -205,8 +266,10 @@ export function PimpinanDashboardPage() {
                       <StatusChip status={incident.status} />
                     </div>
                     <p className="mt-1 text-base text-text-muted">
-                      {DISASTER_LABEL[incident.disasterType as keyof typeof DISASTER_LABEL] ??
-                        incident.disasterType}
+                      {disasterLabel(
+                        incident.disasterType as DisasterType,
+                        incident.disasterDetail,
+                      )}
                       , {incident.region?.name ?? "Kecamatan belum diisi"}
                     </p>
                     <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-text-muted">

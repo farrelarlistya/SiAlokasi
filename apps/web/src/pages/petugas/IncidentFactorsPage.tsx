@@ -3,7 +3,7 @@ import {
   DAMAGE_LEVELS,
   DENSITY_LABEL,
   DENSITY_LEVELS,
-  DISASTER_LABEL,
+  disasterLabel,
   canCancelByPetugas,
   formatDateTime,
   formatDistance,
@@ -60,7 +60,6 @@ type FactorForm = {
   vulnerableElderly: string;
   vulnerablePregnant: string;
   vulnerableDisabled: string;
-  handlingDays: string;
   roadAccess: RoadAccess;
   weather: WeatherCondition;
   density: DensityLevel;
@@ -76,7 +75,6 @@ const EMPTY_FACTORS: FactorForm = {
   vulnerableElderly: "0",
   vulnerablePregnant: "0",
   vulnerableDisabled: "0",
-  handlingDays: "3",
   roadAccess: "TERBUKA",
   weather: "CERAH",
   density: "SEDANG",
@@ -90,7 +88,6 @@ function factorsToForm(factors: IncidentFactorsInput): FactorForm {
     vulnerableElderly: String(factors.vulnerableElderly),
     vulnerablePregnant: String(factors.vulnerablePregnant),
     vulnerableDisabled: String(factors.vulnerableDisabled),
-    handlingDays: String(factors.handlingDays),
     roadAccess: factors.roadAccess,
     weather: factors.weather,
     density: factors.density,
@@ -146,7 +143,6 @@ export function IncidentFactorsPage() {
       vulnerableElderly: form.vulnerableElderly,
       vulnerablePregnant: form.vulnerablePregnant,
       vulnerableDisabled: form.vulnerableDisabled,
-      handlingDays: form.handlingDays,
       roadAccess: form.roadAccess,
       weather: form.weather,
       density: form.density,
@@ -346,29 +342,6 @@ export function IncidentFactorsPage() {
           </div>
         </div>
 
-        <div className="max-w-xs">
-          <Field
-            id="factor-days"
-            label="Perkiraan lama penanganan"
-            hint="Dalam hari, antara 1 sampai 30."
-            error={errors.handlingDays}
-            required
-          >
-            <TextInput
-              type="number"
-              min={1}
-              max={30}
-              value={form.handlingDays}
-              onChange={(event) => {
-                updateForm({ handlingDays: event.target.value });
-                if (errors.handlingDays) {
-                  setErrors((current) => ({ ...current, handlingDays: undefined }));
-                }
-              }}
-            />
-          </Field>
-        </div>
-
         <div className="grid gap-4 border-t border-border pt-5 sm:grid-cols-3">
           <Field id="factor-road" label="Akses jalan" error={errors.roadAccess} required>
             <SelectInput
@@ -447,7 +420,7 @@ export function IncidentFactorsPage() {
         brief={
           recommendation
             ? "Periksa hasil, lalu ajukan ke pimpinan."
-            : "Isi 8 faktor, lalu hitung estimasi."
+            : "Isi faktor lapangan, lalu hitung estimasi."
         }
         actions={
           <>
@@ -621,7 +594,7 @@ export function IncidentFactorsPage() {
       <Section
         tone={recommendation ? "default" : "focus"}
         headingId={recommendation ? undefined : "faktor-lapangan"}
-        title="Delapan faktor lapangan"
+        title="Faktor lapangan"
         brief="Faktor dipakai untuk menghitung kebutuhan, bukan untuk menilai siapa yang salah."
         actions={
           isLocked ? (
@@ -649,7 +622,7 @@ export function IncidentFactorsPage() {
             <div className="min-w-0">
               <p className="text-base font-medium text-text">{incident.title}</p>
               <p className="mt-1 text-base text-text-muted">
-                {DISASTER_LABEL[incident.disasterType]} ·{" "}
+                {disasterLabel(incident.disasterType, incident.disasterDetail)} ·{" "}
                 {incident.region?.name ?? "Kecamatan belum diisi"}
               </p>
             </div>

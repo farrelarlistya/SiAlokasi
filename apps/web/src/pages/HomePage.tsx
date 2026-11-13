@@ -1,11 +1,13 @@
 import {
   DISASTER_LABEL,
   DISASTER_TYPES,
+  disasterLabel,
   formatDateTime,
   formatDistance,
   formatNumber,
   formatRelativeTime,
   SURABAYA_CENTER,
+  type DisasterType,
 } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
 import { LayoutDashboard, MapPin, RefreshCw, ShieldCheck } from "lucide-react";
@@ -315,9 +317,10 @@ export function HomePage() {
                         <div className="flex justify-between gap-3">
                           <dt className="text-text-muted">Jenis bencana</dt>
                           <dd className="text-right text-text">
-                            {DISASTER_LABEL[
-                              selected.disasterType as keyof typeof DISASTER_LABEL
-                            ] ?? selected.disasterType}
+                            {disasterLabel(
+                              selected.disasterType as DisasterType,
+                              selected.disasterDetail,
+                            )}
                           </dd>
                         </div>
                         <div className="flex justify-between gap-3">

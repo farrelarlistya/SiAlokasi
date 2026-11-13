@@ -5,6 +5,7 @@ import {
   formatTime,
   haversineMeters,
   incidentDraftSchema,
+  resolveRegionForPoint,
   SURABAYA_CENTER,
   type DisasterType,
 } from "@sialokasi/shared";
@@ -32,8 +33,8 @@ const DRAFT_KEY = "sialokasi.draft.laporan-baru";
 type DraftForm = {
   title: string;
   disasterType: DisasterType;
+  disasterDetail: string;
   occurredAt: string;
-  regionId: string;
   point: MapPoint | null;
   radiusM: number;
 };
@@ -44,7 +45,7 @@ type StoredDraft = {
 };
 
 type FieldErrors = Partial<
-  Record<"title" | "disasterType" | "occurredAt" | "regionId" | "point" | "radiusM", string>
+  Record<"title" | "disasterType" | "disasterDetail" | "occurredAt" | "point" | "radiusM", string>
 >;
 
 function toDateTimeLocal(date: Date): string {
@@ -58,8 +59,8 @@ function emptyForm(): DraftForm {
   return {
     title: "",
     disasterType: "BANJIR",
+    disasterDetail: "",
     occurredAt: toDateTimeLocal(new Date(Date.now() - 30 * 60_000)),
-    regionId: "",
     point: null,
     radiusM: 1_000,
   };
@@ -71,6 +72,8 @@ function readDraft(): StoredDraft | null {
     if (!raw) return null;
     const parsed = JSON.parse(raw) as StoredDraft;
     if (!parsed.form || typeof parsed.form.title !== "string") return null;
+    // Draf lama belum menyimpan keterangan jenis bencana.
+    if (typeof parsed.form.disasterDetail !== "string") parsed.form.disasterDetail = "";
     return parsed;
   } catch {
     return null;
@@ -108,7 +111,6 @@ export function CreateIncidentPage() {
   const [busy, setBusy] = useState(false);
   const [clearOpen, setClearOpen] = useState(false);
 
-  const master = useQuery({ queryKey: ["master", "options"], queryFn: api.masterOptions });
   const publicIncidents = useQuery({
     queryKey: ["public", "incidents", "", ""],
     queryFn: () => api.publicIncidents(),
@@ -154,11 +156,11 @@ export function CreateIncidentPage() {
     const parsed = incidentDraftSchema.safeParse({
       title: form.title,
       disasterType: form.disasterType,
+      disasterDetail: form.disasterDetail,
       occurredAt: form.occurredAt,
       lat: form.point?.lat,
       lng: form.point?.lng,
       radiusM: form.radiusM,
-      regionId: form.regionId,
     });
 
     if (!parsed.success) {
@@ -170,8 +172,8 @@ export function CreateIncidentPage() {
         } else if (
           key === "title" ||
           key === "disasterType" ||
+          key === "disasterDetail" ||
           key === "occurredAt" ||
-          key === "regionId" ||
           key === "radiusM"
         ) {
           if (!nextErrors[key]) nextErrors[key] = issue.message;
@@ -190,7 +192,7 @@ export function CreateIncidentPage() {
       toast.push({
         tone: "success",
         title: "Laporan tersimpan.",
-        description: `Kode lacak ${response.data.code}. Lanjutkan mengisi 8 faktor.`,
+        description: `Kode lacak ${response.data.code}. Lanjutkan mengisi faktor lapangan.`,
       });
       navigate(`/petugas/laporan/${response.data.id}`, { replace: true });
     } catch (error) {
@@ -215,9 +217,15 @@ export function CreateIncidentPage() {
   };
 
   const radiusKm = formatDistance(form.radiusM);
-  const pointLabel = form.point
-    ? `${form.point.lat.toFixed(5)}, ${form.point.lng.toFixed(5)}`
-    : "Belum ada titik";
+  const detectedRegion = useMemo(
+    () => (form.point ? resolveRegionForPoint(form.point.lat, form.point.lng) : null),
+    [form.point],
+  );
+  const regionLabel = detectedRegion
+    ? detectedRegion.name
+    : form.point
+      ? "Di luar Kota Surabaya"
+      : "Titik belum dipilih";
 
   return (
     <AppShell fullBleed>
@@ -248,10 +256,6 @@ export function CreateIncidentPage() {
 
               <Section tone="focus" title="Titik & wilayah">
                 <div className="grid gap-4">
-                <p className="border border-border-strong bg-sunken px-4 py-3 font-mono text-base text-text">
-                  {pointLabel}
-                </p>
-
                 <div className="grid grid-cols-2 gap-3">
                   <Field id="incident-lat" label="Lintang">
                     <TextInput
@@ -296,6 +300,19 @@ export function CreateIncidentPage() {
                   </Field>
                 </div>
 
+                <div className="flex items-center justify-between gap-3 border border-border-strong bg-sunken px-4 py-3">
+                  <span className="text-base text-text-muted">
+                    Kecamatan terdampak · otomatis
+                  </span>
+                  <span
+                    className={
+                      detectedRegion ? "text-base font-medium text-text" : "text-base font-medium text-danger"
+                    }
+                  >
+                    {regionLabel}
+                  </span>
+                </div>
+
                 {errors.point ? (
                   <p className="flex items-start gap-2 text-base text-danger">
                     <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0" />
@@ -329,26 +346,12 @@ export function CreateIncidentPage() {
                     <span>100 m</span>
                     <span>5 km</span>
                   </div>
-                  <Field
-                    id="incident-radius-number"
-                    label="Radius dalam meter"
-                    error={errors.radiusM}
-                    className="mt-3"
-                  >
-                    <TextInput
-                      type="number"
-                      min={100}
-                      max={5_000}
-                      step={100}
-                      value={form.radiusM}
-                      onChange={(event) => {
-                        updateForm({ radiusM: Number(event.target.value) });
-                        if (errors.radiusM) {
-                          setErrors((current) => ({ ...current, radiusM: undefined }));
-                        }
-                      }}
-                    />
-                  </Field>
+                  {errors.radiusM ? (
+                    <p className="flex items-start gap-2 text-base text-danger">
+                      <AlertTriangle aria-hidden="true" className="mt-1 h-5 w-5 shrink-0" />
+                      <span>{errors.radiusM}</span>
+                    </p>
+                  ) : null}
                 </div>
                 </div>
               </Section>
@@ -409,6 +412,28 @@ export function CreateIncidentPage() {
                   </SelectInput>
                 </Field>
 
+                {form.disasterType === "LAINNYA" ? (
+                  <Field
+                    id="incident-disaster-detail"
+                    label="Jenis bencana lainnya"
+                    hint="Sebutkan sendiri, misalnya: tanah longsor atau letusan gunung."
+                    error={errors.disasterDetail}
+                    required
+                  >
+                    <TextInput
+                      value={form.disasterDetail}
+                      placeholder="Contoh: Tanah longsor"
+                      maxLength={80}
+                      onChange={(event) => {
+                        updateForm({ disasterDetail: event.target.value });
+                        if (errors.disasterDetail) {
+                          setErrors((current) => ({ ...current, disasterDetail: undefined }));
+                        }
+                      }}
+                    />
+                  </Field>
+                ) : null}
+
                 <Field id="incident-time" label="Waktu kejadian" error={errors.occurredAt} required>
                   <TextInput
                     type="datetime-local"
@@ -420,32 +445,6 @@ export function CreateIncidentPage() {
                       }
                     }}
                   />
-                </Field>
-
-                <Field
-                  id="incident-region"
-                  label="Kecamatan terdampak"
-                  hint="Dipakai untuk menyaring peta dan laporan."
-                  error={errors.regionId}
-                  required
-                >
-                  <SelectInput
-                    value={form.regionId}
-                    disabled={master.isPending}
-                    onChange={(event) => {
-                      updateForm({ regionId: event.target.value });
-                      if (errors.regionId) {
-                        setErrors((current) => ({ ...current, regionId: undefined }));
-                      }
-                    }}
-                  >
-                    <option value="">{master.isPending ? "Memuat kecamatan…" : "Pilih kecamatan"}</option>
-                    {(master.data?.regions ?? []).map((region) => (
-                      <option key={region.id} value={region.id}>
-                        {region.name}
-                      </option>
-                    ))}
-                  </SelectInput>
                 </Field>
                 </div>
               </Section>

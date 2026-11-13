@@ -1,5 +1,5 @@
 import {
-  DISASTER_LABEL,
+  disasterLabel,
   formatDateTime,
   formatDistance,
   formatNumber,
@@ -151,7 +151,7 @@ export function TrackingPage() {
           title={result ? result.incident.title : "Lacak laporan"}
           brief={
             result
-              ? `${DISASTER_LABEL[result.incident.disasterType]} · ${
+              ? `${disasterLabel(result.incident.disasterType, result.incident.disasterDetail)} · ${
                   result.incident.regionName ?? "Kecamatan belum diisi"
                 }`
               : "Masukkan kode lacak untuk melihat status."

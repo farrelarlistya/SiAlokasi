@@ -3,7 +3,7 @@ import {
   compareStock,
   DAMAGE_LABEL,
   DENSITY_LABEL,
-  DISASTER_LABEL,
+  disasterLabel,
   formatDateTime,
   formatDistance,
   formatModelVersion,
@@ -67,6 +67,7 @@ export function PimpinanReviewPage() {
   const [cancelOpen, setCancelOpen] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [cancelError, setCancelError] = useState<string | undefined>();
+  const [confirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
 
   const [adjustTarget, setAdjustTarget] = useState<RecommendationItemView | null>(null);
   const [adjustQty, setAdjustQty] = useState("");
@@ -274,6 +275,31 @@ export function PimpinanReviewPage() {
     }
   };
 
+  const completeDistribution = async () => {
+    setBusy(true);
+    try {
+      const response = await api.completeIncident(id);
+      queryClient.setQueryData(["pimpinan", "incident", id], { data: response.data });
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["pimpinan", "summary"] }),
+        queryClient.invalidateQueries({ queryKey: ["public", "incidents"] }),
+        queryClient.invalidateQueries({ queryKey: ["petugas", "dashboard"] }),
+      ]);
+      toast.push({ tone: "success", title: response.message });
+      setConfirmCompleteOpen(false);
+    } catch (error) {
+      toast.push({
+        tone: "danger",
+        title: "Distribusi belum bisa ditandai selesai.",
+        description:
+          error instanceof Error ? error.message : "Periksa koneksi, lalu coba lagi.",
+      });
+      setConfirmCompleteOpen(false);
+    } finally {
+      setBusy(false);
+    }
+  };
+
   if (detail.isPending) {
     return (
       <AppShell>
@@ -315,9 +341,10 @@ export function PimpinanReviewPage() {
   return (
     <AppShell>
       <PageHeader
-        eyebrow={`${incident.code}, ${DISASTER_LABEL[incident.disasterType]}, ${
-          incident.region?.name ?? "Kecamatan belum diisi"
-        }`}
+        eyebrow={`${incident.code}, ${disasterLabel(
+          incident.disasterType,
+          incident.disasterDetail,
+        )}, ${incident.region?.name ?? "Kecamatan belum diisi"}`}
         title={incident.title}
         brief="Periksa jumlah bantuan, lalu setujui atau tolak."
         actions={
@@ -350,12 +377,24 @@ export function PimpinanReviewPage() {
           className="mt-6"
           action={
             incident.permit ? (
-              <Link
-                to={`/pimpinan/izin/${incident.id}`}
-                className={buttonStyles("secondary", "md")}
-              >
-                Buka izin distribusi
-              </Link>
+              <span className="flex flex-wrap gap-3">
+                {incident.status === "DISETUJUI" ? (
+                  <Button
+                    variant="primary"
+                    leadingIcon={<CheckCircle2 />}
+                    disabled={busy}
+                    onClick={() => setConfirmCompleteOpen(true)}
+                  >
+                    Tandai distribusi selesai
+                  </Button>
+                ) : null}
+                <Link
+                  to={`/pimpinan/izin/${incident.id}`}
+                  className={buttonStyles("secondary", "md")}
+                >
+                  Buka izin distribusi
+                </Link>
+              </span>
             ) : undefined
           }
         >
@@ -581,18 +620,12 @@ export function PimpinanReviewPage() {
 
         <div className="space-y-6">
           {incident.factors ? (
-            <Section title="Delapan faktor lapangan">
+            <Section title="Faktor lapangan">
               <dl className="grid gap-x-6 gap-y-3 text-base sm:grid-cols-2">
                 <div className="flex justify-between gap-3">
                   <dt className="text-text-muted">Kerusakan rumah</dt>
                   <dd className="text-right text-text">
                     {DAMAGE_LABEL[incident.factors.damageLevel]}
-                  </dd>
-                </div>
-                <div className="flex justify-between gap-3">
-                  <dt className="text-text-muted">Lama penanganan</dt>
-                  <dd className="text-right text-text">
-                    {formatNumber(incident.factors.handlingDays)} hari
                   </dd>
                 </div>
                 <div className="flex justify-between gap-3">
@@ -871,6 +904,17 @@ export function PimpinanReviewPage() {
           selectedPosko?.name ?? "posko terpilih"
         } dan stok posko langsung berkurang. Setelah disetujui, jumlah bantuan hanya bisa diperbaiki lewat izin koreksi.`}
         confirmLabel="Ya, setujui & terbitkan"
+        cancelLabel="Periksa lagi"
+      />
+
+      <ConfirmDialog
+        open={confirmCompleteOpen}
+        onClose={() => setConfirmCompleteOpen(false)}
+        onConfirm={() => void completeDistribution()}
+        busy={busy}
+        title="Tandai distribusi selesai?"
+        description="Status laporan akan menjadi Selesai dan laporan ditutup. Dokumen izin tetap tersimpan dan bisa dicetak ulang."
+        confirmLabel="Ya, tandai selesai"
         cancelLabel="Periksa lagi"
       />
 

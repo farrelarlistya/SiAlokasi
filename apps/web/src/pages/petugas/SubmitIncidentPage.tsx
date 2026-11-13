@@ -1,5 +1,5 @@
 import {
-  DISASTER_LABEL,
+  disasterLabel,
   formatDateTime,
   formatDistance,
   formatNumber,
@@ -115,7 +115,7 @@ export function SubmitIncidentPage() {
         />
         <Alert tone="warning" title="Laporan ini belum bisa diajukan." className="mt-6">
           {incident.status === "BARU"
-            ? "Isi delapan faktor dan hitung estimasi terlebih dahulu. Setelah itu laporan bisa diajukan ke pimpinan."
+            ? "Isi faktor lapangan dan hitung estimasi terlebih dahulu. Setelah itu laporan bisa diajukan ke pimpinan."
             : incident.status === "MENUNGGU_PERSETUJUAN"
               ? "Laporan ini sudah diajukan dan sedang menunggu keputusan pimpinan."
               : "Laporan ini sudah diputuskan atau dibatalkan, sehingga tidak bisa diajukan lagi."}
@@ -218,7 +218,7 @@ export function SubmitIncidentPage() {
           <div className="min-w-0">
             <p className="text-base font-medium text-text">{incident.title}</p>
             <p className="mt-1 text-base text-text-muted">
-              {DISASTER_LABEL[incident.disasterType]} ·{" "}
+              {disasterLabel(incident.disasterType, incident.disasterDetail)} ·{" "}
               {incident.region?.name ?? "Kecamatan belum diisi"}
             </p>
           </div>

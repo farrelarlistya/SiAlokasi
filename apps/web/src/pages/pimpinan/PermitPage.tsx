@@ -1,6 +1,6 @@
 import {
   compareStock,
-  DISASTER_LABEL,
+  disasterLabel,
   formatDate,
   formatDateTime,
   formatNumber,
@@ -400,7 +400,7 @@ export function PermitPage() {
             <div>
               <dt className="text-ink-muted">Jenis bencana</dt>
               <dd className="mt-1 font-medium text-ink">
-                {DISASTER_LABEL[incident.disasterType]}
+                {disasterLabel(incident.disasterType, incident.disasterDetail)}
               </dd>
             </div>
             <div className="sm:col-span-2">
