@@ -1,4 +1,4 @@
-import { formatDateTime } from "@sialokasi/shared";
+import { DEMO_PASSWORD, formatDateTime } from "@sialokasi/shared";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   ExternalLink,
@@ -190,7 +190,7 @@ export function DevPage() {
               </p>
               <p className="mt-1 text-base text-text-muted">
                 {data?.demoMode
-                  ? "Mode demo aktif. Kode masuk akun contoh selalu 123456."
+                  ? `Mode demo aktif. Kata sandi akun contoh: ${DEMO_PASSWORD}`
                   : "Mode demo sedang tidak aktif."}
               </p>
             </div>

@@ -21,7 +21,6 @@ import type {
   RecapFilter,
   RecapResponse,
   RegionInput,
-  RequestCodeResponse,
   Role,
   StockMovementView,
 } from "@sialokasi/shared";
@@ -403,19 +402,14 @@ export const api = {
   masterSummary: () => request<MasterSummary>("/api/master/summary"),
   masterOptions: () => request<MasterOptions>("/api/master/options"),
 
-  requestCode: (email: string) =>
-    request<RequestCodeResponse>("/api/auth/request-code", {
-      method: "POST",
-      body: { email },
-    }),
-  login: (email: string, code: string) =>
+  login: (email: string, password: string) =>
     request<LoginResponse>("/api/auth/login", {
       method: "POST",
-      body: { email, code },
+      body: { email, password },
     }),
   me: () => request<AuthMeResponse>("/api/auth/me"),
   logout: () => request<{ message: string }>("/api/auth/logout", { method: "POST" }),
-  register: (body: { name: string; email: string; regionId: string }) =>
+  register: (body: { name: string; email: string; password: string; regionId: string }) =>
     request<{ message: string }>("/api/auth/register", { method: "POST", body }),
 
   publicIncidents: (filters: { disasterType?: string; regionId?: string } = {}) =>

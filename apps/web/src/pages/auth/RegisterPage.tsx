@@ -12,7 +12,7 @@ import { api } from "../../lib/api";
 import { homePathForRole } from "../../lib/roles";
 import { AuthLayout } from "./AuthLayout";
 
-type FieldErrors = Partial<Record<"name" | "email" | "regionId", string>>;
+type FieldErrors = Partial<Record<"name" | "email" | "password" | "regionId", string>>;
 
 export function RegisterPage() {
   const { user } = useAuth();
@@ -20,6 +20,7 @@ export function RegisterPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [regionId, setRegionId] = useState("");
   const [errors, setErrors] = useState<FieldErrors>({});
   const [formError, setFormError] = useState<string | undefined>();
@@ -30,12 +31,15 @@ export function RegisterPage() {
     event.preventDefault();
     setFormError(undefined);
 
-    const parsed = registerPetugasSchema.safeParse({ name, email, regionId });
+    const parsed = registerPetugasSchema.safeParse({ name, email, password, regionId });
     if (!parsed.success) {
       const nextErrors: FieldErrors = {};
       for (const issue of parsed.error.issues) {
         const key = issue.path[0];
-        if ((key === "name" || key === "email" || key === "regionId") && !nextErrors[key]) {
+        if (
+          (key === "name" || key === "email" || key === "password" || key === "regionId") &&
+          !nextErrors[key]
+        ) {
           nextErrors[key] = issue.message;
         }
       }
@@ -92,7 +96,7 @@ export function RegisterPage() {
           <p className="text-base text-text-muted">Yang perlu Anda lakukan:</p>
           <ol className="mt-2 list-decimal space-y-1 pl-5 text-base text-text">
             <li>Hubungi admin wilayah agar akun ini diaktifkan.</li>
-            <li>Setelah aktif, masuk memakai email dan kode yang dikirim.</li>
+            <li>Setelah aktif, masuk memakai email dan kata sandi Anda.</li>
           </ol>
         </div>
       </AuthLayout>
@@ -147,6 +151,24 @@ export function RegisterPage() {
             onChange={(event) => {
               setEmail(event.target.value);
               if (errors.email) setErrors((current) => ({ ...current, email: undefined }));
+            }}
+          />
+        </Field>
+
+        <Field
+          id="register-password"
+          label="Kata sandi"
+          hint="Minimal 8 karakter."
+          error={errors.password}
+          required
+        >
+          <TextInput
+            type="password"
+            value={password}
+            autoComplete="new-password"
+            onChange={(event) => {
+              setPassword(event.target.value);
+              if (errors.password) setErrors((current) => ({ ...current, password: undefined }));
             }}
           />
         </Field>

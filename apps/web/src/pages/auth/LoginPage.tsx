@@ -1,7 +1,6 @@
-import { emailSchema, otpCodeSchema, ROLE_LABEL, type Role } from "@sialokasi/shared";
+import { DEMO_PASSWORD, loginSchema, ROLE_LABEL, type Role } from "@sialokasi/shared";
 import { useQuery } from "@tanstack/react-query";
-import { RefreshCw } from "lucide-react";
-import { useCallback, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../auth/AuthProvider";
 import { Alert } from "../../components/Alert";
@@ -17,6 +16,9 @@ const DEMO_ACCOUNTS: { role: Role; email: string; name: string }[] = [
   { role: "PIMPINAN", email: "pimpinan@sialokasi.demo", name: "Budi Santoso" },
   { role: "ADMIN", email: "admin@sialokasi.demo", name: "Sari Wulandari" },
 ];
+
+type FieldErrors = Partial<Record<"email" | "password", string>>;
+
 export function LoginPage() {
   const { user, applyLogin } = useAuth();
   const toast = useToast();
@@ -25,74 +27,36 @@ export function LoginPage() {
   const next = searchParams.get("next");
 
   const health = useQuery({ queryKey: ["health"], queryFn: api.health, retry: 0 });
-
-  const [step, setStep] = useState<"email" | "code">("email");
-  const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [emailError, setEmailError] = useState<string | undefined>();
-  const [codeError, setCodeError] = useState<string | undefined>();
-  const [formError, setFormError] = useState<string | undefined>();
-  const [notice, setNotice] = useState<string | undefined>();
-  const [sending, setSending] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-
   const demoMode = health.data?.demoMode === true;
 
-  const requestCode = useCallback(
-    async (event?: FormEvent<HTMLFormElement>) => {
-      event?.preventDefault();
-      setFormError(undefined);
-      setNotice(undefined);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errors, setErrors] = useState<FieldErrors>({});
+  const [formError, setFormError] = useState<string | undefined>();
+  const [submitting, setSubmitting] = useState(false);
 
-      const parsed = emailSchema.safeParse(email);
-      if (!parsed.success) {
-        setEmailError(parsed.error.issues[0]?.message ?? "Periksa alamat email.");
-        return;
-      }
-      setEmailError(undefined);
-      setSending(true);
-
-      try {
-        const response = await api.requestCode(parsed.data);
-        setStep("code");
-        setNotice(response.message);
-        if (response.demoCode) {
-          setCode(response.demoCode);
-        }
-        toast.push({
-          tone: "info",
-          title: "Kode masuk siap.",
-          description: response.demoMode
-            ? "Mode demo aktif, kode 123456 sudah diisikan."
-            : "Periksa kotak masuk email Anda.",
-        });
-      } catch (error) {
-        setFormError(
-          error instanceof Error
-            ? error.message
-            : "Kode masuk belum bisa dikirim. Periksa koneksi, lalu coba lagi.",
-        );
-      } finally {
-        setSending(false);
-      }
-    },
-    [email, toast],
-  );
-
-  const submitLogin = async (event: FormEvent<HTMLFormElement>) => {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(undefined);
 
-    const parsed = otpCodeSchema.safeParse(code);
+    const parsed = loginSchema.safeParse({ email, password });
     if (!parsed.success) {
-      setCodeError(parsed.error.issues[0]?.message ?? "Periksa kode masuk.");
+      const nextErrors: FieldErrors = {};
+      for (const issue of parsed.error.issues) {
+        const key = issue.path[0];
+        if ((key === "email" || key === "password") && !nextErrors[key]) {
+          nextErrors[key] = issue.message;
+        }
+      }
+      setErrors(nextErrors);
       return;
     }
-    setCodeError(undefined);
+
+    setErrors({});
     setSubmitting(true);
 
     try {
-      const response = await api.login(email.trim().toLowerCase(), parsed.data);
+      const response = await api.login(parsed.data.email, parsed.data.password);
       applyLogin(response);
       toast.push({ tone: "success", title: response.message });
       navigate(nextPathForRole(response.user.role, next), { replace: true });
@@ -113,14 +77,7 @@ export function LoginPage() {
 
   return (
     <AuthLayout
-      title={step === "email" ? "Masuk ke SiAlokasi" : "Masukkan kode masuk"}
-      brief={
-        step === "email"
-          ? undefined
-          : demoMode
-            ? "Mode demo: kode selalu 123456."
-            : "Masukkan 6 angka dari email Anda."
-      }
+      title="Masuk ke SiAlokasi"
       footer={
         <p className="text-base text-text-muted">
           Belum punya akun petugas?{" "}
@@ -139,100 +96,38 @@ export function LoginPage() {
         </Alert>
       ) : null}
 
-      {notice ? (
-        <Alert tone="info" title="Kode masuk" className="mb-5">
-          {notice}
-        </Alert>
-      ) : null}
+      <form onSubmit={(event) => void submit(event)} className="grid gap-5" noValidate>
+        <Field id="login-email" label="Alamat email" error={errors.email} required>
+          <TextInput
+            type="email"
+            value={email}
+            autoComplete="email"
+            placeholder="nama@instansi.go.id"
+            onChange={(event) => {
+              setEmail(event.target.value);
+              if (errors.email) setErrors((current) => ({ ...current, email: undefined }));
+            }}
+          />
+        </Field>
 
-      {step === "email" ? (
-        <form onSubmit={(event) => void requestCode(event)} className="grid gap-5" noValidate>
-          <Field
-            id="login-email"
-            label="Alamat email"
-            hint="Pakai email dinas yang sudah terdaftar."
-            error={emailError}
-            required
-          >
-            <TextInput
-              type="email"
-              value={email}
-              autoComplete="email"
-              placeholder="nama@instansi.go.id"
-              onChange={(event) => {
-                setEmail(event.target.value);
-                if (emailError) setEmailError(undefined);
-              }}
-            />
-          </Field>
+        <Field id="login-password" label="Kata sandi" error={errors.password} required>
+          <TextInput
+            type="password"
+            value={password}
+            autoComplete="current-password"
+            onChange={(event) => {
+              setPassword(event.target.value);
+              if (errors.password) setErrors((current) => ({ ...current, password: undefined }));
+            }}
+          />
+        </Field>
 
-          <Button
-            type="submit"
-            size="lg"
-            disabled={sending}
-            className="w-full"
-          >
-            {sending ? "Sedang mengirim kode…" : "Kirim kode masuk"}
-          </Button>
-        </form>
-      ) : (
-        <form onSubmit={(event) => void submitLogin(event)} className="grid gap-5" noValidate>
-          <Field
-            id="login-code"
-            label="Kode masuk"
-            hint={demoMode ? "Mode demo: kode selalu 123456." : "Enam angka dari email Anda."}
-            error={codeError}
-            required
-          >
-            <TextInput
-              value={code}
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              maxLength={6}
-              placeholder="123456"
-              className="font-mono text-[22px] tracking-[0.4em]"
-              onChange={(event) => {
-                setCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                if (codeError) setCodeError(undefined);
-              }}
-            />
-          </Field>
+        <Button type="submit" size="lg" disabled={submitting} className="w-full">
+          {submitting ? "Sedang memeriksa…" : "Masuk"}
+        </Button>
+      </form>
 
-          <Button
-            type="submit"
-            size="lg"
-            disabled={submitting}
-            className="w-full"
-          >
-            {submitting ? "Sedang memeriksa…" : "Masuk"}
-          </Button>
-
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <Button
-              variant="ghost"
-              leadingIcon={<RefreshCw />}
-              disabled={sending}
-              onClick={() => void requestCode()}
-            >
-              {sending ? "Sedang mengirim…" : "Kirim ulang kode"}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={() => {
-                setStep("email");
-                setCode("");
-                setCodeError(undefined);
-                setFormError(undefined);
-                setNotice(undefined);
-              }}
-            >
-              Ganti email
-            </Button>
-          </div>
-        </form>
-      )}
-
-      {demoMode && step === "email" ? (
+      {demoMode ? (
         <div className="mt-8 border-t border-border pt-5">
           <p className="text-base text-text-muted">Akun demo</p>
           <ul className="mt-2">
@@ -242,13 +137,14 @@ export function LoginPage() {
                   type="button"
                   onClick={() => {
                     setEmail(account.email);
-                    setEmailError(undefined);
+                    setPassword(DEMO_PASSWORD);
+                    setErrors({});
                   }}
                   className="flex min-h-14 w-full items-center justify-between gap-3 py-3 text-left transition-colors hover:bg-elevated"
                 >
                   <span className="min-w-0">
                     <span className="block text-base font-medium text-text">
-                      {ROLE_LABEL[account.role]}
+                      {ROLE_LABEL[account.role]} — {account.name}
                     </span>
                     <span className="block break-all font-mono text-base text-text-muted">
                       {account.email}
@@ -261,8 +157,8 @@ export function LoginPage() {
               </li>
             ))}
           </ul>
-          <p className="mt-3 text-base text-text-muted">
-            Mode demo aktif, kode 123456 diisikan otomatis.
+          <p className="mt-3 break-all text-base text-text-muted">
+            Kata sandi: <span className="font-mono text-text">{DEMO_PASSWORD}</span>
           </p>
         </div>
       ) : null}
