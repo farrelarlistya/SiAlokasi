@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
-import { SURABAYA_BOUNDS } from "@sialokasi/shared";
+import { SURABAYA_BOUNDS, SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -74,7 +74,11 @@ async function main(): Promise<void> {
     ]);
 
   check("10 jenis bantuan", aidItems.length === 10, `${aidItems.length} baris`);
-  check("8 kecamatan", regions.length === 8, `${regions.length} baris`);
+  check(
+    `${SURABAYA_REGION_COUNT} kecamatan`,
+    regions.length === SURABAYA_REGION_COUNT,
+    `${regions.length} baris`,
+  );
   check("3 posko", poskos.length === 3, `${poskos.length} baris`);
   check("3 akun demo", users.length === 3, `${users.length} baris`);
   check("0 laporan kejadian", incidents === 0, `${incidents} baris`);

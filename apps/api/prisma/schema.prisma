@@ -176,20 +176,21 @@ model AidItem {
 }
 
 model Incident {
-  id           String         @id @default(cuid())
-  code         String         @unique
-  title        String
-  disasterType DisasterType
-  lat          Float
-  lng          Float
-  radiusM      Int
-  regionId     String?
-  region       Region?        @relation(fields: [regionId], references: [id])
-  occurredAt   DateTime
-  status       IncidentStatus @default(BARU)
-  reporterId   String
-  reporter     User           @relation("IncidentReporter", fields: [reporterId], references: [id])
-  cancelReason String?
+  id             String         @id @default(cuid())
+  code           String         @unique
+  title          String
+  disasterType   DisasterType
+  disasterDetail String?
+  lat            Float
+  lng            Float
+  radiusM        Int
+  regionId       String?
+  region         Region?        @relation(fields: [regionId], references: [id])
+  occurredAt     DateTime
+  status         IncidentStatus @default(BARU)
+  reporterId     String
+  reporter       User           @relation("IncidentReporter", fields: [reporterId], references: [id])
+  cancelReason   String?
 
   affectedPeople     Int?
   damageLevel        DamageLevel?
@@ -197,7 +198,6 @@ model Incident {
   vulnerableElderly  Int               @default(0)
   vulnerablePregnant Int               @default(0)
   vulnerableDisabled Int               @default(0)
-  handlingDays       Int?
   roadAccess         RoadAccess?
   weather            WeatherCondition?
   density            DensityLevel?

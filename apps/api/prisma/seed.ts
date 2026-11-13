@@ -1,4 +1,4 @@
-import "dotenv/config";
+﻿import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -25,94 +25,99 @@ export async function seedDatabase(prisma: PrismaClient): Promise<SeedResult> {
   const demoPoskoIds = POSKOS.map((posko) => posko.id);
   const demoAidItemIds = AID_ITEMS.map((item) => item.id);
 
-  await prisma.$transaction(async (tx) => {
-    // Trigger append-only hanya mengizinkan penghapusan saat reset demo.
-    await tx.$executeRawUnsafe("SELECT set_config('sialokasi.allow_purge', 'on', true)");
+  // Jarak jauh (Neon) membuat transaksi seed lebih lambat daripada lokal,
+  // jadi waktunya diberi napas agar reset demo tidak gagal di tengah.
+  await prisma.$transaction(
+    async (tx) => {
+      // Trigger append-only hanya mengizinkan penghapusan saat reset demo.
+      await tx.$executeRawUnsafe("SELECT set_config('sialokasi.allow_purge', 'on', true)");
 
-    await tx.incidentCorrection.deleteMany();
-    await tx.notification.deleteMany();
-    await tx.stockMovement.deleteMany();
-    await tx.permitItem.deleteMany();
-    await tx.permit.deleteMany();
-    await tx.decision.deleteMany();
-    await tx.recommendationItem.deleteMany();
-    await tx.recommendation.deleteMany();
-    await tx.incidentLog.deleteMany();
-    await tx.incident.deleteMany();
-    await tx.stock.deleteMany();
-    await tx.auditLog.deleteMany();
-    await tx.session.deleteMany();
-    await tx.otpCode.deleteMany();
+      await tx.incidentCorrection.deleteMany();
+      await tx.notification.deleteMany();
+      await tx.stockMovement.deleteMany();
+      await tx.permitItem.deleteMany();
+      await tx.permit.deleteMany();
+      await tx.decision.deleteMany();
+      await tx.recommendationItem.deleteMany();
+      await tx.recommendation.deleteMany();
+      await tx.incidentLog.deleteMany();
+      await tx.incident.deleteMany();
+      await tx.stock.deleteMany();
+      await tx.auditLog.deleteMany();
+      await tx.session.deleteMany();
+      await tx.otpCode.deleteMany();
 
-    await tx.user.deleteMany({ where: { email: { notIn: demoEmails } } });
-    await tx.posko.deleteMany({ where: { id: { notIn: demoPoskoIds } } });
-    await tx.region.deleteMany({ where: { id: { notIn: demoRegionIds } } });
-    await tx.aidItem.deleteMany({ where: { id: { notIn: demoAidItemIds } } });
+      await tx.user.deleteMany({ where: { email: { notIn: demoEmails } } });
+      await tx.posko.deleteMany({ where: { id: { notIn: demoPoskoIds } } });
+      await tx.region.deleteMany({ where: { id: { notIn: demoRegionIds } } });
+      await tx.aidItem.deleteMany({ where: { id: { notIn: demoAidItemIds } } });
 
-    for (const region of REGIONS) {
-      await tx.region.upsert({
-        where: { id: region.id },
-        update: { name: region.name, isActive: true },
-        create: region,
+      for (const region of REGIONS) {
+        await tx.region.upsert({
+          where: { id: region.id },
+          update: { name: region.name, isActive: true },
+          create: region,
+        });
+      }
+
+      for (const user of DEMO_USERS) {
+        await tx.user.upsert({
+          where: { email: user.email },
+          update: {
+            name: user.name,
+            role: user.role,
+            isActive: true,
+            regionId: user.regionId ?? null,
+          },
+          create: { ...user, regionId: user.regionId ?? null },
+        });
+      }
+
+      for (const posko of POSKOS) {
+        await tx.posko.upsert({
+          where: { id: posko.id },
+          update: {
+            name: posko.name,
+            regionId: posko.regionId,
+            lat: posko.lat,
+            lng: posko.lng,
+            isActive: true,
+          },
+          create: posko,
+        });
+      }
+
+      for (const item of AID_ITEMS) {
+        await tx.aidItem.upsert({
+          where: { id: item.id },
+          update: {
+            name: item.name,
+            unit: item.unit,
+            icon: item.icon,
+            standardPerPerson: item.standardPerPerson,
+            sortOrder: item.sortOrder,
+            isActive: true,
+          },
+          create: item,
+        });
+      }
+
+      for (const stock of STOCKS) {
+        await tx.stock.upsert({
+          where: { poskoId_aidItemId: { poskoId: stock.poskoId, aidItemId: stock.aidItemId } },
+          update: { qty: stock.qty },
+          create: stock,
+        });
+      }
+
+      await tx.demoClock.upsert({
+        where: { id: 1 },
+        update: { offsetMinutes: 0 },
+        create: { id: 1, offsetMinutes: 0 },
       });
-    }
-
-    for (const user of DEMO_USERS) {
-      await tx.user.upsert({
-        where: { email: user.email },
-        update: {
-          name: user.name,
-          role: user.role,
-          isActive: true,
-          regionId: user.regionId ?? null,
-        },
-        create: { ...user, regionId: user.regionId ?? null },
-      });
-    }
-
-    for (const posko of POSKOS) {
-      await tx.posko.upsert({
-        where: { id: posko.id },
-        update: {
-          name: posko.name,
-          regionId: posko.regionId,
-          lat: posko.lat,
-          lng: posko.lng,
-          isActive: true,
-        },
-        create: posko,
-      });
-    }
-
-    for (const item of AID_ITEMS) {
-      await tx.aidItem.upsert({
-        where: { id: item.id },
-        update: {
-          name: item.name,
-          unit: item.unit,
-          icon: item.icon,
-          standardPerPerson: item.standardPerPerson,
-          sortOrder: item.sortOrder,
-          isActive: true,
-        },
-        create: item,
-      });
-    }
-
-    for (const stock of STOCKS) {
-      await tx.stock.upsert({
-        where: { poskoId_aidItemId: { poskoId: stock.poskoId, aidItemId: stock.aidItemId } },
-        update: { qty: stock.qty },
-        create: stock,
-      });
-    }
-
-    await tx.demoClock.upsert({
-      where: { id: 1 },
-      update: { offsetMinutes: 0 },
-      create: { id: 1, offsetMinutes: 0 },
-    });
-  });
+    },
+    { maxWait: 15_000, timeout: 120_000 },
+  );
 
   const [users, regions, poskos, aidItems, stocks, incidents, notifications] = await Promise.all([
     prisma.user.count(),

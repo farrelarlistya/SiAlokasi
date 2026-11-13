@@ -1,4 +1,5 @@
 import type { Role } from "@prisma/client";
+import { SURABAYA_REGIONS } from "@sialokasi/shared";
 
 export type DemoUserSeed = {
   id: string;
@@ -22,16 +23,12 @@ export const DEMO_USERS: DemoUserSeed[] = [
 
 export type RegionSeed = { id: string; name: string };
 
-export const REGIONS: RegionSeed[] = [
-  { id: "region_gubeng", name: "Gubeng" },
-  { id: "region_tambaksari", name: "Tambaksari" },
-  { id: "region_rungkut", name: "Rungkut" },
-  { id: "region_benowo", name: "Benowo" },
-  { id: "region_bulak", name: "Bulak" },
-  { id: "region_tandes", name: "Tandes" },
-  { id: "region_wonokromo", name: "Wonokromo" },
-  { id: "region_sukomanunggal", name: "Sukomanunggal" },
-];
+/**
+ * Daftar kecamatan diambil dari satu sumber kebenaran di `@sialokasi/shared`
+ * (31 kecamatan Kota Surabaya beserta batas wilayahnya), sehingga pilihan di
+ * admin, deteksi otomatis dari titik, dan peta selalu cocok.
+ */
+export const REGIONS: RegionSeed[] = SURABAYA_REGIONS.map(({ id, name }) => ({ id, name }));
 
 export type PoskoSeed = {
   id: string;

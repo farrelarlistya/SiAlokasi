@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
   createTrackingCode,
+  resolveRegionForPoint,
   type IncidentCorrectionView,
   type IncidentDetailView,
   type PimpinanIncidentDetailView,
@@ -8,6 +9,7 @@ import {
 } from "@sialokasi/shared";
 import { randomInt } from "node:crypto";
 import type { ClockService } from "../clock";
+import { RequestError } from "./errors";
 
 export const incidentDetailInclude = {
   region: { select: { id: true, name: true } },
@@ -139,7 +141,6 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
   const factors =
     incident.affectedPeople === null ||
     incident.damageLevel === null ||
-    incident.handlingDays === null ||
     incident.roadAccess === null ||
     incident.weather === null ||
     incident.density === null
@@ -151,7 +152,6 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
           vulnerableElderly: incident.vulnerableElderly,
           vulnerablePregnant: incident.vulnerablePregnant,
           vulnerableDisabled: incident.vulnerableDisabled,
-          handlingDays: incident.handlingDays,
           roadAccess: incident.roadAccess,
           weather: incident.weather,
           density: incident.density,
@@ -162,6 +162,7 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
     code: incident.code,
     title: incident.title,
     disasterType: incident.disasterType,
+    disasterDetail: incident.disasterDetail,
     lat: incident.lat,
     lng: incident.lng,
     radiusM: incident.radiusM,
@@ -239,6 +240,44 @@ export function toIncidentDetail(incident: IncidentWithDetail): IncidentDetailVi
       items: readCorrectionItems(correction.changes),
     })),
   };
+}
+
+/**
+ * Menentukan kecamatan dari titik kejadian, bukan dari pilihan petugas.
+ * Memakai batas wilayah resmi Kota Surabaya; titik di luar kota ditolak dengan
+ * pesan yang memberi tahu langkah perbaikan.
+ */
+export async function resolveIncidentRegionId(
+  prisma: PrismaClient,
+  lat: number,
+  lng: number,
+): Promise<string> {
+  const detected = resolveRegionForPoint(lat, lng);
+
+  if (!detected) {
+    throw new RequestError(
+      400,
+      "Titik kejadian berada di luar Kota Surabaya. Geser titik ke lokasi kejadian, lalu coba lagi.",
+    );
+  }
+
+  const region = await prisma.region.findFirst({
+    where: {
+      isActive: true,
+      OR: [{ id: detected.id }, { name: detected.name }],
+    },
+    orderBy: { id: "asc" },
+    select: { id: true },
+  });
+
+  if (!region) {
+    throw new RequestError(
+      400,
+      `Kecamatan ${detected.name} belum ada di data wilayah. Hubungi admin untuk menambahkannya.`,
+    );
+  }
+
+  return region.id;
 }
 
 export async function generateUniqueTrackingCode(prisma: PrismaClient): Promise<string> {

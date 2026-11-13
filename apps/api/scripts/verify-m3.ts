@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import type { Response as InjectResponse } from "light-my-request";
+import { SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { seedDatabase } from "../prisma/seed";
 
 process.env.LOG_LEVEL = "silent";
@@ -98,7 +99,6 @@ const validFactors = {
   vulnerableElderly: 30,
   vulnerablePregnant: 4,
   vulnerableDisabled: 6,
-  handlingDays: 3,
   roadAccess: "TERBATAS",
   weather: "HUJAN",
   density: "TINGGI",
@@ -288,12 +288,21 @@ async function main(): Promise<void> {
   console.log("\n[6] Tinjauan pimpinan dan penyesuaian jumlah");
   const summary = await get("/api/pimpinan/summary", pimpinan.cookie);
   const summaryBody = summary.json() as {
-    summary: { waitingCount: number; waitingAidTotal: number };
+    summary: { waitingCount: number };
+    waitingAid: { itemCount: number; items: { name: string; unit: string; qty: number }[] };
     queue: { id: string }[];
+    approved: { id: string; permitNumber: string | null }[];
   };
   check("antrian pimpinan memuat laporan", summaryBody.queue.some((item) => item.id === incidentId));
   check("ringkasan menunggu keputusan terisi", summaryBody.summary.waitingCount >= 1);
-  check("ringkasan bantuan menunggu terisi", summaryBody.summary.waitingAidTotal > 0);
+  check(
+    "ringkasan bantuan menunggu terisi per jenis dan satuan",
+    summaryBody.waitingAid.items.length > 0 &&
+      summaryBody.waitingAid.itemCount === summaryBody.waitingAid.items.length &&
+      summaryBody.waitingAid.items.every((item) => item.qty > 0 && item.unit !== ""),
+    `${summaryBody.waitingAid.itemCount} jenis`,
+  );
+  check("laporan yang disetujui belum muncul sebelum keputusan", summaryBody.approved.length === 0);
 
   const detailResponse = await get(`/api/pimpinan/incidents/${incidentId}`, pimpinan.cookie);
   check("pimpinan bisa membuka rincian laporan", detailResponse.statusCode === 200);
@@ -378,6 +387,23 @@ async function main(): Promise<void> {
   check("nomor izin memakai format IZN-YYYYMMDD-XXX", /^IZN-\d{8}-\d{3}$/.test(permitNumber), permitNumber);
   check("izin memuat 10 baris bantuan", approved.data.permit?.items.length === 10);
 
+  const summaryAfterApprove = await get("/api/pimpinan/summary", pimpinan.cookie);
+  const approvedList = (
+    summaryAfterApprove.json() as {
+      approved: { id: string; permitNumber: string | null; poskoName: string | null }[];
+    }
+  ).approved;
+  check(
+    "laporan disetujui masuk daftar menunggu distribusi",
+    approvedList.some(
+      (item) =>
+        item.id === incidentId &&
+        item.permitNumber === permitNumber &&
+        item.poskoName !== null,
+    ),
+    `${approvedList.length} laporan`,
+  );
+
   const approveAgain = await post(
     `/api/pimpinan/incidents/${incidentId}/decision`,
     pimpinan.cookie,
@@ -423,6 +449,16 @@ async function main(): Promise<void> {
   );
   check("menandai selesai dua kali ditolak", completeAgain.statusCode === 409);
 
+  const summaryAfterComplete = await get("/api/pimpinan/summary", pimpinan.cookie);
+  const approvedAfterComplete = (
+    summaryAfterComplete.json() as { approved: { id: string }[] }
+  ).approved;
+  check(
+    "laporan selesai keluar dari daftar menunggu distribusi",
+    !approvedAfterComplete.some((item) => item.id === incidentId),
+    `${approvedAfterComplete.length} laporan`,
+  );
+
   console.log("\n[10] Jalur penolakan");
   const secondCreate = await post("/api/petugas/incidents", petugas.cookie, {
     ...draftPayload,
@@ -436,7 +472,6 @@ async function main(): Promise<void> {
   await post(`/api/petugas/incidents/${secondId}/factors`, petugas.cookie, {
     ...validFactors,
     affectedPeople: 150,
-    handlingDays: 2,
     roadAccess: "TERBUKA",
     weather: "CERAH",
     density: "SEDANG",
@@ -497,7 +532,11 @@ async function main(): Promise<void> {
 
   check("reset mengembalikan 3 akun demo", users === 3, `${users} akun`);
   check("reset mengembalikan 10 jenis bantuan", aidItems === 10, `${aidItems} item`);
-  check("reset mengembalikan 8 kecamatan", regions === 8, `${regions} kecamatan`);
+  check(
+    `reset mengembalikan ${SURABAYA_REGION_COUNT} kecamatan`,
+    regions === SURABAYA_REGION_COUNT,
+    `${regions} kecamatan`,
+  );
   check("reset mengembalikan 3 posko", poskos === 3, `${poskos} posko`);
   check("reset mengembalikan 0 laporan", incidents === 0, `${incidents} laporan`);
   check("reset mengembalikan 0 rekomendasi", recommendations === 0, `${recommendations} baris`);

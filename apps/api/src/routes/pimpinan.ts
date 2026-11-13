@@ -20,7 +20,7 @@ export function registerPimpinanRoutes(
       const activeStatuses = [...ACTIVE_INCIDENT_STATUSES] as IncidentStatus[];
       const startOfToday = await deps.clock.startOfDayJakarta();
 
-      const [waitingCount, activeCount, affected, permitsToday, waitingAid, queue, poskos] =
+      const [waitingCount, activeCount, affected, permitsToday, queue, approved, poskos] =
         await Promise.all([
           deps.prisma.incident.count({ where: { status: "MENUNGGU_PERSETUJUAN" } }),
           deps.prisma.incident.count({ where: { status: { in: activeStatuses } } }),
@@ -29,15 +29,6 @@ export function registerPimpinanRoutes(
             _sum: { affectedPeople: true },
           }),
           deps.prisma.permit.count({ where: { issuedAt: { gte: startOfToday } } }),
-          deps.prisma.recommendationItem.aggregate({
-            where: {
-              recommendation: {
-                isActive: true,
-                incident: { status: "MENUNGGU_PERSETUJUAN" },
-              },
-            },
-            _sum: { finalQty: true },
-          }),
           deps.prisma.incident.findMany({
             where: { status: "MENUNGGU_PERSETUJUAN" },
             orderBy: { occurredAt: "asc" },
@@ -47,6 +38,7 @@ export function registerPimpinanRoutes(
               code: true,
               title: true,
               disasterType: true,
+              disasterDetail: true,
               status: true,
               occurredAt: true,
               affectedPeople: true,
@@ -55,6 +47,29 @@ export function registerPimpinanRoutes(
               lng: true,
               region: { select: { name: true } },
               reporter: { select: { name: true } },
+            },
+          }),
+          deps.prisma.incident.findMany({
+            where: { status: "DISETUJUI" },
+            orderBy: { updatedAt: "desc" },
+            take: 10,
+            select: {
+              id: true,
+              code: true,
+              title: true,
+              disasterType: true,
+              disasterDetail: true,
+              occurredAt: true,
+              updatedAt: true,
+              region: { select: { name: true } },
+              permits: {
+                orderBy: { issuedAt: "desc" },
+                take: 1,
+                select: {
+                  number: true,
+                  posko: { select: { name: true } },
+                },
+              },
             },
           }),
           deps.prisma.posko.findMany({
@@ -86,6 +101,44 @@ export function registerPimpinanRoutes(
         }
       }
 
+      // Rincian bantuan yang menunggu keputusan, dipecah per jenis dan satuan
+      // supaya angkanya bisa dibaca (jumlah campuran satuan tidak bermakna).
+      const waitingRows = await deps.prisma.recommendationItem.findMany({
+        where: {
+          recommendation: {
+            isActive: true,
+            incident: { status: "MENUNGGU_PERSETUJUAN" },
+          },
+        },
+        select: {
+          finalQty: true,
+          unit: true,
+          aidItem: { select: { name: true, sortOrder: true } },
+        },
+      });
+
+      const waitingMap = new Map<
+        string,
+        { name: string; unit: string; qty: number; sortOrder: number }
+      >();
+      for (const row of waitingRows) {
+        const key = `${row.aidItem.name}|${row.unit}`;
+        const current = waitingMap.get(key);
+        if (current) {
+          current.qty += row.finalQty;
+        } else {
+          waitingMap.set(key, {
+            name: row.aidItem.name,
+            unit: row.unit,
+            qty: row.finalQty,
+            sortOrder: row.aidItem.sortOrder,
+          });
+        }
+      }
+      const waitingAid = [...waitingMap.values()].sort(
+        (left, right) => left.sortOrder - right.sortOrder,
+      );
+
       return {
         summary: {
           waitingCount,
@@ -93,12 +146,30 @@ export function registerPimpinanRoutes(
           affectedPeople: affected._sum.affectedPeople ?? 0,
           permitsToday,
           lowStockCount,
-          waitingAidTotal: waitingAid._sum.finalQty ?? 0,
+        },
+        waitingAid: {
+          itemCount: waitingAid.length,
+          items: waitingAid.map(({ name, unit, qty }) => ({ name, unit, qty })),
         },
         queue: queue.map((incident) => ({
           ...incident,
           affectedPeople: incident.affectedPeople ?? 0,
         })),
+        approved: approved.map((incident) => {
+          const permit = incident.permits[0] ?? null;
+          return {
+            id: incident.id,
+            code: incident.code,
+            title: incident.title,
+            disasterType: incident.disasterType,
+            disasterDetail: incident.disasterDetail,
+            occurredAt: incident.occurredAt.toISOString(),
+            approvedAt: incident.updatedAt.toISOString(),
+            regionName: incident.region?.name ?? null,
+            permitNumber: permit?.number ?? null,
+            poskoName: permit?.posko.name ?? null,
+          };
+        }),
       };
     },
   );

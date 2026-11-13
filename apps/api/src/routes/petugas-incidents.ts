@@ -1,6 +1,7 @@
 import type { Prisma, PrismaClient } from "@prisma/client";
 import {
   cancelIncidentSchema,
+  disasterDetailFor,
   incidentDraftSchema,
   incidentFactorsSchema,
   incidentPatchSchema,
@@ -15,6 +16,7 @@ import {
   generateUniqueTrackingCode,
   incidentDetailInclude,
   lockIncident,
+  resolveIncidentRegionId,
   toIncidentDetail,
 } from "../lib/incident";
 import { requireRole } from "../lib/rbac";
@@ -41,6 +43,7 @@ export function registerPetugasIncidentRoutes(
         code: true,
         title: true,
         disasterType: true,
+        disasterDetail: true,
         status: true,
         occurredAt: true,
         affectedPeople: true,
@@ -69,18 +72,18 @@ export function registerPetugasIncidentRoutes(
       return reply.code(401).send({ error: { message: "Sesi Anda belum aktif." } });
     }
 
-    const region = await deps.prisma.region.findFirst({
-      where: { id: parsed.data.regionId, isActive: true },
-      select: { id: true },
-    });
-
-    if (!region) {
-      return reply.code(400).send({
-        error: {
-          message:
-            "Kecamatan yang dipilih belum tersedia. Pilih kecamatan lain, atau hubungi admin wilayah.",
-        },
-      });
+    let regionId: string;
+    try {
+      regionId = await resolveIncidentRegionId(
+        deps.prisma,
+        parsed.data.lat,
+        parsed.data.lng,
+      );
+    } catch (error) {
+      if (error instanceof RequestError) {
+        return reply.code(error.statusCode).send({ error: { message: error.message } });
+      }
+      throw error;
     }
 
     const now = await deps.clock.now();
@@ -102,10 +105,11 @@ export function registerPetugasIncidentRoutes(
           code,
           title: parsed.data.title,
           disasterType: parsed.data.disasterType,
+          disasterDetail: disasterDetailFor(parsed.data),
           lat: parsed.data.lat,
           lng: parsed.data.lng,
           radiusM: parsed.data.radiusM,
-          regionId: parsed.data.regionId,
+          regionId,
           occurredAt,
           status: "BARU",
           reporterId,
@@ -150,7 +154,7 @@ export function registerPetugasIncidentRoutes(
 
     return reply.code(201).send({
       data: toIncidentDetail(incident),
-      message: `Laporan tersimpan dengan kode lacak ${code}. Lanjutkan mengisi 8 faktor untuk menghitung estimasi.`,
+      message: `Laporan tersimpan dengan kode lacak ${code}. Lanjutkan mengisi faktor lapangan untuk menghitung estimasi.`,
     });
   });
 
@@ -189,7 +193,16 @@ export function registerPetugasIncidentRoutes(
 
     const target = await deps.prisma.incident.findFirst({
       where: { id, reporterId },
-      select: { id: true, status: true, title: true, radiusM: true, regionId: true },
+      select: {
+        id: true,
+        status: true,
+        title: true,
+        radiusM: true,
+        regionId: true,
+        lat: true,
+        lng: true,
+        disasterType: true,
+      },
     });
 
     if (!target) {
@@ -207,22 +220,6 @@ export function registerPetugasIncidentRoutes(
       });
     }
 
-    if (parsed.data.regionId !== undefined) {
-      const region = await deps.prisma.region.findFirst({
-        where: { id: parsed.data.regionId, isActive: true },
-        select: { id: true },
-      });
-
-      if (!region) {
-        return reply.code(400).send({
-          error: {
-            message:
-              "Kecamatan yang dipilih belum tersedia. Pilih kecamatan lain, atau hubungi admin wilayah.",
-          },
-        });
-      }
-    }
-
     if (parsed.data.occurredAt !== undefined) {
       const now = await deps.clock.now();
       const occurredAt = deps.clock.parseBusinessDate(parsed.data.occurredAt);
@@ -238,13 +235,38 @@ export function registerPetugasIncidentRoutes(
 
     const data: Prisma.IncidentUncheckedUpdateInput = {};
     if (parsed.data.title !== undefined) data.title = parsed.data.title;
-    if (parsed.data.disasterType !== undefined) data.disasterType = parsed.data.disasterType;
     if (parsed.data.lat !== undefined) data.lat = parsed.data.lat;
     if (parsed.data.lng !== undefined) data.lng = parsed.data.lng;
     if (parsed.data.radiusM !== undefined) data.radiusM = parsed.data.radiusM;
-    if (parsed.data.regionId !== undefined) data.regionId = parsed.data.regionId;
     if (parsed.data.occurredAt !== undefined) {
       data.occurredAt = deps.clock.parseBusinessDate(parsed.data.occurredAt);
+    }
+
+    // Titik yang berubah menentukan ulang kecamatan terdampak secara otomatis.
+    const nextLat = parsed.data.lat ?? target.lat;
+    const nextLng = parsed.data.lng ?? target.lng;
+    if (parsed.data.lat !== undefined || parsed.data.lng !== undefined) {
+      try {
+        data.regionId = await resolveIncidentRegionId(deps.prisma, nextLat, nextLng);
+      } catch (error) {
+        if (error instanceof RequestError) {
+          return reply.code(error.statusCode).send({ error: { message: error.message } });
+        }
+        throw error;
+      }
+    }
+
+    if (parsed.data.disasterType !== undefined) {
+      data.disasterType = parsed.data.disasterType;
+      data.disasterDetail = disasterDetailFor({
+        disasterType: parsed.data.disasterType,
+        disasterDetail: parsed.data.disasterDetail ?? "",
+      });
+    } else if (parsed.data.disasterDetail !== undefined) {
+      data.disasterDetail = disasterDetailFor({
+        disasterType: target.disasterType,
+        disasterDetail: parsed.data.disasterDetail,
+      });
     }
 
     const updated = await deps.prisma.incident.update({
@@ -326,7 +348,6 @@ export function registerPetugasIncidentRoutes(
             vulnerableElderly: parsed.data.vulnerableElderly,
             vulnerablePregnant: parsed.data.vulnerablePregnant,
             vulnerableDisabled: parsed.data.vulnerableDisabled,
-            handlingDays: parsed.data.handlingDays,
             roadAccess: parsed.data.roadAccess,
             weather: parsed.data.weather,
             density: parsed.data.density,
@@ -365,7 +386,7 @@ export function registerPetugasIncidentRoutes(
               fromStatus: "BARU",
               toStatus: "DIPERIKSA",
               actorId: reporterId,
-              note: "Delapan faktor diisi dan estimasi dihitung.",
+              note: "Faktor lapangan diisi dan estimasi dihitung.",
               createdAt: now,
             },
           });
@@ -441,7 +462,7 @@ export function registerPetugasIncidentRoutes(
         if (incident.status === "BARU") {
           throw new RequestError(
             409,
-            "Lengkapi 8 faktor dan hitung estimasi terlebih dahulu sebelum mengajukan laporan.",
+            "Lengkapi faktor lapangan dan hitung estimasi terlebih dahulu sebelum mengajukan laporan.",
           );
         }
 

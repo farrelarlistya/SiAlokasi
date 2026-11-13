@@ -31,6 +31,7 @@ export function registerPetugasRoutes(app: FastifyInstance, deps: PetugasDepende
             code: true,
             title: true,
             disasterType: true,
+            disasterDetail: true,
             status: true,
             occurredAt: true,
             affectedPeople: true,

@@ -1,6 +1,7 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import type { Response as InjectResponse } from "light-my-request";
+import { SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { seedDatabase } from "../prisma/seed";
 
 process.env.LOG_LEVEL = "silent";
@@ -224,7 +225,6 @@ async function main(): Promise<void> {
       vulnerableElderly: 4,
       vulnerablePregnant: 1,
       vulnerableDisabled: 1,
-      handlingDays: 3,
       roadAccess: "TERBATAS",
       weather: "HUJAN",
       density: "TINGGI",
@@ -352,7 +352,11 @@ async function main(): Promise<void> {
   ]);
   check("reset demo mengembalikan 3 akun demo", users === 3, `${users} akun`);
   check("reset demo mengembalikan 10 jenis bantuan", aidItems === 10, `${aidItems} item`);
-  check("reset demo mengembalikan 8 kecamatan", regions === 8, `${regions} kecamatan`);
+  check(
+    `reset demo mengembalikan ${SURABAYA_REGION_COUNT} kecamatan`,
+    regions === SURABAYA_REGION_COUNT,
+    `${regions} kecamatan`,
+  );
   check("reset demo mengembalikan 3 posko", poskos === 3, `${poskos} posko`);
   check("reset demo mengembalikan 0 laporan", incidents === 0, `${incidents} laporan`);
   check("reset demo mengakhiri semua sesi", sessions === 0, `${sessions} sesi`);

@@ -136,7 +136,6 @@ const validFactors = {
   vulnerableElderly: 8,
   vulnerablePregnant: 2,
   vulnerableDisabled: 2,
-  handlingDays: 2,
   roadAccess: "TERBATAS",
   weather: "HUJAN",
   density: "SEDANG",
