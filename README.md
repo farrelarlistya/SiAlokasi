@@ -48,7 +48,7 @@ $env:PG_DIR = "D:\PostgreSQL\17"
    ```
 
    Sesuaikan `DATABASE_URL` bila nama pengguna atau kata sandi berbeda. Biarkan
-   `DEMO_MODE=true` agar kode masuk `123456` dan panel `/dev` aktif.
+   `DEMO_MODE=true` agar tiga akun contoh tampil di halaman masuk dan panel `/dev` aktif.
 
 3. **Buat pengguna dan database** (sekali saja, dari `psql` sebagai superuser)
 
@@ -105,9 +105,11 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 - 3 akun demo: `petugas@sialokasi.demo`, `pimpinan@sialokasi.demo`, `admin@sialokasi.demo`.
 - **0 laporan, 0 rekomendasi, 0 keputusan, 0 izin, 0 riwayat, 0 jurnal stok, 0 notifikasi, 0 sesi.**
 
-Masuk lewat <http://localhost:5173/masuk>. Saat `DEMO_MODE=true`, kode masuk selalu
-**`123456`** dan tiga akun demo bisa dipilih langsung. Pendaftaran petugas menunggu aktivasi
-Admin. Panel `/dev` (khusus admin) bisa membuka <http://localhost:5173/dev> untuk mengatur
+Masuk lewat <http://localhost:5173/masuk> memakai **email dan kata sandi**. Ketiga akun
+demo memakai kata sandi **`Sialokasi#2026`** (ditampilkan juga di halaman masuk selama
+`DEMO_MODE=true`); `npm run db:seed`/`demo:reset` selalu mengembalikan kata sandi ini.
+Pendaftaran petugas memakai kata sandi pilihannya sendiri dan menunggu aktivasi Admin.
+Panel `/dev` (khusus admin) bisa membuka <http://localhost:5173/dev> untuk mengatur
 waktu demo, mengisi 3 contoh laporan, atau reset transaksi.
 
 ## Notifikasi Simulasi

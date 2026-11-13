@@ -27,13 +27,13 @@ demo. Semua langkah dimulai dari **0 transaksi** agar alur terlihat utuh.
 6. Bila demo dari HP/laptop lain, jalankan `npm run share` di terminal kedua dan buka alamat
    tunnel yang tercetak.
 
-**Akun demo** (kode selalu `123456` saat `DEMO_MODE=true`):
+**Akun demo** (kata sandi selalu `Sialokasi#2026` saat `DEMO_MODE=true`):
 
-| Peran | Email | Nama di layar |
-| :--- | :--- | :--- |
-| Petugas | `petugas@sialokasi.demo` | Rina Kusuma |
-| Pimpinan | `pimpinan@sialokasi.demo` | Budi Santoso |
-| Admin | `admin@sialokasi.demo` | Sari Wulandari |
+| Peran | Email | Kata sandi | Nama di layar |
+| :--- | :--- | :--- | :--- |
+| Petugas | `petugas@sialokasi.demo` | `Sialokasi#2026` | Rina Kusuma |
+| Pimpinan | `pimpinan@sialokasi.demo` | `Sialokasi#2026` | Budi Santoso |
+| Admin | `admin@sialokasi.demo` | `Sialokasi#2026` | Sari Wulandari |
 
 ---
 
@@ -157,7 +157,7 @@ tercetak di terminal. Tampilan sudah diuji pada lebar **360, 768, 1366, dan 1920
 | :--- | :--- |
 | Halaman tidak terbuka | Pastikan `npm run dev` masih menyala dan PostgreSQL hidup (`npm run db:status`). |
 | Peta kosong | Tunggu beberapa detik; bila internet lemah, peta memakai area Surabaya dari cadangan. |
-| Kode masuk ditolak | Pastikan `apps/api/.env` memuat `DEMO_MODE=true`, lalu coba `123456`. |
+| Kata sandi ditolak | Jalankan `npm run db:seed` agar kata sandi demo kembali `Sialokasi#2026`. |
 | Data demo bercampur | Buka `/dev` sebagai Admin, lalu **Reset transaksi & waktu demo**. |
 | Cetak terpotong | Pilih ukuran **A4**, margin **Default**, dan matikan “Headers and footers”. |
 | Tunnel gagal | Pakai `cloudflared tunnel --url http://localhost:5173` atau `ngrok http 5173`. |

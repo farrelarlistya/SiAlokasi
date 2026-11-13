@@ -185,7 +185,7 @@ async function main() {
     const result = await evaluate(`fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: ${JSON.stringify(email)}, code: "123456" })
+      body: JSON.stringify({ email: ${JSON.stringify(email)}, password: "Sialokasi#2026" })
     }).then(async (response) => ({ status: response.status, body: await response.json() }))`);
     if (result.status !== 200) {
       throw new Error(`Gagal masuk sebagai ${email}: ${JSON.stringify(result.body)}`);

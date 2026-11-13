@@ -195,7 +195,7 @@ async function main() {
     const result = await evaluate(`fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: ${JSON.stringify(email)}, code: "123456" })
+      body: JSON.stringify({ email: ${JSON.stringify(email)}, password: "Sialokasi#2026" })
     }).then(async (response) => ({ status: response.status, body: await response.json() }))`);
     if (result.status !== 200) {
       throw new Error(`Gagal masuk sebagai ${email}: ${JSON.stringify(result.body)}`);
@@ -206,7 +206,18 @@ async function main() {
   try {
     await setViewport(1440, 1000);
     await navigate(`${baseUrl}/`, "Kejadian aktif");
-    await loginAs("petugas@sialokasi.demo");
+
+    console.log("\n[0] Masuk lewat form email + kata sandi");
+    await navigate(`${baseUrl}/masuk`, "Masuk ke SiAlokasi");
+    check(
+      "halaman masuk menampilkan kata sandi demo",
+      await evaluate(`document.body.innerText.includes("Sialokasi#2026")`),
+    );
+    await setField("#login-email", "petugas@sialokasi.demo");
+    await setField("#login-password", "Sialokasi#2026");
+    await clickText("button", "Masuk");
+    await waitForText("Laporan terbaru");
+    check("masuk dengan email + kata sandi berhasil", true);
 
     console.log("\n[1] Formulir laporan baru");
     await evaluate(`window.localStorage.removeItem("sialokasi.draft.laporan-baru")`);

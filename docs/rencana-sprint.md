@@ -14,6 +14,7 @@
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ✅ Selesai — 2026-11-09 | `docs/bukti/m5.md`, `docs/adr/0008-notifikasi-cetak-a4-dan-akses-lintas-perangkat.md`, `docs/panduan-demo.md`, `README.md` |
 | `R1` | Revisi Hierarki & Fokus Section | ✅ Selesai — 2026-11-10 | `docs/bukti/hierarki-fokus/`, `docs/adr/0011-hierarki-fokus.md`, `docs/desain/design-rim.md` §3–§10 |
 | `R2` | Revisi Isi Laporan & Dasbor Pimpinan | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-2026-11-13.md`, `docs/adr/0013-kecamatan-otomatis-dan-isian-formulir.md` |
+| `R3` | Login Email + Kata Sandi | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-login-password.md`, `docs/adr/0014-login-email-password.md` |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
 
@@ -580,3 +581,34 @@ menunggu, dan jalan masuk laporan yang sudah disetujui).
 - [x] `npm run build`, `npm test`, `verify:m1`—`verify:m5` lulus; demo direset ke 0 transaksi.
 
 **Bukti:** `docs/bukti/revisi-2026-11-13.md`. Keputusan teknis: ADR 0013.
+
+---
+
+## R3 — Login Email + Kata Sandi (Selesai 2026-11-13)
+
+**Permintaan:** mengganti sistem kode demo `123456` menjadi kredensial akun (email +
+kata sandi) untuk ketiga akun yang sudah ada.
+
+**Hasil:**
+- Login satu langkah: `POST /api/auth/login` menerima `email` + `password`.
+  Endpoint `/api/auth/request-code`, tabel `otp_codes`, dan skema OTP dihapus.
+- Kata sandi disimpan sebagai hash scrypt bersalt (`users.passwordHash`), diperiksa
+  dengan `timingSafeEqual`; tidak ada kata sandi di audit maupun log.
+- Migrasi `20261113170000_m7_password_login` (tambah `passwordHash`, buang `otp_codes`).
+- Seed/demo reset selalu mengembalikan kata sandi demo `Sialokasi#2026` untuk ketiga akun.
+- Pendaftaran petugas kini meminta kata sandi (minimal 8 karakter) dan tetap menunggu
+  aktivasi Admin; pesan sukses menyebut masuk memakai email + kata sandi.
+- Halaman masuk menampilkan tiga akun contoh; memilih satu baris mengisi email dan
+  kata sandi sekaligus. Panel `/dev` ikut menyebut kata sandi demo.
+- Uji: `verify:m1` 24/24 (termasuk hash kata sandi), `verify:m2` 50/50 (termasuk kata
+  sandi salah ditolak), `verify:m3` 83/83, `verify:m4` 99/99, `verify:m5` 40/40,
+  `npm test` 102/102, serta uji peramban.
+
+**Kriteria selesai:**
+- [x] Kode `123456` hilang dari kode aplikasi, skrip, dan dokumen petunjuk (README, PRD, panduan, production); catatan bukti lama tetap sebagai arsip.
+- [x] Ketiga akun bisa masuk dengan email + kata sandi; kata sandi salah ditolak `401`.
+- [x] Pendaftaran meminta kata sandi dan akun tetap nonaktif sampai diaktifkan admin.
+- [x] Kata sandi tidak pernah tersimpan sebagai teks biasa.
+- [x] `npm run build`, `npm test`, dan `verify:m1`—`verify:m5` lulus.
+
+**Bukti:** `docs/bukti/revisi-login-password.md`. Keputusan teknis: ADR 0014.

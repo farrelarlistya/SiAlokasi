@@ -236,7 +236,7 @@ Menampilkan empat perilaku wajib dalam satu papan:
 ### 12.9 `A1` — Masuk & `A2` — Daftar Petugas (M2)
 - Dua kolom di desktop: panel kiri berisi merek dan ilustrasi peta yang **tampil utuh** di dalam bingkai; panel kanan berisi kartu formulir.
 - Ilustrasi memakai rasio asli `800:520`, lebar penuh bingkai, tanpa posisi negatif, rotasi, atau pemotongan. Bingkai berada di alur layout agar tidak terpotong di bawah.
-- `A1` dua langkah: email → kode. Mode demo menampilkan tiga akun contoh; memilih akun mengisi email, lalu kode `123456` diisikan otomatis.
+- `A1` satu langkah: email + kata sandi. Mode demo menampilkan tiga akun contoh; memilih akun mengisi email dan kata sandi demo sekaligus (ADR 0014).
 - `A2` meminta nama, email, dan kecamatan. Setelah terkirim, tampil langkah "menunggu aktivasi admin" — bukan pesan sukses kosong.
 - Di ponsel hanya kartu formulir yang tampil, dengan tombol kembali ke peta di atas.
 

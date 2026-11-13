@@ -76,7 +76,7 @@ async function main() {
   console.log(`  ${tunnel.url}`);
   console.log("");
   console.log("Buka alamat itu dari HP atau laptop lain yang terhubung internet.");
-  console.log("Masuk memakai akun demo, kode selalu 123456 saat DEMO_MODE=true.");
+  console.log("Masuk memakai salah satu akun demo; kata sandi ada di README.");
 
   const password = await tunnelPassword();
   if (password) {

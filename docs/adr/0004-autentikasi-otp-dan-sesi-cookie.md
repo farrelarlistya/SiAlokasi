@@ -1,8 +1,13 @@
-# ADR 0004 — Autentikasi OTP Demo dan Sesi Cookie httpOnly
+# ADR 0004 - Autentikasi OTP Demo dan Sesi Cookie httpOnly
+
+> **Catatan 2026-11-13:** bagian **kode OTP** pada ADR ini sudah digantikan oleh
+> [ADR 0014](./0014-login-email-password.md) — masuk kini memakai email + kata
+> sandi. Keputusan tentang **sesi cookie httpOnly** dan pemeriksaan peran di
+> server tetap berlaku.
 
 - **Tanggal:** 2026-11-08
-- **Status:** Diterima
-- **Konteks tahap:** Sesi 3 (`M2` — Akun Semua Peran & Data Master)
+- **Status:** Diterima (bagian OTP digantikan ADR 0014)
+- **Konteks tahap:** Sesi 3 (`M2` - Akun Semua Peran & Data Master)
 
 ## Konteks
 

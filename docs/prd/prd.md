@@ -90,13 +90,13 @@ SiAlokasi menyatukan tiga hal dalam satu aplikasi web:
 | Lihat ringkasan stok per posko | — | — | ✅ | ✅ |
 | Panel kontrol demo `/dev` | — | — | — | ✅ |
 
-**Akun demo (`DEMO_MODE=true`, kode masuk selalu `123456`):**
+**Akun demo (`DEMO_MODE=true`, kata sandi selalu `Sialokasi#2026`):**
 
-| Peran | Email | Nama tampilan |
-| :--- | :--- | :--- |
-| Petugas | `petugas@sialokasi.demo` | Rina Kusuma |
-| Pimpinan | `pimpinan@sialokasi.demo` | Budi Santoso |
-| Admin | `admin@sialokasi.demo` | Sari Wulandari |
+| Peran | Email | Kata sandi | Nama tampilan |
+| :--- | :--- | :--- | :--- |
+| Petugas | `petugas@sialokasi.demo` | `Sialokasi#2026` | Rina Kusuma |
+| Pimpinan | `pimpinan@sialokasi.demo` | `Sialokasi#2026` | Budi Santoso |
+| Admin | `admin@sialokasi.demo` | `Sialokasi#2026` | Sari Wulandari |
 
 Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pimpinan dan Admin dibuat lewat seed.
 
@@ -119,8 +119,8 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 | Kode | Kebutuhan | Pelaku | Cara membuktikan |
 | :--- | :--- | :--- | :--- |
-| `FR-05` | Masuk dengan email + kode OTP; `123456` selalu diterima saat `DEMO_MODE=true` | Semua | Ketiga akun berhasil masuk dan diarahkan ke halaman sesuai peran |
-| `FR-06` | Pendaftaran akun Petugas + aktivasi oleh Admin | Petugas, Admin | Daftar → status "menunggu" → admin aktifkan → bisa masuk |
+| `FR-05` | Masuk dengan email + kata sandi; kata sandi disimpan sebagai hash scrypt dan akun demo memakai `Sialokasi#2026` | Semua | Ketiga akun berhasil masuk dengan kata sandi, kata sandi salah ditolak `401`, dan diarahkan ke halaman sesuai peran |
+| `FR-06` | Pendaftaran akun Petugas (email + kata sandi pilihan sendiri) + aktivasi oleh Admin | Petugas, Admin | Daftar → status "menunggu" → admin aktifkan → bisa masuk dengan kata sandinya |
 | `FR-07` | Kelola akun & peran (ubah peran, nonaktifkan) | Admin | Peran berubah langsung membatasi menu & API; akun sendiri tidak bisa dinonaktifkan |
 | `FR-08` | CRUD jenis bantuan: nama, satuan, ikon SVG, standar per jiwa | Admin | Nonaktifkan item → item hilang dari form baru tetapi tetap muncul di laporan lama |
 | `FR-09` | CRUD wilayah (kecamatan) & posko, dengan pemilih koordinat di peta | Admin | Posko baru muncul di peta & pilihan tujuan izin |
@@ -198,9 +198,8 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 | Entitas | Kolom wajib | Catatan |
 | :--- | :--- | :--- |
-| `User` | `id`, `name`, `email` (unik), `role`, `isActive`, `regionId` (opsional), `createdAt` | Role: `PETUGAS`, `PIMPINAN`, `ADMIN`; pendaftar baru `isActive=false` |
+| `User` | `id`, `name`, `email` (unik), `passwordHash` (scrypt), `role`, `isActive`, `regionId` (opsional), `createdAt` | Role: `PETUGAS`, `PIMPINAN`, `ADMIN`; pendaftar baru `isActive=false`; kata sandi tidak pernah disimpan sebagai teks biasa |
 | `Session` | `id`, `tokenHash` (unik), `userId`, `expiresAt`, `createdAt` | Sesi cookie httpOnly; token asli tidak disimpan (ADR 0004) |
-| `OtpCode` | `userId`, `codeHash`, `expiresAt`, `usedAt` | `123456` hanya saat `DEMO_MODE=true` |
 | `Region` | `id`, `name`, `isActive` | 31 kecamatan Kota Surabaya; batas wilayah dari OpenStreetMap dipakai untuk menentukan kecamatan otomatis dari titik; nonaktif ≠ hapus |
 | `Posko` | `id`, `name`, `regionId`, `lat`, `lng`, `isActive` | 3 posko contoh |
 | `AidItem` | `id`, `name`, `unit`, `icon`, `standardPerPerson`, `isActive` | 10 jenis bantuan |
@@ -337,7 +336,7 @@ SiAlokasi/
 | Styling | Tailwind CSS v4 `@theme` | 4.x | Token warna terkunci di satu tempat |
 | State/data | TanStack Query | 5.x | Loading/error state konsisten |
 | Validasi | Zod | 3.x | Satu skema untuk form & server |
-| Auth | Cookie sesi httpOnly + OTP demo (`123456`) | — | Sederhana & aman untuk demo; ADR 0004 |
+| Auth | Cookie sesi httpOnly + kata sandi (scrypt) | - | Tanpa layanan pihak ketiga; kata sandi disalt & di-hash; ADR 0014 |
 
 ### 9.3 Model Estimasi
 

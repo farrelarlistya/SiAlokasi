@@ -83,7 +83,7 @@ curl https://<project>.vercel.app/api/health
 curl https://<project>.vercel.app/api/auth/me      # harus 200, bukan 404
 ```
 
-Lalu buka halaman masuk, gunakan akun demo (`petugas@sialokasi.demo`, kode `123456` bila `DEMO_MODE=true`), dan cek:
+Lalu buka halaman masuk, gunakan akun demo (`petugas@sialokasi.demo`, kata sandi `Sialokasi#2026` bila `DEMO_MODE=true`), dan cek:
 
 - peta memuat tile OSM (CSP mengizinkan `*.tile.openstreetmap.org`),
 - cookie sesi `Secure; HttpOnly; SameSite=Lax` terpasang,
@@ -93,7 +93,7 @@ Lalu buka halaman masuk, gunakan akun demo (`petugas@sialokasi.demo`, kode `1234
 ## 5. Catatan produksi
 
 - **Migrasi tidak otomatis.** Jalankan `prisma migrate deploy` sebelum deploy yang mengubah skema. Jangan menaruhnya di build Vercel agar dua deployment bersamaan tidak berlomba.
-- **Demo mode.** Saat `DEMO_MODE=true`, OTP `123456` selalu diterima dan `/api/dev` aktif. Matikan untuk produksi nyata.
+- **Demo mode.** Saat `DEMO_MODE=true`, halaman masuk menampilkan tiga akun contoh beserta kata sandi demo dan `/api/dev` aktif. Matikan untuk produksi nyata, lalu ganti kata sandi akun lewat seed atau basis data.
 - **Serverless.** Setiap instans fungsi punya memori sendiri; rate limit in-memory tidak lintas instans. Bila perlu, tambahkan rate limit di edge/WAF.
 - **Koneksi.** Gunakan pooler + `connection_limit=1` agar tidak menghabiskan koneksi PostgreSQL saat banyak fungsi dingin.
 - **Region.** Tempatkan fungsi di region yang sama dengan database (`regions` di `vercel.json`). Beda benua membuat setiap kueri lambat dan transaksi bisa melewati batas waktu.
