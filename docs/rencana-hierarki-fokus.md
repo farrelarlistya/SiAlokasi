@@ -201,7 +201,7 @@ Komponen `FocusSection`:
 3. **Hitung.** Satu judul 32, satu judul fokus 24, section 20, satu tombol primer.
 4. **Uji keadaan.** Kosong, memuat, galat, terpilih, langkah 1/2/3, hasil ada — pastikan fokus berpindah sesuai tabel keadaan.
 5. **Keyboard.** Tab dari awal; fokus berpindah ke judul section setelah aksi; Escape menutup dialog.
-6. **Build & lint.** `npm run build`, `npm test`, `sloplint --scope app --render` → 0 FAIL.
+6. **Build & audit.** `npm run build`, `npm test`, dan audit tampilan → 0 FAIL.
 7. **Bukti.** Simpan tangkapan di `docs/bukti/hierarki-fokus/` dan perbarui `design-rim.md` + ADR.
 
 ## 10. Urutan eksekusi (sesi baru)
@@ -224,7 +224,7 @@ Komponen `FocusSection`:
 
 **Sesi D — Audit & dokumentasi**
 - Uji 5 detik semua layar, squint test, keyboard.
-- sloplint, build, test.
+- Audit tampilan, build, test.
 - Perbarui `design-rim.md`, ADR baru `docs/adr/0011-hierarki-fokus.md`, papan sprint.
 
 Setiap sesi diakhiri dengan commit terpisah agar mudah dibandingkan.
@@ -270,7 +270,7 @@ Tempel di PRD atau catatan desain sebelum membuat layar:
   jumlah `<h1>`, jumlah blok fokus, fokus P1, bilah keputusan L2, dialog penolakan, skip link,
   Escape).
 - `npm run build`, `npm test` (91/91), `verify:m2` (49/49), `verify:m4` (99/99) lulus.
-- `sloplint --scope app --render`: **0 FAIL, 1 WARN F3** (disengaja). Render tier tidak berjalan
+- Audit tampilan otomatis: **0 FAIL, 1 WARN F3** (disengaja). Pemeriksaan render tidak berjalan
   karena `puppeteer-core` tidak tersedia; tangkapan memakai Chrome DevTools Protocol.
 - Penyimpangan kecil: ringkasan angka P1 di ponsel dipindah ke dalam gulungan (bukan menghilang),
   dan header ponsel menyembunyikan wordmark/nama pengguna agar tidak bertumpuk.

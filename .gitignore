@@ -1,5 +1,7 @@
-# Aturan proyek (lokal, jangan pernah di-push)
+# Aturan proyek & konfigurasi alat lokal (jangan pernah di-push)
 AGENTS.md
+opencode.json
+.opencode/
 
 # Berkas desain mentah
 *.figcraft

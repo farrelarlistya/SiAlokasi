@@ -1,6 +1,6 @@
 # Panduan Desain — SiAlokasi
 
-> **Revisi 10 November 2026:** sistem yang berlaku sekarang adalah **"Rim"** di [`design-rim.md`](design-rim.md) (kertas hitam hangat, oranye, sudut 0, Geist Mono). Dokumen ini disimpan sebagai arsip sistem lama dan acuan alur/status yang masih berlaku. Keputusan: `docs/adr/0010-redesign-rim-hallmark.md`.
+> **Revisi 10 November 2026:** sistem yang berlaku sekarang adalah **"Rim"** di [`design-rim.md`](design-rim.md) (kertas hitam hangat, oranye, sudut 0, Geist Mono). Dokumen ini disimpan sebagai arsip sistem lama dan acuan alur/status yang masih berlaku. Keputusan: `docs/adr/0010-redesign-rim.md`.
 
 > Acuan tunggal untuk tampilan. Semua warna **wajib** memakai token di `@theme`; tidak boleh ada nilai hex lepas di halaman. Semua keputusan di sini sudah dikunci pada Sesi 1 (`D1`).
 
@@ -286,7 +286,7 @@ Menampilkan empat perilaku wajib dalam satu papan:
 
 ### 12.15 Catatan Implementasi Gerak Beranda (Revisi 2026-11-10)
 
-- Sumber komponen: registry React Bits melalui shadcn MCP (`@react-bits`), versi TypeScript + CSS gratis.
+- Sumber komponen: registry React Bits lewat shadcn (`@react-bits`), versi TypeScript + CSS gratis.
 - `AnimatedContent` memakai GSAP untuk transisi panel Beranda dan rincian kejadian; dipicu saat mount, bukan menunggu gulir, dengan jarak 8–16 px dan durasi 250–350 ms.
 - `GlareHover` memberi kilau tipis pada kartu kejadian saat kursor masuk/keluar. Tidak ada kilau berulang otomatis. Fokus keyboard tetap terlihat lewat `:focus-within` pada bingkai.
 - `Aurora` menjadi latar lambat di blok ringkasan saja, memakai token `--color-primary`, `--color-accent`, dan `--color-info`. Lapisan `surface/85` menjaga kontras teks; tanpa WebGL, latar tetap memakai `surface`.

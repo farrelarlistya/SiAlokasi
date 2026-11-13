@@ -6,7 +6,7 @@
 
 | Tahap | Nama | Status | Bukti |
 | :--- | :--- | :--- | :--- |
-| `D1` | Perencanaan & Desain | ✅ Selesai — 2026-11-07 | `docs/prd/prd.md`, `docs/desain/design.md`, `AGENTS.md`, `docs/adr/0001..0003`, `SiAlokasi.figcraft` (9 board) |
+| `D1` | Perencanaan & Desain | ✅ Selesai — 2026-11-07 | `docs/prd/prd.md`, `docs/desain/design.md`, `docs/adr/0001..0003`, `SiAlokasi.figcraft` (9 board) |
 | `M1` | Pondasi + UI Matang + Seed Bersih | ✅ Selesai — 2026-11-08 | `docs/bukti/m1.md`, `apps/web`, `apps/api`, `packages/shared` |
 | `M2` | Akun Semua Peran & Data Master | ✅ Selesai — 2026-11-08 | `docs/bukti/m2.md`, `docs/adr/0004-autentikasi-otp-dan-sesi-cookie.md`, halaman A1/A2/T1/D1–D5 |
 | `M3` | Alur Kerja Utama (`FR-11`–`FR-18`) | ✅ Selesai — 2026-11-08 | `docs/bukti/m3.md`, `docs/adr/0005-alur-kerja-inti-dan-kunci-persetujuan.md`, halaman T2/T3/T4/L1/L2/L3/P2 |
@@ -21,12 +21,11 @@ Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terha
 ## D1 — Perencanaan & Desain (Selesai 2026-11-07)
 
 **Hasil:**
-- Profil proyek di `AGENTS.md` (lokal).
 - PRD 10 bagian: `docs/prd/prd.md` — termasuk `FR-01`–`FR-27` dan `NFR-01`–`NFR-15`.
 - Panduan desain: `docs/desain/design.md`.
 - Keputusan teknis: ADR 0001 (arsitektur & stack), 0002 (model estimasi), 0003 (peta & cadangan tile).
 - Berkas desain: `SiAlokasi.figcraft` — halaman `01 · Fondasi & Layar Inti` berisi 9 board: Fondasi (warna, tipografi, komponen), P1 Beranda Publik, T2 Buat Laporan, T3 Faktor & Estimasi, L1 Dasbor Pimpinan, L2 Tinjau Rekomendasi, L3 Izin Distribusi, P2 Lacak Status, dan State & Dialog.
-- `.gitignore` sudah memuat `AGENTS.md` dan `*.figcraft`.
+- `.gitignore` sudah memuat berkas aturan lokal dan `*.figcraft`.
 
 **Kriteria selesai:**
 - [x] 1 persona utama terkunci (Rina, petugas lapangan).
@@ -298,17 +297,16 @@ diarahkan ke `/pimpinan` dan melihat "Halaman ini bukan untuk peran Anda".
 ## Revisi Antarsesi — Bahasa Visual, Halaman Masuk, & Gerak Beranda (Selesai 2026-11-10)
 
 **Permintaan pemilik:** kurangi subjudul/penjelasan dekoratif setelah judul, perbaiki ilustrasi
-halaman masuk yang terpotong, lalu sambungkan React Bits melalui shadcn MCP dan terapkan
+halaman masuk yang terpotong, lalu sambungkan React Bits lewat registry shadcn dan terapkan
 transisi, interaksi mikro, latar, serta animasi gratis **hanya di Beranda**.
 
 **Hasil:**
-- Aturan "judul berdiri sendiri" ditulis di `AGENTS.md` global dan lokal. `PageHeader` tidak lagi
+- Aturan "judul berdiri sendiri" berlaku di seluruh layar. `PageHeader` tidak lagi
   menampilkan keterangan; metadata penting dipindah ke `eyebrow`. Tagline header, subjudul panel,
   paragraf pembuka halaman masuk, dan kalimat "Tidak perlu masuk" dihapus.
 - Halaman masuk memakai ilustrasi dalam aliran layout dengan rasio asli `800:520`, tanpa offset
   negatif/rotasi, sehingga gambar utuh pada 1024/1280/1440 px.
-- MCP `shadcn` terdaftar lokal di `opencode.json`; registry `@react-bits` ada di
-  `components.json`. Komponen gratis `AnimatedContent`, `GlareHover`, dan `Aurora` (TS + CSS)
+- Registry `@react-bits` terdaftar di `components.json`. Komponen gratis `AnimatedContent`, `GlareHover`, dan `Aurora` (TS + CSS)
   dipasang di `apps/web/src/components/react-bits/`.
 - Aurora memakai token warna, diberi lapisan `surface/85` agar kontras, dan berhenti saat gerak
   minimal. `GlareHover` memberi fokus keyboard yang terlihat. Ketiga komponen hanya diimpor
@@ -319,7 +317,7 @@ transisi, interaksi mikro, latar, serta animasi gratis **hanya di Beranda**.
 **Kriteria selesai:**
 - [x] Tiga contoh subjudul dekoratif tidak lagi tampil.
 - [x] Ilustrasi masuk utuh dan rasio asli terjaga; tidak ada gulir horizontal 390–1440 px.
-- [x] MCP shadcn + registry React Bits aktif dan komponen gratis berhasil dipasang.
+- [x] Registry React Bits aktif dan komponen gratis berhasil dipasang.
 - [x] Transisi, kilau kartu, dan latar Aurora berjalan hanya di Beranda.
 - [x] Konten tetap terlihat dan latar berhenti dengan `prefers-reduced-motion`.
 - [x] `npm run build` lulus; 14 pemeriksaan peramban lulus; 0 kesalahan konsol/halaman.
@@ -362,9 +360,9 @@ transisi, interaksi mikro, latar, serta animasi gratis **hanya di Beranda**.
 | 2026-11-09 | Akses lintas perangkat lewat **satu tunnel web** (API diproxy Vite) | Satu alamat untuk web + API; cookie tetap same-origin | ADR 0008 |
 | 2026-11-09 | Halaman peta **React.lazy** + `manualChunks` | Bundel awal ~213 kB; Leaflet hanya saat halaman peta dibuka | ADR 0008 |
 | 2026-11-09 | Tujuan setelah masuk (`next`) **divalidasi terhadap peran**; keluar tidak menyimpan alamat lama | Ganti akun tidak membawa ke halaman peran lain | `perbaikan-ganti-akun.md` |
-| 2026-11-10 | **Judul tanpa subjudul dekoratif**; metadata penting menjadi `eyebrow`; teks pendukung hanya untuk tindakan/status/konfirmasi/keadaan kosong | Layar lebih tenang dan mudah dipindai | ADR 0009; `AGENTS.md` global §4.6 |
+| 2026-11-10 | **Judul tanpa subjudul dekoratif**; metadata penting menjadi `eyebrow`; teks pendukung hanya untuk tindakan/status/konfirmasi/keadaan kosong | Layar lebih tenang dan mudah dipindai | ADR 0009 |
 | 2026-11-10 | Ilustrasi halaman masuk memakai **aliran layout + rasio asli** `800:520` | Gambar tidak terpotong pada tinggi layar mana pun | ADR 0009 |
-| 2026-11-10 | **React Bits lewat shadcn MCP**, komponen gratis TS+CSS, hanya di Beranda: `AnimatedContent`, `GlareHover`, `Aurora` | Transisi/interaksi/latar tanpa mengganggu halaman kerja | ADR 0009 |
+| 2026-11-10 | **React Bits lewat registry shadcn**, komponen gratis TS+CSS, hanya di Beranda: `AnimatedContent`, `GlareHover`, `Aurora` | Transisi/interaksi/latar tanpa mengganggu halaman kerja | ADR 0009 |
 | 2026-11-10 | Aurora memakai **token warna + lapisan `surface/85`** dan berhenti saat gerak minimal; tanpa WebGL kembali ke `surface` | Kontras teks dan aksesibilitas tetap aman | ADR 0009 |
 | 2026-11-10 | **Tangga tipe 32 → 24 → 20 → 16** dan **satu blok fokus per keadaan** | Mata punya tujuan baca dan satu langkah berikutnya | ADR 0011 |
 | 2026-11-10 | **Bilah keputusan L2 `fixed` di atas navigasi bawah**; alasan tolak di dialog | Keputusan selalu terlihat tanpa menggulir, bilah tetap ringkas di ponsel | ADR 0011 |
@@ -391,7 +389,7 @@ transisi, interaksi mikro, latar, serta animasi gratis **hanya di Beranda**.
 
 ## Catatan Sesi Berikutnya
 
-Saat memulai sesi baru, baca berurutan: `AGENTS.md` → dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
+Saat memulai sesi baru, baca berurutan: dokumen ini → bagian PRD yang relevan dengan tahap aktif → `docs/desain/design.md` bila menyentuh UI → `docs/adr/` bila menyentuh teknis.
 
 **Status akhir:** semua tahap `D1` dan `M1`–`M5` selesai. Tidak ada pekerjaan milestone yang
 menggantung. Untuk pengembangan lanjutan:
@@ -407,7 +405,7 @@ menggantung. Untuk pengembangan lanjutan:
 
 ## Revisi Redesign "Rim" (2026-11-10)
 
-**Keputusan:** material Hallmark "Rim" (kertas hitam hangat, oranye, garis 1 px, sudut 0, Geist Mono) menggantikan sistem gelap-biru lama. Catatan lengkap: `docs/adr/0010-redesign-rim-hallmark.md`, `docs/desain/design-rim.md`.
+**Keputusan:** material **Rim** (kertas hitam hangat, oranye, garis 1 px, sudut 0, Geist Mono) menggantikan sistem gelap-biru lama. Catatan lengkap: `docs/adr/0010-redesign-rim.md`, `docs/desain/design-rim.md`.
 
 **Aset desain:** `SiAlokasi-Redesign.figcraft` — halaman `00 · Sistem`, `01 · Alur inti` (P1, T2, T3, L1, L2, L3, P2), `02 · Admin & masuk` (A1, A2, D1–D7), `03 · Status & ponsel` (state & dialog, P1 ponsel). Pratinjau PNG: `docs/desain/redesign/`.
 
@@ -417,11 +415,11 @@ menggantung. Untuk pengembangan lanjutan:
 - Halaman: Beranda publik, Buat laporan, Masuk/Daftar, Dasbor admin, Dasbor pimpinan, Lacak laporan. Halaman lain mewarisi token dan komponen; perincian layout menyusul.
 - Logo 32 px ditampilkan di header semua halaman ber-sesi dan halaman masuk.
 
-**Bukti:** `npm run build` lulus, `npm test` 91/91 lulus, tangkapan layar 1440/390 px diperiksa manual. Sisa pekerjaan: menyamakan layout T3/L2/L3/D2–D7 dengan board, lalu menjalankan `sloplint` pada HTML/CSS hasil build.
+**Bukti:** `npm run build` lulus, `npm test` 91/91 lulus, tangkapan layar 1440/390 px diperiksa manual. Sisa pekerjaan: menyamakan layout T3/L2/L3/D2–D7 dengan board.
 
 **Tindak lanjut (2026-11-10):**
 - T3, L2, L3, D2–D7 dirapikan mengikuti board (judul pendek, tanpa kartu bertumpuk, badge status batang kiri).
-- `sloplint --scope app --render` pada `apps/web/src` + `http://localhost:5174`: **0 FAIL, 1 WARN F3** (disengaja). Bukti di `docs/bukti/redesign-rim/`.
+- Audit tampilan otomatis pada `apps/web/src` + `http://localhost:5174`: **0 FAIL, 1 WARN F3** (disengaja). Bukti di `docs/bukti/redesign-rim/`.
 - Siap Vercel: `vercel.json`, `api/[...path].ts`, bundel `server/api-app.mjs`, CSP/header keamanan, `TRUST_PROXY`, dan panduan `docs/production-vercel.md`.
 - API serverless diuji lokal: `/api/health` 200 (`database: ok`) dan `POST /api/auth/request-code` 200.
 
@@ -450,7 +448,7 @@ berubah sesuai keadaan, dengan tangga tipe 32 → 24 → 20 → 16 dan satu aksi
   nama pengguna agar tidak bertumpuk.
 - API `GET /api/admin/summary` menambahkan `lowStockCount` untuk blok "Perlu tindakan" D1.
 - Bukti: `docs/bukti/hierarki-fokus/` — 38 tangkapan (1440/390), `hasil-uji.json`
-  (**240/240 lulus**), `sloplint.txt` (**0 FAIL, 1 WARN F3** disengaja). `npm run build` lulus,
+  (**240/240 lulus**), audit tampilan (**0 FAIL, 1 WARN F3** disengaja). `npm run build` lulus,
   `npm test` 91/91 lulus, `verify:m2` 49/49, `verify:m4` 99/99. ADR 0011.
 
 **Kriteria selesai:**
@@ -459,10 +457,10 @@ berubah sesuai keadaan, dengan tangga tipe 32 → 24 → 20 → 16 dan satu aksi
 - [x] Satu aksi primer per layar; L2 punya bilah keputusan yang terlihat tanpa menggulir.
 - [x] Angka "menunggu keputusan" tidak lagi tampil dua kali di L1.
 - [x] Ponsel: blok fokus tampil pertama di panel; filter P1 dilipat; tanpa gulir horizontal.
-- [x] `npm run build`, `npm test`, dan sloplint lulus (0 FAIL).
+- [x] `npm run build`, `npm test`, dan audit tampilan lulus (0 FAIL).
 - [x] ADR 0011 dan `design-rim.md` §3–§10 diperbarui.
 
-**Catatan:** render tier sloplint tidak berjalan karena `puppeteer-core` tidak tersedia di sesi ini;
+**Catatan:** pemeriksaan render otomatis tidak berjalan karena `puppeteer-core` tidak tersedia di sesi ini;
 tangkapan 1440/390 dilakukan lewat Chrome DevTools Protocol dan tetap memeriksa overflow, teks,
 target sentuh, jumlah `<h1>`, dan jumlah blok fokus.
 
@@ -487,10 +485,28 @@ copy yang menjelaskan pekerjaan yang dibantu aplikasi.
 - Tidak ada perubahan formulir, tautan, akun demo, rute, atau logika masuk.
 
 **Bukti:** `docs/bukti/revisi-login.md` — tangkapan 1440/1280/390 dan halaman daftar; `npm run build`
-lulus, `npm test` 91/91 lulus, `sloplint` 0 FAIL (1 WARN F3 disengaja). `design-rim.md` A1/A2 diperbarui.
+lulus, `npm test` 91/91 lulus, audit tampilan 0 FAIL (1 WARN F3 disengaja). `design-rim.md` A1/A2 diperbarui.
 
 **Kriteria selesai:**
 - [x] Tidak ada hitungan data awal di halaman masuk.
 - [x] Copy memakai istilah kamus proyek: laporan lapangan, estimasi bantuan, izin distribusi.
 - [x] Tanpa tagline dekoratif, angka karangan, atau istilah teknis.
 - [x] Formulir dan akun demo tetap berfungsi; tidak ada gulir horizontal di 390 px.
+
+---
+
+## Pembersihan Jejak Alat Internal (Selesai 2026-11-13)
+
+**Permintaan:** repo tidak boleh memuat berkas atau catatan yang berkaitan dengan alat internal
+proyek (konfigurasi asisten kode dan laporan audit tampilan bawaannya).
+
+**Hasil:**
+- Berkas konfigurasi asisten kode dan berkas aturan kerja lokal dikeluarkan dari repo serta masuk
+  `.gitignore` (tetap tersimpan di mesin pengembang, tidak ikut dibagikan).
+- Dua berkas keluaran audit tampilan baku di folder bukti dihapus; rujukannya diganti istilah
+  netral "audit tampilan".
+- ADR-0010 berganti nama menjadi `docs/adr/0010-redesign-rim.md`; semua tautan diperbarui.
+- README, ADR 0009, ADR 0011, PRD, dan catatan bukti tidak lagi menyebut alat internal.
+
+**Bukti:** `npm run build` lulus, `npm test` 91/91 lulus; pencarian kata kunci alat internal pada
+berkas ter-track hanya menyisakan baris `.gitignore`.

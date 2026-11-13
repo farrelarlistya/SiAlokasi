@@ -155,21 +155,13 @@ yang ikut tercetak (alamat IP publik komputer demo).
 Skenario lengkap ada di [`docs/panduan-demo.md`](docs/panduan-demo.md): persiapan, urutan
 demo dari kondisi nol transaksi, akun tiap peran, cetak izin, dan pembersihan setelah demo.
 
-## Komponen Gerak & MCP React Bits
+## Komponen Gerak
 
-Beranda memakai tiga komponen gratis dari registry **React Bits** melalui shadcn MCP:
+Beranda memakai tiga komponen gratis dari registry **React Bits**:
 `AnimatedContent` (transisi panel), `GlareHover` (kilau kartu), dan `Aurora` (latar ringkasan).
 Sumber dan lisensi dicatat di [`docs/desain/gambar/CREDITS.md`](docs/desain/gambar/CREDITS.md).
 
-- MCP sudah terdaftar secara lokal di `opencode.json` dengan nama `shadcn`. Bila konfigurasi
-  hilang, jalankan dari akar proyek:
-
-  ```bash
-  opencode mcp add shadcn -- npx shadcn@latest mcp
-  ```
-
-- Registry React Bits terdaftar di `components.json`; OpenCode memuat ulang konfigurasi MCP
-  tanpa perlu memulai ulang aplikasi.
+- Registry React Bits terdaftar di `components.json`.
 - Menambah komponen lain (pilih varian **TS-CSS** dan hanya komponen gratis):
 
   ```bash
@@ -206,8 +198,7 @@ Variabel minimum di dashboard: `DATABASE_URL` (pooler), `DEMO_MODE`, `WEB_ORIGIN
 
 ## Catatan
 
-- `AGENTS.md` adalah aturan kerja lokal dan **tidak di-commit**.
-- Berkas desain mentah `*.figcraft` juga tidak di-commit; tangkapan layarnya ada di `docs/bukti/`.
+- Berkas desain mentah `*.figcraft` tidak di-commit; tangkapan layarnya ada di `docs/bukti/`.
 - Semua warna tampilan memakai token `@theme`; lihat `apps/web/src/styles/theme.css` dan
   `docs/desain/design.md`.
 - Bundel peta Leaflet dipisah dari bundel awal; halaman peta dimuat saat dibuka.

@@ -62,8 +62,8 @@ keadaan, dengan tiga sinyal sekaligus: ukuran judul, ruang, dan penanda aksen.
 - Header ponsel tidak lagi menampilkan wordmark dan nama pengguna; peran tetap terlihat di
   dasbor masing-masing dan menu bawah.
 - Bukti: 38 tangkapan layar di `docs/bukti/hierarki-fokus/`, `hasil-uji.json` (240 pemeriksaan),
-  `sloplint.txt` (0 FAIL, 1 WARN F3 yang disengaja). Pemeriksaan keyboard mencakup skip link,
-  perpindahan fokus ke judul, dan Escape menutup dialog. Render tier sloplint tidak berjalan karena
+  audit tampilan (0 FAIL, 1 WARN F3 yang disengaja). Pemeriksaan keyboard mencakup skip link,
+  perpindahan fokus ke judul, dan Escape menutup dialog. Pemeriksaan render otomatis tidak berjalan karena
   `puppeteer-core` tidak tersedia; tangkapan dilakukan lewat Chrome DevTools Protocol.
 - `npm run build` dan `npm test` (91/91) lulus; `verify:m2` 49/49 dan `verify:m4` 99/99 lulus.
-- Belum di-commit; pemilik dapat meninjau lewat `npm run dev`.
+- Pratinjau: `npm run dev`.

@@ -16,7 +16,7 @@
    - Bingkai ilustrasi dipindahkan ke aliran layout, memakai lebar penuh dan rasio asli `800:520`.
    - Posisi absolut negatif dan rotasi dihapus agar gambar tidak terpotong di bawah.
 3. **React Bits di Beranda**
-   - MCP `shadcn` lokal proyek dan registry `@react-bits` aktif.
+   - Registry `@react-bits` di `components.json` aktif.
    - `AnimatedContent`: panel Beranda dan rincian kejadian masuk dengan fade + geser.
    - `GlareHover`: kilau tipis pada kartu kejadian.
    - `Aurora`: latar biru lambat di blok ringkasan, diberi lapisan `surface/85` untuk kontras.

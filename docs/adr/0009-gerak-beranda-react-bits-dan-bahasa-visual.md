@@ -29,7 +29,7 @@ Pemilik juga meminta aturan bahasa visual ini menjadi standar proyek berikutnya.
 - Tagline merek, subjudul panel, dan paragraf pembuka yang hanya mengulang judul dihapus.
 - Teks setelah judul hanya dipertahankan bila membantu tindakan: petunjuk kolom, syarat penting,
   privasi, status, konfirmasi, langkah pemulihan, atau penjelasan keadaan kosong.
-- Aturan yang sama ditulis di `AGENTS.md` global agar berlaku untuk proyek berikutnya.
+- Aturan yang sama berlaku untuk seluruh halaman, bukan hanya Beranda.
 
 ### 2. Ilustrasi masuk tampil utuh
 
@@ -38,10 +38,8 @@ Pemilik juga meminta aturan bahasa visual ini menjadi standar proyek berikutnya.
   (`h-auto w-full`). Bingkai berada di aliran flex yang dapat menyusut, sehingga tidak terpotong.
 - Salinan pemasaran di panel kiri dihapus; merek dan ilustrasi sudah cukup menjelaskan konteks.
 
-### 3. React Bits lewat shadcn MCP, khusus Beranda
+### 3. React Bits lewat shadcn, khusus Beranda
 
-- MCP `shadcn` didaftarkan secara **lokal proyek** di `opencode.json`:
-  `npx shadcn@latest mcp`.
 - Registry `@react-bits` ditulis di `components.json` dengan alamat
   `https://reactbits.dev/r/{name}.json`.
 - Komponen gratis bervarian **TypeScript + CSS** diambil ke
@@ -74,8 +72,8 @@ Pemilik juga meminta aturan bahasa visual ini menjadi standar proyek berikutnya.
 - Potongan `HomePage` bertambah sekitar 144 kB (56 kB gzip) karena GSAP dan komponen gerak.
   Potongan itu hanya diambil saat Beranda dibuka; bundel awal dan halaman peran tidak berubah.
 - Aurora membutuhkan WebGL2. Tanpa dukungan WebGL, tampilan tetap benar dan terbaca.
-- MCP membutuhkan Node/npm dan internet saat komponen baru diambil. Konfigurasi tidak memuat
-  rahasia dan dapat dihapus dari `opencode.json`.
+- Pengambilan komponen membutuhkan Node/npm dan internet. Konfigurasi registry tidak memuat
+  rahasia.
 - Komponen Pro tidak dipakai. Semua komponen yang diambil berasal dari registry gratis.
 - Bukti: `docs/bukti/revisi-beranda/` berisi 6 tangkapan layar dan `hasil-uji.json` dengan
   **14 pemeriksaan lulus** (termasuk ilustrasi utuh, rasio asli, tanpa gulir horizontal,

@@ -2,7 +2,7 @@
 
 **Tanggal:** 2026-11-11
 **Lingkup:** revisi copy panel merek A1/A2 (bukan milestone baru)
-**Sistem:** Rim (`docs/desain/design-rim.md`), Hallmark mode polish
+**Sistem:** Rim (`docs/desain/design-rim.md`), mode perapian tampilan
 
 ## Masalah
 
@@ -55,13 +55,13 @@ yang dibantu aplikasi.
 | :--- | :--- |
 | `npm run build` | Lulus: typecheck shared, typecheck api, build web |
 | `npm test` | **91/91 unit test lulus** |
-| `sloplint apps/web/src --scope app --genre modern-minimal` | **0 FAIL, 1 WARN F3** (disengaja, sudah ada sebelumnya); pemeriksaan `AuthLayout.tsx` saja: 0 FAIL, 0 REFLEX, 0 WARN |
+| Audit tampilan `apps/web/src` (`--scope app --genre modern-minimal`) | **0 FAIL, 1 WARN F3** (disengaja, sudah ada sebelumnya); pemeriksaan `AuthLayout.tsx` saja: 0 FAIL, 0 REFLEX, 0 WARN |
 | Lebar 390 px (CDP) | `innerWidth 390`, `documentElement.scrollWidth 390`, `body.scrollWidth 390`; tidak ada elemen melewati tepi |
 | Tangkapan 1440×900 | Judul, tiga langkah, formulir, dan catatan bawah terlihat |
 | Tangkapan 1280×800 | Aksi utama "Kirim kode masuk" terlihat; catatan bawah panel tetap di layar |
 | Tangkapan 390×844 | Panel merek tersembunyi; formulir dan akun demo tidak terpotong |
 
-Render tier `sloplint --render` tidak dijalankan karena `puppeteer-core` tidak tersedia di mesin ini.
+Pemeriksaan render otomatis tidak dijalankan karena `puppeteer-core` tidak tersedia di mesin ini.
 Pemeriksaan visual dan overflow dilakukan lewat Chrome DevTools Protocol.
 
 ## Berkas Bukti

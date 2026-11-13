@@ -20,8 +20,8 @@ Revisi: `docs/rencana-hierarki-fokus.md` · ADR: [`0011-hierarki-fokus.md`](../.
 | `npm run verify:m4` | 99/99 lulus |
 | Tangkapan + audit CDP | **240/240 pemeriksaan lulus, 0 gagal** |
 | Keyboard | skip link tersedia, fokus pindah ke `#rincian-kejadian`, Escape menutup dialog |
-| `sloplint --scope app --render` | **0 FAIL, 1 WARN F3** (judul aplikasi satu baris; disengaja) |
-| Render tier sloplint | tidak berjalan: `puppeteer-core` tidak tersedia; diganti tangkapan Chrome DevTools Protocol |
+| Audit tampilan otomatis | **0 FAIL, 1 WARN F3** (judul aplikasi satu baris; disengaja) |
+| Pemeriksaan render otomatis | tidak berjalan: `puppeteer-core` tidak tersedia; diganti tangkapan Chrome DevTools Protocol |
 | P1: pilih baris | fokus berpindah ke judul `#rincian-kejadian` |
 | L2: bilah keputusan | terlihat tanpa menggulir pada 1440×1000 |
 | L2: dialog penolakan | terbuka dari aksi Tolak; Escape menutupnya |
@@ -64,5 +64,4 @@ Revisi: `docs/rencana-hierarki-fokus.md` · ADR: [`0011-hierarki-fokus.md`](../.
 - Uji 5 detik dan squint test dilakukan dengan meninjau tangkapan di atas: setiap layar hanya
   memiliki satu blok bergaris aksen 2 px, satu judul fokus 24, dan satu aksi primer.
 - WARN F3 bukan kegagalan: judul aplikasi satu baris dan tidak perlu di-balance.
-- `hasil-uji.json` adalah keluaran mentah skrip `scripts/capture-hierarki-fokus.mjs`;
-  `sloplint.txt` adalah keluaran mentah sloplint.
+- `hasil-uji.json` adalah keluaran mentah skrip `scripts/capture-hierarki-fokus.mjs`.

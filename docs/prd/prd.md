@@ -6,7 +6,7 @@
 | Tanggal | 7 November 2026 |
 | Pemilik | Farras (pemilik proyek) |
 | Tahap | Sesi 1 — Perencanaan & Desain (`D1`) |
-| Dokumen terkait | `AGENTS.md`, `docs/rencana-sprint.md`, `docs/desain/design.md`, `docs/adr/` |
+| Dokumen terkait | `docs/rencana-sprint.md`, `docs/desain/design.md`, `docs/adr/` |
 
 ---
 

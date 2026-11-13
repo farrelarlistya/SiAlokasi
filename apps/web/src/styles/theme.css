@@ -1,16 +1,10 @@
-/* Hallmark · checked: 2026-11-10 · genre: modern-minimal (inferred)
- * floor: 0 FAIL · theme: Rim · built: SiAlokasi · scope: app
- * dismissed F3 · app heads are single-line, balance is unnecessary
- * waive 39b · report rows are full-width list buttons, not form controls · v2.0.0 */
-/* Hallmark · waive 39b · the 136px button is a report list row with aria-pressed · report rows are navigation, not form controls */
 @import "tailwindcss";
 @import "@fontsource-variable/plus-jakarta-sans";
 @import "@fontsource/geist-mono/latin-400.css";
 @import "@fontsource/geist-mono/latin-500.css";
 
 /*
- * Hallmark · theme: Rim (night) · shape: app screen
- * floor: 0 FAIL (manual) · sloplint: dijalankan saat build web
+ * Tema: Rim (night) · bentuk: layar aplikasi
  * Paper hangat, tinta gading, garis rambut 1px, sudut 0, satu sinyal oranye.
  */
 @theme {
