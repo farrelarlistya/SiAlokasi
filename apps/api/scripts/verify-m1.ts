@@ -4,6 +4,7 @@ import { SURABAYA_BOUNDS, SURABAYA_REGION_COUNT } from "@sialokasi/shared";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { ClockService } from "../src/clock";
 import { seedDatabase } from "../prisma/seed";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -169,6 +170,35 @@ async function main(): Promise<void> {
     "brief/hint tidak menulis ulang langkah pengguna",
     stepCopyHits.length === 0,
     stepCopyHits.join(", "),
+  );
+
+  // Server produksi memakai UTC; waktu yang tidak membawa zona wajib dibaca sebagai WIB.
+  const clockService = new ClockService(prisma);
+  const nowWib = new Intl.DateTimeFormat("sv-SE", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
+  })
+    .format(new Date())
+    .replace(" ", "T");
+  const parsedNow = clockService.parseBusinessDate(nowWib);
+  const businessNow = await clockService.now();
+  check(
+    "waktu kejadian 'sekarang' (WIB) tidak dianggap masa depan",
+    !Number.isNaN(parsedNow.getTime()) &&
+      parsedNow.getTime() <= businessNow.getTime() + 5 * 60_000 &&
+      parsedNow.getTime() >= businessNow.getTime() - 5 * 60_000,
+    `${nowWib} → ${parsedNow.toISOString()}`,
+  );
+  check(
+    "waktu yang sudah membawa zona tidak diubah",
+    clockService.parseBusinessDate("2026-11-13T04:00:00.000Z").toISOString() ===
+      "2026-11-13T04:00:00.000Z",
   );
 
   console.log("\nRingkasan");

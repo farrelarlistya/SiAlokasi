@@ -23,9 +23,27 @@ export class ClockService {
     return new Date(now.getTime() + minutes * 60_000);
   }
 
-  /** Membaca waktu yang dikirim formulir. Semua parsing tanggal lewat sini. */
+  /**
+   * Membaca waktu yang dikirim formulir. Semua parsing tanggal lewat sini.
+   *
+   * Input `datetime-local`/`date` tidak membawa zona waktu. Server produksi
+   * berjalan di UTC sementara pengguna memakai WIB, sehingga tanpa aturan ini
+   * jam yang diketik "sekarang" terbaca tujuh jam ke depan dan ditolak sebagai
+   * masa depan. Nilai tanpa zona selalu dianggap WIB (Asia/Jakarta); nilai yang
+   * sudah membawa `Z` atau offset tetap dibaca apa adanya.
+   */
   parseBusinessDate(value: string): Date {
-    return new Date(value);
+    const raw = value.trim();
+
+    if (/(?:Z|[+-]\d{2}:?\d{2})$/.test(raw)) return new Date(raw);
+
+    const withTime = /^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}(?::\d{2}(?:\.\d+)?)?)$/.exec(raw);
+    if (withTime) return new Date(`${withTime[1]}T${withTime[2]}+07:00`);
+
+    const dateOnly = /^\d{4}-\d{2}-\d{2}$/.test(raw);
+    if (dateOnly) return new Date(`${raw}T00:00:00+07:00`);
+
+    return new Date(raw);
   }
 
   /** Menggeser waktu bisnis yang sudah dihitung tanpa memakai jam sistem langsung. */
