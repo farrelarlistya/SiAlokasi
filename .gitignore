@@ -39,3 +39,4 @@ desktop.ini
 *.sqlite
 *.sqlite3
 pgdata/
+.neon
