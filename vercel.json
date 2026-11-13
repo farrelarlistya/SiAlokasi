@@ -4,18 +4,17 @@
   "installCommand": "npm ci",
   "buildCommand": "npm run db:generate -w @sialokasi/api && node scripts/build-vercel-api.mjs && npm run build -w @sialokasi/web",
   "outputDirectory": "apps/web/dist",
+  "regions": ["sin1"],
   "functions": {
     "api/[...path].ts": {
-      "memory": 1024,
-      "maxDuration": 30,
-      "includeFiles": [
-        "node_modules/.prisma/client/**",
-        "apps/api/node_modules/.prisma/client/**",
-        "node_modules/@prisma/client/**"
-      ]
+      "maxDuration": 30
     }
   },
   "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/[...path]"
+    },
     {
       "source": "/((?!api/).*)",
       "destination": "/index.html"

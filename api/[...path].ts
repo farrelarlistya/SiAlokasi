@@ -1,13 +1,37 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { Readable } from "node:stream";
+import type { FastifyInstance } from "fastify";
 // Bundel dibuat oleh scripts/build-vercel-api.mjs saat build Vercel.
 import { buildApp } from "../server/api-app.mjs";
 
-let appPromise: ReturnType<typeof buildApp> | null = null;
+let appPromise: Promise<FastifyInstance> | null = null;
 
 async function getApp() {
   appPromise ??= buildApp();
   return appPromise;
+}
+
+/**
+ * Teruskan permintaan ke Fastify dan tunggu respons benar-benar selesai.
+ * Tanpa menunggu `finish`, fungsi Vercel bisa berhenti sebelum badan respons
+ * terkirim (terlihat sebagai 400 tanpa isi pada permintaan POST).
+ */
+function dispatch(app: FastifyInstance, request: IncomingMessage, response: ServerResponse) {
+  return new Promise<void>((resolve) => {
+    let settled = false;
+    const settle = () => {
+      if (settled) return;
+      settled = true;
+      resolve();
+    };
+
+    response.once("finish", settle);
+    response.once("close", settle);
+
+    app.server.emit("request", request, response);
+
+    if (response.writableEnded) settle();
+  });
 }
 
 /**
@@ -23,11 +47,15 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
   if (parsed.body !== undefined) {
     // Sebagian runtime Vercel sudah membaca body. Umpan balikkan sebagai stream
     // agar Fastify tetap bisa memvalidasi JSON seperti di server biasa.
-    const payload =
-      typeof parsed.body === "string" ? parsed.body : JSON.stringify(parsed.body);
+    const payload = Buffer.isBuffer(parsed.body)
+      ? parsed.body
+      : typeof parsed.body === "string"
+        ? parsed.body
+        : JSON.stringify(parsed.body);
     const stream = Readable.from([payload]) as unknown as IncomingMessage;
     Object.assign(stream, {
-      headers: req.headers,
+      // Samakan content-length dengan isi yang benar-benar dikirim ulang.
+      headers: { ...req.headers, "content-length": String(Buffer.byteLength(payload)) },
       method: req.method,
       url: req.url,
       httpVersion: "1.1",
@@ -35,9 +63,9 @@ export default async function handler(req: IncomingMessage, res: ServerResponse)
       connection: req.socket,
       complete: true,
     });
-    app.server.emit("request", stream, res);
+    await dispatch(app, stream, res);
     return;
   }
 
-  app.server.emit("request", req, res);
+  await dispatch(app, req, res);
 }
