@@ -118,6 +118,22 @@ export const DISASTER_LABEL: Record<DisasterType, string> = {
   LAINNYA: "Lainnya",
 };
 
+/** Nama bencana yang tampil di layar, memakai isian petugas saat "Lainnya". */
+export function disasterLabel(type: DisasterType, detail?: string | null): string {
+  const custom = detail?.trim();
+  if (type === "LAINNYA" && custom) return custom;
+  return DISASTER_LABEL[type];
+}
+
+/** Nilai keterangan bencana yang disimpan, hanya untuk jenis "Lainnya". */
+export function disasterDetailFor(
+  input: { disasterType?: DisasterType | string | null; disasterDetail?: string | null },
+): string | null {
+  if (input.disasterType !== "LAINNYA") return null;
+  const detail = input.disasterDetail?.trim();
+  return detail ? detail.slice(0, DISASTER_DETAIL_MAX) : null;
+}
+
 export const DAMAGE_LEVELS = ["RINGAN", "SEDANG", "BERAT"] as const;
 export type DamageLevel = (typeof DAMAGE_LEVELS)[number];
 export const damageLevelSchema = z.enum(DAMAGE_LEVELS);
@@ -158,9 +174,17 @@ export const DENSITY_LABEL: Record<DensityLevel, string> = {
 export const FACTOR_LIMITS = {
   affectedPeople: { min: 1, max: 50_000 },
   vulnerable: { min: 0, max: 50_000 },
-  handlingDays: { min: 1, max: 30 },
   radiusM: { min: 100, max: 5_000, step: 100 },
 } as const;
+
+/**
+ * Lama penanganan tidak lagi diisi petugas. Perhitungan memakai asumsi awal
+ * tiga hari, dan angka ini tampil di alasan setiap baris estimasi.
+ */
+export const DEFAULT_HANDLING_DAYS = 3;
+
+/** Batas panjang keterangan untuk jenis bencana "Lainnya". */
+export const DISASTER_DETAIL_MAX = 80;
 
 /** Pola kode lacak publik, contoh: SIA-7K2Q9. */
 export const TRACKING_CODE_PATTERN = /^SIA-[A-Z0-9]{5}$/;

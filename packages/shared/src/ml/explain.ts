@@ -6,6 +6,7 @@ import {
 } from "../domain";
 import { formatNumber } from "../format";
 import type { AidItemForEstimate, EstimationFactors } from "./predict";
+import { resolveHandlingDays } from "./predict";
 
 const DAMAGE_PERCENT = { RINGAN: 0, SEDANG: 10, BERAT: 20 } as const;
 const ROAD_PERCENT = { TERBUKA: 0, TERBATAS: 10, TERPUTUS: 20 } as const;
@@ -62,7 +63,7 @@ function peoplePhrase(factors: EstimationFactors): string {
 }
 
 function dayPhrase(factors: EstimationFactors): string {
-  return `selama ${formatNumber(factors.handlingDays)} hari`;
+  return `selama ${formatNumber(resolveHandlingDays(factors))} hari`;
 }
 
 function ratioPhrase(standardPerPerson: number): string {

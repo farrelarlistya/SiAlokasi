@@ -15,7 +15,6 @@ export type IncidentFactorsView = {
   vulnerableElderly: number;
   vulnerablePregnant: number;
   vulnerableDisabled: number;
-  handlingDays: number;
   roadAccess: RoadAccess;
   weather: WeatherCondition;
   density: DensityLevel;
@@ -122,6 +121,8 @@ export type IncidentDetailView = {
   code: string;
   title: string;
   disasterType: DisasterType;
+  /** Keterangan bebas saat jenis bencana "Lainnya". */
+  disasterDetail: string | null;
   lat: number;
   lng: number;
   radiusM: number;
@@ -186,6 +187,7 @@ export type PublicIncidentTracking = {
     code: string;
     title: string;
     disasterType: DisasterType;
+    disasterDetail: string | null;
     regionName: string | null;
     occurredAt: string;
     status: IncidentStatus;

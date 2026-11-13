@@ -21,15 +21,22 @@ const validFactors = {
   vulnerableElderly: 30,
   vulnerablePregnant: 4,
   vulnerableDisabled: 6,
-  handlingDays: 5,
   roadAccess: "TERBATAS" as const,
   weather: "HUJAN" as const,
   density: "TINGGI" as const,
 };
 
 describe("incidentFactorsSchema", () => {
-  it("menerima 8 faktor yang lengkap", () => {
+  it("menerima faktor lapangan yang lengkap", () => {
     expect(incidentFactorsSchema.safeParse(validFactors).success).toBe(true);
+  });
+
+  it("tidak lagi meminta lama penanganan", () => {
+    const result = incidentFactorsSchema.safeParse(validFactors);
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data).not.toHaveProperty("handlingDays");
+    }
   });
 
   it("menolak jumlah jiwa nol", () => {
@@ -50,25 +57,16 @@ describe("incidentFactorsSchema", () => {
     }
   });
 
-  it("menolak lama penanganan di luar 1-30 hari", () => {
-    expect(incidentFactorsSchema.safeParse({ ...validFactors, handlingDays: 0 }).success).toBe(
-      false,
-    );
-    expect(incidentFactorsSchema.safeParse({ ...validFactors, handlingDays: 31 }).success).toBe(
-      false,
-    );
-  });
-
   it("mengubah angka dari input formulir (teks) menjadi bilangan", () => {
     const result = incidentFactorsSchema.safeParse({
       ...validFactors,
       affectedPeople: "120",
-      handlingDays: "3",
+      vulnerableBabies: "5",
     });
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.affectedPeople).toBe(120);
-      expect(result.data.handlingDays).toBe(3);
+      expect(result.data.vulnerableBabies).toBe(5);
     }
   });
 });
@@ -128,8 +126,26 @@ describe("incidentDraftSchema", () => {
     regionId: "region_wonokromo",
   };
 
-  it("mewajibkan kecamatan terdampak", () => {
-    expect(incidentDraftSchema.safeParse({ ...draft, regionId: "" }).success).toBe(false);
+  it("tidak lagi mewajibkan kecamatan karena diisi otomatis dari titik", () => {
+    const withoutRegion = { ...draft } as Record<string, unknown>;
+    delete withoutRegion.regionId;
+    expect(incidentDraftSchema.safeParse(withoutRegion).success).toBe(true);
+  });
+
+  it("mewajibkan keterangan saat jenis bencana Lainnya", () => {
+    const missing = incidentDraftSchema.safeParse({ ...draft, disasterType: "LAINNYA" });
+    expect(missing.success).toBe(false);
+    if (!missing.success) {
+      expect(missing.error.issues[0]?.path).toEqual(["disasterDetail"]);
+    }
+
+    expect(
+      incidentDraftSchema.safeParse({
+        ...draft,
+        disasterType: "LAINNYA",
+        disasterDetail: "Tanah longsor",
+      }).success,
+    ).toBe(true);
   });
 
   it("menolak titik di luar Kota Surabaya", () => {

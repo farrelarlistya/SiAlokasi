@@ -4,10 +4,11 @@ import type {
   RoadAccess,
   WeatherCondition,
 } from "../domain";
+import { DEFAULT_HANDLING_DAYS } from "../domain";
 import { explainAidNeed } from "./explain";
 import modelFile from "./model.json";
 
-/** Delapan faktor lapangan yang sudah divalidasi sebelum perhitungan. */
+/** Faktor lapangan yang sudah divalidasi sebelum perhitungan. */
 export type EstimationFactors = {
   affectedPeople: number;
   damageLevel: DamageLevel;
@@ -15,11 +16,19 @@ export type EstimationFactors = {
   vulnerableElderly: number;
   vulnerablePregnant: number;
   vulnerableDisabled: number;
-  handlingDays: number;
+  /** Tidak lagi diisi petugas; bila kosong dipakai `DEFAULT_HANDLING_DAYS`. */
+  handlingDays?: number;
   roadAccess: RoadAccess;
   weather: WeatherCondition;
   density: DensityLevel;
 };
+
+/** Lama penanganan yang dipakai perhitungan, termasuk asumsi awal. */
+export function resolveHandlingDays(factors: EstimationFactors): number {
+  const days = factors.handlingDays;
+  if (typeof days === "number" && Number.isFinite(days) && days >= 1) return days;
+  return DEFAULT_HANDLING_DAYS;
+}
 
 export type AidItemForEstimate = {
   id: string;
@@ -120,7 +129,7 @@ export function computeBaseQuantity(
   factors: EstimationFactors,
 ): number {
   const people = factors.affectedPeople;
-  const days = factors.handlingDays;
+  const days = resolveHandlingDays(factors);
 
   switch (baseKind) {
     case "perPersonDay":
@@ -163,12 +172,14 @@ const DAY_SENSITIVE_IDS = new Set([
 
 /** Cadangan bila admin menambah jenis bantuan baru yang belum punya koefisien. */
 function fallbackQuantity(item: AidItemForEstimate, factors: EstimationFactors): number {
+  const days = resolveHandlingDays(factors);
+
   if (item.id === "aid_susu_bayi") {
-    return Math.max(0, Math.round(factors.vulnerableBabies * 0.5 * factors.handlingDays));
+    return Math.max(0, Math.round(factors.vulnerableBabies * 0.5 * days));
   }
 
   const base = item.standardPerPerson * factors.affectedPeople;
-  const dayFactor = DAY_SENSITIVE_IDS.has(item.id) ? factors.handlingDays : 1;
+  const dayFactor = DAY_SENSITIVE_IDS.has(item.id) ? days : 1;
   const damageFactor = 1 + 0.1 * DAMAGE_SCORE[factors.damageLevel];
   const roadFactor = 1 + 0.1 * ROAD_SCORE[factors.roadAccess];
   const weatherFactor = 1 + 0.075 * WEATHER_SCORE[factors.weather];

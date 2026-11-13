@@ -2,6 +2,7 @@ export * from "./auth";
 export * from "./domain";
 export * from "./format";
 export * from "./geo";
+export * from "./geo/regions";
 export * from "./incidents";
 export * from "./ml/explain";
 export * from "./ml/predict";

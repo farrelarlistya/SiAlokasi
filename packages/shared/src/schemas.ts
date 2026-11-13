@@ -5,6 +5,7 @@ import {
   DAMAGE_LEVELS,
   DECISION_TYPES,
   DENSITY_LEVELS,
+  DISASTER_DETAIL_MAX,
   DISASTER_TYPES,
   FACTOR_LIMITS,
   ROAD_ACCESS_OPTIONS,
@@ -103,11 +104,6 @@ const factorFields = {
   vulnerableElderly: vulnerableCountSchema,
   vulnerablePregnant: vulnerableCountSchema,
   vulnerableDisabled: vulnerableCountSchema,
-  handlingDays: z.coerce
-    .number({ invalid_type_error: "Perkiraan lama penanganan wajib diisi angka." })
-    .int("Lama penanganan harus bilangan bulat hari.")
-    .min(FACTOR_LIMITS.handlingDays.min, "Lama penanganan minimal 1 hari.")
-    .max(FACTOR_LIMITS.handlingDays.max, "Lama penanganan maksimal 30 hari."),
   roadAccess: z.enum(ROAD_ACCESS_OPTIONS, { required_error: "Pilih kondisi akses jalan." }),
   weather: z.enum(WEATHER_OPTIONS, { required_error: "Pilih kondisi cuaca." }),
   density: z.enum(DENSITY_LEVELS, { required_error: "Pilih tingkat kepadatan penduduk." }),
@@ -144,6 +140,11 @@ export type IncidentFactorsInput = z.infer<typeof incidentFactorsSchema>;
 const incidentDraftFields = {
   title: requiredText("Judul laporan", 5, 120),
   disasterType: z.enum(DISASTER_TYPES, { required_error: "Pilih jenis bencana." }),
+  disasterDetail: z
+    .string()
+    .trim()
+    .max(DISASTER_DETAIL_MAX, `Keterangan jenis bencana maksimal ${DISASTER_DETAIL_MAX} karakter.`)
+    .optional(),
   occurredAt: z
     .string({ required_error: "Waktu kejadian wajib diisi." })
     .min(1, "Waktu kejadian wajib diisi.")
@@ -151,11 +152,28 @@ const incidentDraftFields = {
   lat: latitudeSchema,
   lng: longitudeSchema,
   radiusM: radiusSchema,
-  regionId: z
-    .string({ required_error: "Pilih kecamatan terdampak." })
-    .trim()
-    .min(1, "Pilih kecamatan terdampak."),
+  /**
+   * Kecamatan tidak lagi dipilih petugas. Server mengisinya dari titik peta.
+   * Kolom ini tetap diterima untuk impor data dan pengujian.
+   */
+  regionId: z.string().trim().min(1, "Kecamatan terdampak belum dikenali.").optional(),
 };
+
+function checkDisasterDetail(
+  value: { disasterType?: string; disasterDetail?: string },
+  ctx: z.RefinementCtx,
+): void {
+  if (value.disasterType !== "LAINNYA") return;
+
+  const detail = value.disasterDetail?.trim() ?? "";
+  if (detail.length < 3) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["disasterDetail"],
+      message: "Sebutkan jenis bencananya, misalnya: letusan gunung atau tanah longsor.",
+    });
+  }
+}
 
 function checkIncidentInsideSurabaya(
   value: { lat?: number; lng?: number },
@@ -181,18 +199,25 @@ function checkIncidentInsideSurabaya(
 
 export const incidentDraftSchema = z
   .object(incidentDraftFields)
-  .superRefine(checkIncidentInsideSurabaya);
+  .superRefine((value, ctx) => {
+    checkDisasterDetail(value, ctx);
+    checkIncidentInsideSurabaya(value, ctx);
+  });
 
 /** Dipakai saat petugas menyunting draf yang masih berstatus BARU. */
 export const incidentPatchSchema = z
   .object(incidentDraftFields)
   .partial()
-  .superRefine(checkIncidentInsideSurabaya);
+  .superRefine((value, ctx) => {
+    checkDisasterDetail(value, ctx);
+    checkIncidentInsideSurabaya(value, ctx);
+  });
 
 export const incidentFormSchema = z
   .object({ ...incidentDraftFields, ...factorFields })
   .superRefine((value, ctx) => {
     checkVulnerableTotal(value, ctx);
+    checkDisasterDetail(value, ctx);
     checkIncidentInsideSurabaya(value, ctx);
   });
 
