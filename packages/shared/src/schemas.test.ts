@@ -8,6 +8,7 @@ import {
   incidentFactorsSchema,
   incidentFormSchema,
   incidentPatchSchema,
+  loginSchema,
   poskoInputSchema,
   publicIncidentFilterSchema,
   registerPetugasSchema,
@@ -249,19 +250,45 @@ describe("registerPetugasSchema", () => {
       registerPetugasSchema.safeParse({
         name: "Rina Kusuma",
         email: "  Rina@BPBD.Surabaya.go.id ",
+        password: "rahasia123",
         regionId: "region_gubeng",
       }).success,
     ).toBe(true);
   });
 
-  it("mewajibkan nama dan kecamatan", () => {
+  it("mewajibkan nama, kata sandi, dan kecamatan", () => {
     expect(
       registerPetugasSchema.safeParse({
         name: "Ri",
         email: "rina@bpbd.surabaya.go.id",
+        password: "rahasia123",
         regionId: "",
       }).success,
     ).toBe(false);
+
+    expect(
+      registerPetugasSchema.safeParse({
+        name: "Rina Kusuma",
+        email: "rina@bpbd.surabaya.go.id",
+        password: "pendek",
+        regionId: "region_gubeng",
+      }).success,
+    ).toBe(false);
+  });
+});
+
+describe("loginSchema", () => {
+  it("menerima email dan kata sandi", () => {
+    expect(
+      loginSchema.safeParse({ email: "Rina@BPBD.Surabaya.go.id", password: "rahasia123" })
+        .success,
+    ).toBe(true);
+  });
+
+  it("menolak kata sandi kosong", () => {
+    expect(loginSchema.safeParse({ email: "rina@bpbd.surabaya.go.id", password: "" }).success).toBe(
+      false,
+    );
   });
 });
 

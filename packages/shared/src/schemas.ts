@@ -30,23 +30,22 @@ export const emailSchema = z
   .email("Tulis alamat email dengan format yang benar, contoh: nama@instansi.go.id.")
   .transform((value) => value.toLowerCase());
 
-export const otpCodeSchema = z
-  .string({ required_error: "Kode masuk wajib diisi." })
-  .trim()
-  .regex(/^\d{6}$/, "Kode masuk terdiri dari 6 angka.");
+export const passwordSchema = z
+  .string({ required_error: "Kata sandi wajib diisi." })
+  .min(8, "Kata sandi minimal 8 karakter.")
+  .max(72, "Kata sandi maksimal 72 karakter.");
 
 export const loginSchema = z.object({
   email: emailSchema,
-  code: otpCodeSchema,
-});
-
-export const otpRequestSchema = z.object({
-  email: emailSchema,
+  password: z
+    .string({ required_error: "Kata sandi wajib diisi." })
+    .min(1, "Kata sandi wajib diisi."),
 });
 
 export const registerPetugasSchema = z.object({
   name: requiredText("Nama lengkap", 3, 80),
   email: emailSchema,
+  password: passwordSchema,
   regionId: z.string({ required_error: "Pilih kecamatan tempat bertugas." }).trim().min(
     1,
     "Pilih kecamatan tempat bertugas.",
