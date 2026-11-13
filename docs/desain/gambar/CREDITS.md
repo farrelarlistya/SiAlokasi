@@ -39,7 +39,7 @@ Font dimuat lokal lewat paket `@fontsource` (`@fontsource-variable/plus-jakarta-
 | Aset | Sumber | Lisensi | Kewajiban |
 | :--- | :--- | :--- | :--- |
 | Tile peta | OpenStreetMap contributors | ODbL 1.0 | Atribusi "© OpenStreetMap contributors" wajib tampil di peta |
-| Batas kecamatan Surabaya (cadangan) | Data administrasi publik, disederhanakan | Data terbuka | Cantumkan sumber di `docs/desain/gambar/` |
+| Batas 31 kecamatan Surabaya | [OpenStreetMap](https://www.openstreetmap.org/copyright) lewat Overpass API (relasi `admin_level=6`) | ODbL 1.0 | Berkas `packages/shared/src/geo/kecamatan-surabaya.json`; skrip pembuat `tools/build-region-boundaries.mjs`; atribusi "© kontributor OpenStreetMap" wajib tetap tampil di peta |
 | Pustaka peta | Leaflet | BSD-2-Clause | Cantumkan lisensi di `THIRD-PARTY.md` |
 
 ## Foto

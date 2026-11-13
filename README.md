@@ -101,7 +101,7 @@ $env:PG_DIR = "D:\PostgreSQL\17"
 
 `db:seed` dan `demo:reset` menghasilkan kondisi yang sama:
 
-- 10 jenis bantuan logistik, 8 kecamatan, 3 posko, 30 baris stok.
+- 10 jenis bantuan logistik, 31 kecamatan, 3 posko, 30 baris stok.
 - 3 akun demo: `petugas@sialokasi.demo`, `pimpinan@sialokasi.demo`, `admin@sialokasi.demo`.
 - **0 laporan, 0 rekomendasi, 0 keputusan, 0 izin, 0 riwayat, 0 jurnal stok, 0 notifikasi, 0 sesi.**
 

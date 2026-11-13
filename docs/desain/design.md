@@ -123,7 +123,7 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 - **Chip status**: `BARU` biru, `DIPERIKSA` ungu, `MENUNGGU_PERSETUJUAN` kuning, `DISETUJUI` hijau, `SELESAI` hijau tua, `DITOLAK` merah, `DIBATALKAN` abu. Teks selalu menyertai warna.
 - **Kartu metrik** (`StatCard`): angka 32–40 px + label 16 px + keterangan singkat opsional.
 - **Tabel bantuan**: kolom Jenis, Satuan, Jumlah, Alasan. Baris bisa diubah hanya oleh Pimpinan; sel yang diubah diberi penanda dan wajib alasan.
-- **Slider radius**: nilai angka + satuan selalu terlihat, langkah 100 m, rentang 100 m–5 km.
+- **Geser radius**: nilai angka + satuan selalu terlihat (mis. "1,2 km"), langkah 100 m, rentang 100 m-5 km; tidak ada kolom ketikan radius.
 - **`Alert`**: pesan info/sukses/peringatan/bahaya dengan ikon dan langkah lanjutan; dipakai untuk kegagalan API dan mode demo.
 - **`PageHeader`**: judul halaman 28–32 px dan aksi di kanan, tanpa keterangan di bawah judul; metadata singkat bila perlu menjadi `eyebrow` di atas judul.
 - **`AidIcon`**: ikon Lucide berdasarkan nama ikon di data master; latar kotak 44 px.
@@ -135,7 +135,7 @@ Font dimuat lokal (`woff2`) agar tampilan tidak berubah saat internet lemah.
 
 1. Pusat awal: **Kota Surabaya**, zoom 12, tanpa rotasi.
 2. Klik peta = pindahkan marker kejadian; marker bisa digeser.
-3. Lingkaran radius diperbarui langsung saat slider/angka berubah.
+3. Lingkaran radius diperbarui langsung saat geser berubah.
 4. Popup marker: judul, status chip, waktu, tombol "Lihat detail" 44 px.
 5. Jika lebih dari 30 marker, gunakan pengelompokan (cluster) dengan angka.
 6. Tile gagal dimuat → tampilkan latar `#F3EEDD` + batas kecamatan dari data lokal + pita peringatan "Peta sedang memuat terbatas".
@@ -194,7 +194,7 @@ Contoh pesan gagal: **"Laporan belum bisa dikirim karena koneksi terputus. Draf 
 ### 12.2 `T2` — Buat Laporan (Petugas)
 - Peta menjadi kanvas utama; panel formulir di samping berisi **Titik & wilayah**, **Detail laporan**, dan tombol simpan.
 - Panel bisa ditutup agar seluruh peta terlihat saat menentukan titik, lalu dibuka lagi tanpa kehilangan isian.
-- Slider radius dengan nilai besar (contoh "1,2 km") dan alternatif angka lintang/bujur.
+- Kolom **Lintang** dan **Bujur** terpisah (tanpa kotak koordinat gabungan), kecamatan terdampak tampil baca-saja sebagai hasil deteksi otomatis dari titik, dan geser radius dengan nilai besar (contoh "1,2 km").
 - Tombol utama "Simpan & lanjut ke faktor" di akhir panel.
 - Pita kecil "Draf tersimpan 10:42" di dekat tombol.
 
@@ -255,9 +255,9 @@ Menampilkan empat perilaku wajib dalam satu papan:
 
 ### 12.12 Catatan Implementasi M3 (Alur Kerja Inti)
 
-- **T2** memakai peta penuh dengan titik yang bisa diklik dan digeser, slider radius 100 m–5 km, serta input angka lintang/bujur sebagai alternatif tanpa tetikus. Draf disimpan di perangkat dan peringatan muncul bila ada laporan lain dalam radius 200 m.
-- **T3** mengelompokkan 8 faktor menjadi "Dampak" dan "Kondisi lapangan". Setelah dihitung, tabel 10 bantuan menampilkan jumlah, satuan, dan alasan satu baris. Versi teknis perhitungan ditampilkan sebagai label ramah, mis. "Versi 1.1", bukan nama model.
-- **L1** menampilkan empat kartu: menunggu keputusan, jiwa terdampak, bantuan menunggu, dan izin terbit hari ini. Setiap kartu antrian menjadi tautan ke L2.
+- **T2** memakai peta penuh dengan titik yang bisa diklik dan digeser, kolom Lintang/Bujur terpisah, kecamatan terdampak terdeteksi otomatis dari titik, dan geser radius 100 m-5 km. Draf disimpan di perangkat dan peringatan muncul bila ada laporan lain dalam radius 200 m.
+- **T3** mengelompokkan faktor lapangan menjadi "Dampak" dan "Kondisi lapangan". Setelah dihitung, tabel 10 bantuan menampilkan jumlah, satuan, dan alasan satu baris. Versi teknis perhitungan ditampilkan sebagai label ramah, mis. "Versi 1.1", bukan nama model.
+- **L1** menampilkan kartu ringkasan (jiwa terdampak, jenis bantuan menunggu, izin terbit hari ini), rincian bantuan menunggu **per jenis dan satuan**, serta bagian **Menunggu distribusi** yang membuka laporan untuk ditandai selesai. Setiap baris antrian menjadi tautan ke L2.
 - **L2** menambahkan kolom stok posko terpilih pada tabel rekomendasi. Perubahan jumlah memakai modal dengan alasan wajib; baris yang disesuaikan diberi penanda dan alasan perubahan. Peringatan stok kurang muncul sebelum tombol keputusan.
 - **L3** adalah dokumen putih A4 dengan nomor izin mono, daftar bantuan dari salinan `permit_items`, tanda tangan pimpinan, dan tombol Cetak. `@media print` menyembunyikan header, navigasi, dan tombol di luar dokumen.
 - **P2** menampilkan timeline empat langkah utama; status terminal (`DITOLAK`/`DIBATALKAN`) ditambahkan di akhir. Ringkasan bantuan hanya muncul setelah izin terbit. Nama, email, dan telepon pelapor tidak pernah ditampilkan.

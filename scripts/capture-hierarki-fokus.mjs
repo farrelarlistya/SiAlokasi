@@ -338,7 +338,7 @@ async function main() {
   check("Draf laporan dibuat", created.status === 201 || created.status === 200, created);
   const incidentId = created.body?.data?.id;
   await setViewport(1440, 1000);
-  await navigate(`${baseUrl}/petugas/laporan/${incidentId}`, "Delapan faktor lapangan");
+  await navigate(`${baseUrl}/petugas/laporan/${incidentId}`, "Faktor lapangan");
   await screenshot("10-t3-faktor-1440.png", "T3 faktor 1440");
 
   const estimated = await api(`/api/petugas/incidents/${incidentId}/factors`, "POST", {

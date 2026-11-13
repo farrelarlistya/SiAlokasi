@@ -21,7 +21,7 @@ Saat bencana, laporan dari lapangan masuk lewat pesan singkat dan telepon. Data 
 ### 1.2 Solusi
 SiAlokasi menyatukan tiga hal dalam satu aplikasi web:
 1. **Peta kerja (WebGIS)** — petugas menandai titik kejadian dan menggambar radius wilayah terdampak.
-2. **Perhitungan otomatis** — model estimasi lokal mengubah 8 faktor lapangan menjadi daftar 10 jenis bantuan beserta jumlah dan alasannya.
+2. **Perhitungan otomatis** - model estimasi lokal mengubah faktor lapangan menjadi daftar 10 jenis bantuan beserta jumlah dan alasannya.
 3. **Ruang keputusan** — pimpinan meninjau di peta, menyesuaikan jumlah, menyetujui, lalu izin distribusi bernomor terbit otomatis.
 
 ### 1.3 Nilai yang Diuji Saat Demo
@@ -78,7 +78,7 @@ SiAlokasi menyatukan tiga hal dalam satu aplikasi web:
 | Lihat peta kejadian aktif & daftar laporan publik | ✅ | ✅ | ✅ | ✅ |
 | Lacak status lewat kode lacak | ✅ | ✅ | ✅ | ✅ |
 | Buat & sunting laporan `BARU` | — | ✅ | — | — |
-| Isi 8 faktor & hitung estimasi | — | ✅ | — | — |
+| Isi faktor lapangan & hitung estimasi | — | ✅ | — | — |
 | Ajukan laporan ke pimpinan | — | ✅ | — | — |
 | Lihat seluruh antrian & dasbor | — | — | ✅ | — |
 | Sesuaikan jumlah bantuan (dengan alasan) | — | — | ✅ | — |
@@ -112,7 +112,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | :--- | :--- | :--- | :--- |
 | `FR-01` | Monorepo `apps/web`, `apps/api`, `packages/shared` berjalan; tipe & skema Zod dipakai bersama | Dev | `npm run build` sukses; mengubah satu tipe di `shared` memicu error TypeScript di web & api |
 | `FR-02` | Token warna Tailwind `@theme` + 6 komponen dasar: `Modal`/`ConfirmDialog`, `Toast`, `Skeleton`, `EmptyState`, `Field`, `AppHeader`/`BottomNav` | Dev | Halaman contoh `/ui` menampilkan semua komponen; tidak ada teks <16 px; tombol ≥44 px |
-| `FR-03` | Seed bersih: 10 jenis bantuan, 8 kecamatan, 3 posko, 3 akun demo, **0 laporan** | Admin | `npm run db:seed` lalu hitung baris tabel laporan = 0 |
+| `FR-03` | Seed bersih: 10 jenis bantuan, **31 kecamatan** (batas resmi Kota Surabaya), 3 posko, 3 akun demo, **0 laporan** | Admin | `npm run db:seed` lalu hitung baris tabel laporan = 0 dan baris kecamatan = 31 |
 | `FR-04` | `ClockService` + reset demo | Admin | Ubah waktu +72 jam lewat `/dev`, waktu di UI ikut berubah; reset mengembalikan 0 transaksi |
 
 ### 4.2 M2 — Akun Semua Peran & Data Master
@@ -130,8 +130,8 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 | Kode | Kebutuhan | Pelaku | Cara membuktikan |
 | :--- | :--- | :--- | :--- |
-| `FR-11` | Buat laporan: judul, jenis bencana, waktu, titik (klik/geser) + radius 100 m–5 km | Petugas | Marker & lingkaran tampil; radius berubah dengan slider & angka |
-| `FR-12` | Isi 8 faktor dengan validasi rentang | Petugas | Faktor kosong menghalangi perhitungan; pesan error di bawah kolom yang salah |
+| `FR-11` | Buat laporan: judul, jenis bencana (termasuk "Lainnya" yang ditulis bebas), waktu, titik Lintang/Bujur, radius 100 m–5 km lewat geser; kecamatan terdeteksi dari titik | Petugas | Marker & lingkaran tampil; radius hanya berubah lewat geser; kecamatan hasil deteksi tampil tanpa dipilih |
+| `FR-12` | Isi faktor lapangan dengan validasi rentang | Petugas | Faktor kosong menghalangi perhitungan; pesan error di bawah kolom yang salah |
 | `FR-13` | Hitung estimasi 10 jenis bantuan + alasan tiap baris + versi model | Sistem | Hasil sama untuk input yang sama; alasan tampil dalam bahasa manusia |
 | `FR-14` | Ajukan laporan ke pimpinan | Petugas | Status → `MENUNGGU_PERSETUJUAN`; form terkunci; muncul di antrian pimpinan |
 | `FR-15` | Dasbor pimpinan: peta, antrian, ringkasan (jumlah laporan, jiwa, bantuan) | Pimpinan | Angka ringkasan cocok dengan data antrian |
@@ -157,6 +157,15 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | `FR-25` | Notifikasi simulasi (lonceng in-app + log) | Sistem | Setiap perubahan status menambah satu notifikasi; tidak mengirim WA asli |
 | `FR-26` | Akses lintas perangkat (`npm run share`) & uji 360/768/1366/1920 px | Dev | Semua halaman bisa dipakai di keempat lebar tanpa scroll horizontal |
 | `FR-27` | `README.md` + panduan demo 5 menit | Dev | Orang lain bisa menjalankan dari nol mengikuti README |
+
+### 4.6 R2 — Revisi Isi Laporan & Dasbor Pimpinan (2026-11-13)
+
+| Kode | Kebutuhan | Pelaku | Cara membuktikan |
+| :--- | :--- | :--- | :--- |
+| `FR-28` | Kecamatan terdampak ditentukan **otomatis dari titik** memakai batas 31 kecamatan; formulir tidak lagi memilih kecamatan | Sistem, Petugas | `regions.test.ts` (8 uji), `verify:m1` (31 baris), `capture-revisi.mjs`: titik Wonokromo terbaca tanpa pilihan manual |
+| `FR-29` | Jenis bencana "Lainnya" punya keterangan bebas (min. 3, maks. 80 karakter) dan tampil di semua halaman yang menampilkan jenis bencana | Petugas | Uji skema `incidentDraftSchema`; tangkapan `02-formulir-lainnya.png`; nama tampil di lacak publik |
+| `FR-30` | Isian laporan diringkas: Lintang/Bujur terpisah tanpa kotak gabungan, radius hanya lewat geser, kolom "perkiraan lama penanganan" dihapus (perhitungan memakai asumsi 3 hari) | Petugas | `capture-revisi.mjs`: kolom radius ketikan & pilihan kecamatan tidak ada, `#factor-days` tidak ada |
+| `FR-31` | Dasbor pimpinan menampilkan bantuan menunggu **per jenis & satuan** serta bagian "Menunggu distribusi" yang membuka laporan untuk ditandai selesai | Pimpinan | `verify:m3` (rincian `waitingAid`, daftar `approved`), `capture-revisi.mjs`: alur setujui → buka dari dasbor → tandai selesai |
 
 ---
 
@@ -191,10 +200,10 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | `User` | `id`, `name`, `email` (unik), `role`, `isActive`, `regionId` (opsional), `createdAt` | Role: `PETUGAS`, `PIMPINAN`, `ADMIN`; pendaftar baru `isActive=false` |
 | `Session` | `id`, `tokenHash` (unik), `userId`, `expiresAt`, `createdAt` | Sesi cookie httpOnly; token asli tidak disimpan (ADR 0004) |
 | `OtpCode` | `userId`, `codeHash`, `expiresAt`, `usedAt` | `123456` hanya saat `DEMO_MODE=true` |
-| `Region` | `id`, `name`, `isActive`, `boundary` (GeoJSON opsional) | 8 kecamatan contoh Surabaya; nonaktif ≠ hapus |
+| `Region` | `id`, `name`, `isActive` | 31 kecamatan Kota Surabaya; batas wilayah dari OpenStreetMap dipakai untuk menentukan kecamatan otomatis dari titik; nonaktif ≠ hapus |
 | `Posko` | `id`, `name`, `regionId`, `lat`, `lng`, `isActive` | 3 posko contoh |
 | `AidItem` | `id`, `name`, `unit`, `icon`, `standardPerPerson`, `isActive` | 10 jenis bantuan |
-| `Incident` | `id`, `code`, `title`, `disasterType`, `lat`, `lng`, `radiusM`, `regionId`, `occurredAt`, `status`, `reporterId`, 8 kolom faktor | Faktor disimpan sebagai kolom eksplisit, bukan JSON bebas |
+| `Incident` | `id`, `code`, `title`, `disasterType`, `disasterDetail`, `lat`, `lng`, `radiusM`, `regionId` (diisi server dari titik), `occurredAt`, `status`, `reporterId`, kolom faktor | Faktor disimpan sebagai kolom eksplisit, bukan JSON bebas; keterangan jenis bencana "Lainnya" di `disasterDetail` |
 | `IncidentLog` | `id`, `incidentId`, `fromStatus`, `toStatus`, `actorId`, `note`, `createdAt` | Riwayat status, append-only |
 | `Recommendation` | `id`, `incidentId`, `modelVersion`, `totalPeople`, `generatedAt` | Satu laporan bisa punya beberapa versi, yang aktif ditandai |
 | `RecommendationItem` | `recommendationId`, `aidItemId`, `baseQty`, `finalQty`, `unit`, `reason` | 10 baris per rekomendasi |
@@ -204,7 +213,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | `AuditLog` | `id`, `entity`, `entityId`, `action`, `actorId`, `before`, `after`, `createdAt` | Append-only |
 | `DemoClock` | `id`, `offsetMinutes` | Dipakai `ClockService` |
 
-### 6.2 Faktor Laporan (8)
+### 6.2 Faktor & Isian Laporan
 
 | Faktor | Tipe | Nilai |
 | :--- | :--- | :--- |
@@ -212,15 +221,16 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | Kerusakan rumah | pilihan | `RINGAN`, `SEDANG`, `BERAT` |
 | Kelompok rentan | integer ×4 | bayi, lansia, ibu hamil, disabilitas |
 | Jenis bencana | pilihan | `BANJIR`, `KEBAKARAN`, `GEMPA`, `ANGIN`, `LAINNYA` |
-| Lama penanganan | integer hari | 1–30 |
 | Akses jalan | pilihan | `TERBUKA`, `TERBATAS`, `TERPUTUS` |
 | Cuaca | pilihan | `CERAH`, `HUJAN`, `EKSTREM` |
 | Kepadatan penduduk | pilihan | `RENDAH`, `SEDANG`, `TINGGI` |
 
+Jenis bencana diisi pada langkah titik & wilayah; bila memilih `LAINNYA`, petugas menulis nama bencananya sendiri (maksimal 80 karakter). Lama penanganan tidak lagi diisi: perhitungan memakai asumsi 3 hari (`DEFAULT_HANDLING_DAYS`).
+
 ### 6.3 Seed Bersih
 
 - **0** `Incident`, **0** `Recommendation`, **0** `Decision`, **0** `Permit`, **0** `IncidentLog`.
-- Data master: 10 `AidItem`, 8 `Region`, 3 `Posko`, 3 `User`.
+- Data master: 10 `AidItem`, 31 `Region`, 3 `Posko`, 3 `User`.
 - Ikon bantuan = SVG (bukan foto), sumber dicatat di `docs/desain/gambar/CREDITS.md`.
 - Semua kuantitas berupa integer (liter, paket, unit, lembar).
 
@@ -232,7 +242,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 1. **Petugas** masuk → membuat laporan baru → memilih jenis bencana, waktu, judul.
 2. Petugas menaruh **titik** di peta Surabaya dan menarik **radius** wilayah terdampak.
-3. Petugas mengisi **8 faktor**; sistem memvalidasi rentang.
+3. Petugas mengisi **faktor lapangan**; sistem memvalidasi rentang.
 4. Petugas menekan **"Hitung estimasi"** → sistem menjalankan model → tabel 10 bantuan + alasan.
 5. Petugas meninjau, lalu menekan **"Ajukan ke pimpinan"** → status `MENUNGGU_PERSETUJUAN`.
 6. **Pimpinan** membuka dasbor → melihat antrian → memilih laporan → peta & rincian tampil.
@@ -245,7 +255,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 
 | Dari | Ke | Pelaku | Syarat | Efek |
 | :--- | :--- | :--- | :--- | :--- |
-| `BARU` | `DIPERIKSA` | Petugas | 8 faktor valid & estimasi dihitung | Rekomendasi tersimpan |
+| `BARU` | `DIPERIKSA` | Petugas | Faktor lapangan valid & estimasi dihitung | Rekomendasi tersimpan |
 | `DIPERIKSA` | `MENUNGGU_PERSETUJUAN` | Petugas | Rekomendasi ada | Terkunci; masuk antrian |
 | `MENUNGGU_PERSETUJUAN` | `DISETUJUI` | Pimpinan | Keputusan `APPROVE` | Izin terbit |
 | `MENUNGGU_PERSETUJUAN` | `DITOLAK` | Pimpinan | Alasan wajib | Terminal |
@@ -393,7 +403,7 @@ SiAlokasi/
 ### 10.3 Skenario Demo (5 Menit)
 1. Buka `P1` sebagai Tamu → peta Surabaya, 0 laporan, `EmptyState` ramah.
 2. Masuk sebagai **Petugas** → buat laporan banjir di Kecamatan Wonokromo → tandai titik, radius 1,2 km.
-3. Isi 8 faktor (contoh: 420 jiwa, rumah rusak berat, 12 bayi, akses terbatas, hujan).
+3. Isi faktor lapangan (contoh: 420 jiwa, rumah rusak berat, 12 bayi, akses terbatas, hujan).
 4. Tekan **Hitung estimasi** → tunjukkan 10 bantuan + alasan.
 5. Ajukan → ganti akun **Pimpinan** → antrian menampilkan laporan.
 6. Ubah 2 item dengan alasan → Setujui → izin `IZN-20261107-001` terbit.

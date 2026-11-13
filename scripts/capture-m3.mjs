@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+﻿import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -210,27 +210,29 @@ async function main() {
 
     console.log("Masuk sebagai petugas dan membuat laporan lewat formulir");
     await loginAs("petugas@sialokasi.demo");
-    await navigate(`${baseUrl}/petugas/laporan/baru`, "Tandai kejadian di peta");
+    await evaluate(`window.localStorage.removeItem("sialokasi.draft.laporan-baru")`);
+    await navigate(`${baseUrl}/petugas/laporan/baru`, "Klik peta untuk menandai titik kejadian");
+    await cdp.send("Page.reload");
+    await delay(1_200);
+    await waitForText("Klik peta untuk menandai titik kejadian");
 
     await setField("#incident-title", "Banjir di Wonokromo RW 03");
     await setField("#incident-lat", "-7.3002");
     await setField("#incident-lng", "112.7382");
-    await setField("#incident-radius-number", "1200");
-    await setField("#incident-region", "region_wonokromo");
-    await waitForText("Titik sudah dipilih");
+    await waitForText("Kecamatan terdampak · otomatis");
+    await waitForText("Wonokromo");
     await screenshot("01-t2-buat-laporan.png", 1440, 1000);
 
-    await clickText("button", "Simpan & lanjut ke faktor");
-    await waitForText("Delapan faktor lapangan");
+    await clickText("button", "Simpan & lanjut");
+    await waitForText("Faktor lapangan");
 
-    console.log("Mengisi 8 faktor dan menghitung estimasi");
+    console.log("Mengisi faktor lapangan dan menghitung estimasi");
     await setField("#factor-people", "420");
     await setField("#factor-damage", "BERAT");
     await setField("#factor-vulnerableBabies", "12");
     await setField("#factor-vulnerableElderly", "30");
     await setField("#factor-vulnerablePregnant", "4");
     await setField("#factor-vulnerableDisabled", "6");
-    await setField("#factor-days", "3");
     await setField("#factor-road", "TERBATAS");
     await setField("#factor-weather", "HUJAN");
     await setField("#factor-density", "TINGGI");
@@ -258,11 +260,11 @@ async function main() {
     await screenshot("04-t3-terkunci.png", 1440, 1000);
 
     console.log("Memeriksa peringatan laporan dobel di titik yang sama");
-    await navigate(`${baseUrl}/petugas/laporan/baru`, "Tandai kejadian di peta");
     await evaluate(`window.localStorage.removeItem("sialokasi.draft.laporan-baru")`);
+    await navigate(`${baseUrl}/petugas/laporan/baru`, "Klik peta untuk menandai titik kejadian");
     await cdp.send("Page.reload");
     await delay(1_200);
-    await waitForText("Tandai kejadian di peta");
+    await waitForText("Klik peta untuk menandai titik kejadian");
     await setField("#incident-lat", "-7.3002");
     await setField("#incident-lng", "112.7382");
     await waitForText("Sudah ada laporan dalam radius 200 meter.");

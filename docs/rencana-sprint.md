@@ -13,6 +13,7 @@
 | `M4` | Kasus Khusus, Rekap, Admin, Demo | ✅ Selesai — 2026-11-09 | `docs/bukti/m4.md`, `docs/adr/0007-stok-ledger-append-only-dan-koreksi-izin.md`, halaman L4/D6/D7 |
 | `M5` | Uji Lintas Perangkat & Siap Pamer | ✅ Selesai — 2026-11-09 | `docs/bukti/m5.md`, `docs/adr/0008-notifikasi-cetak-a4-dan-akses-lintas-perangkat.md`, `docs/panduan-demo.md`, `README.md` |
 | `R1` | Revisi Hierarki & Fokus Section | ✅ Selesai — 2026-11-10 | `docs/bukti/hierarki-fokus/`, `docs/adr/0011-hierarki-fokus.md`, `docs/desain/design-rim.md` §3–§10 |
+| `R2` | Revisi Isi Laporan & Dasbor Pimpinan | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-2026-11-13.md`, `docs/adr/0013-kecamatan-otomatis-dan-isian-formulir.md` |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
 
@@ -545,3 +546,36 @@ terkelola, lalu memverifikasi seluruh alur kerja.
 
 **Rencana berikutnya:** tidak ada yang menggantung. Untuk pemakaian nyata, ubah `DEMO_MODE=false`
 dan jalankan migrasi dengan `DATABASE_URL_UNPOOLED` sebelum deploy yang mengubah skema.
+
+---
+
+## R2 — Revisi Isi Laporan & Dasbor Pimpinan (Selesai 2026-11-13)
+
+**Permintaan:** pemilik proyek meminta delapan perbaikan setelah mencoba aplikasi di produksi
+(titik tanpa versi gabungan, radius hanya geser, jenis bencana "Lainnya" bisa diketik, kecamatan
+otomatis, daftar kecamatan lengkap, hapus "perkiraan lama penanganan", arti angka bantuan
+menunggu, dan jalan masuk laporan yang sudah disetujui).
+
+**Hasil:**
+- Batas 31 kecamatan diambil dari OpenStreetMap (`tools/build-region-boundaries.mjs` →
+  `packages/shared/src/geo/kecamatan-surabaya.json`) dan dipakai untuk menentukan kecamatan
+  otomatis dari titik; seed berubah dari 8 menjadi **31 kecamatan** (Mulyorejo ikut terisi).
+- Formulir laporan: hanya Lintang + Bujur, radius lewat geser, kolom keterangan untuk jenis
+  bencana "Lainnya", kecamatan tampil baca-saja sebagai hasil deteksi.
+- Kolom `handlingDays` dihapus dari skema, API, dan database; perhitungan memakai asumsi 3 hari.
+- Kolom baru `disasterDetail` (migrasi `20261113130000_m6_revisi_laporan`).
+- Dasbor pimpinan: angka campuran satuan diganti rincian per jenis bantuan, dan ditambah bagian
+  **Menunggu distribusi** yang membuka laporan; halaman tinjau kini punya tombol
+  **Tandai distribusi selesai**.
+- Uji: `npm run build`, `npm test` 100/100, `verify:m1`—`verify:m5` (18/49/83/99/40 pemeriksaan),
+  serta uji peramban `scripts/capture-revisi.mjs` 12/12 tanpa kesalahan konsol.
+
+**Kriteria selesai:**
+- [x] Titik hanya berupa Lintang/Bujur; radius hanya geser; kecamatan tidak dipilih manual.
+- [x] Jenis bencana "Lainnya" menyimpan keterangan bebas dan tampil di semua halaman.
+- [x] 31 kecamatan tersedia dan deteksi titik diuji (termasuk Mulyorejo).
+- [x] Tidak ada kolom lama penanganan di formulir maupun API.
+- [x] Dasbor menampilkan bantuan menunggu per jenis dan daftar laporan menunggu distribusi.
+- [x] `npm run build`, `npm test`, `verify:m1`—`verify:m5` lulus; demo direset ke 0 transaksi.
+
+**Bukti:** `docs/bukti/revisi-2026-11-13.md`. Keputusan teknis: ADR 0013.

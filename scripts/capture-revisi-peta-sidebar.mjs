@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from "node:fs/promises";
+﻿import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -210,7 +210,7 @@ async function main() {
 
   await loginAs("petugas@sialokasi.demo");
   await evaluate('localStorage.removeItem("sialokasi.panel.laporan-baru")');
-  await navigate(`${baseUrl}/petugas/laporan/baru`, "Tandai kejadian di peta");
+  await navigate(`${baseUrl}/petugas/laporan/baru`, "Klik peta untuk menandai titik kejadian");
   await screenshot("04-buat-laporan-panel-terbuka-1440.png");
 
   await clickLabel("Tutup Formulir laporan");
@@ -219,7 +219,7 @@ async function main() {
   await navigate(`${baseUrl}/petugas/laporan/baru`);
   await setViewport(390, 844);
   await clickText("button", "Tampilkan panel");
-  await waitForText("Tandai kejadian di peta");
+  await waitForText("Klik peta untuk menandai titik kejadian");
   await screenshot("06-buat-laporan-390.png");
 
   await clickLabel("Tutup Formulir laporan");
@@ -233,7 +233,7 @@ async function main() {
   await screenshot("09-beranda-768.png");
 
   await evaluate('localStorage.removeItem("sialokasi.panel.laporan-baru")');
-  await navigate(`${baseUrl}/petugas/laporan/baru`, "Tandai kejadian di peta");
+  await navigate(`${baseUrl}/petugas/laporan/baru`, "Klik peta untuk menandai titik kejadian");
   await screenshot("10-buat-laporan-768.png");
 
   await evaluate('localStorage.removeItem("sialokasi.panel.peta-publik")');
@@ -241,7 +241,7 @@ async function main() {
   await setViewport(360, 800);
   await screenshot("11-beranda-360.png");
 
-  await navigate(`${baseUrl}/petugas/laporan/baru`, "Tandai kejadian di peta");
+  await navigate(`${baseUrl}/petugas/laporan/baru`, "Klik peta untuk menandai titik kejadian");
   await screenshot("12-buat-laporan-360.png");
 
   await setViewport(1920, 1080);

@@ -58,7 +58,7 @@ demo. Semua langkah dimulai dari **0 transaksi** agar alur terlihat utuh.
    - Kecamatan: **Wonokromo**.
 4. Tekan **Simpan laporan**. Tunjukkan **kode lacak** yang muncul dan lonceng notifikasi.
 
-### Menit 1:15 — Isi 8 faktor dan hitung estimasi
+### Menit 1:15 — Isi faktor lapangan dan hitung estimasi
 
 1. Isi faktor contoh:
    - Jiwa terdampak: **420**
@@ -83,7 +83,7 @@ demo. Semua langkah dimulai dari **0 transaksi** agar alur terlihat utuh.
 ### Menit 2:30 — Pimpinan meninjau dan menyetujui
 
 1. Buka laporan dari antrian.
-2. Tunjukkan 8 faktor, tabel bantuan, stok posko tujuan, dan peta radius.
+2. Tunjukkan faktor lapangan, tabel bantuan, stok posko tujuan, dan peta radius.
 3. Ubah satu jumlah bantuan, misalnya air bersih, lalu isi alasan perubahan.
 4. Pilih posko tujuan **Posko Balai Kota**.
 5. Tekan **Setujui** lalu konfirmasi.

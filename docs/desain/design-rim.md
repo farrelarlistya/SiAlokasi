@@ -76,7 +76,7 @@
 | :--- | :--- |
 | P1 | Beranda publik: panel 420 px + peta, ringkasan angka, status baris |
 | T2 | Laporan baru: titik, radius, detail, draf, aksi bawah |
-| T3 | Faktor & estimasi: 8 faktor + tabel 10 bantuan beralasan |
+| T3 | Faktor & estimasi: faktor lapangan + tabel 10 bantuan beralasan |
 | L1 | Dasbor pimpinan: "Perlu keputusan" (angka 40 + laporan teratas), 3 metrik pendukung 20, peta, antrian |
 | L2 | Tinjau rekomendasi: ringkasan, tabel yang bisa diubah, setujui/tolak |
 | L3 | Izin distribusi: dokumen kertas A4 di kanvas gelap |
@@ -106,7 +106,7 @@ Setiap layar menetapkan **satu Blok Fokus** yang berubah mengikuti keadaan:
 | P1 Beranda | kosong / ada daftar | Daftar kejadian |
 | P1 Beranda | baris dipilih | Rincian kejadian + "Lacak laporan ini" |
 | T2 Buat laporan | langkah 1 | Titik & wilayah; detail menjadi section 20 |
-| T3 Faktor | belum dihitung | Delapan faktor lapangan |
+| T3 Faktor | belum dihitung | Faktor lapangan |
 | T3 Faktor | hasil tersedia | Estimasi bantuan (angka 40 + tabel); faktor turun ke section 20 |
 | T4 Ajukan | langkah 3 | Bantuan yang diajukan |
 | L1 Dasbor pimpinan | antrian ada | "Perlu keputusan": jumlah 40, laporan teratas, aksi Tinjau |

@@ -40,7 +40,7 @@ npx prisma migrate deploy
 npx prisma db seed
 ```
 
-Seed membuat 10 jenis bantuan, 8 kecamatan, 3 posko, dan 3 akun demo. Tidak ada transaksi contoh, sesuai aturan demo bersih.
+Seed membuat 10 jenis bantuan, 31 kecamatan, 3 posko, dan 3 akun demo. Tidak ada transaksi contoh, sesuai aturan demo bersih.
 
 ## 2. Siapkan proyek Vercel
 
