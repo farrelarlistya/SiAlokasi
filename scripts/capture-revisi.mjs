@@ -210,8 +210,10 @@ async function main() {
     console.log("\n[0] Masuk lewat form email + kata sandi");
     await navigate(`${baseUrl}/masuk`, "Masuk ke SiAlokasi");
     check(
-      "halaman masuk menampilkan kata sandi demo",
-      await evaluate(`document.body.innerText.includes("Sialokasi#2026")`),
+      "halaman masuk tanpa daftar akun demo",
+      await evaluate(
+        `!document.body.innerText.includes("Akun demo") && !document.body.innerText.includes("@sialokasi.demo")`,
+      ),
     );
     await setField("#login-email", "petugas@sialokasi.demo");
     await setField("#login-password", "Sialokasi#2026");
@@ -309,6 +311,30 @@ async function main() {
     console.log("\n[4] Menyetujui lalu membuka laporan dari dasbor");
     await clickText("a", "Tinjau laporan");
     await waitForText("Rekomendasi bantuan");
+
+    console.log("  Memeriksa fokus kolom alasan penyesuaian");
+    await clickText("button", "Ubah");
+    await waitForText("Ubah jumlah bantuan");
+    await evaluate(`document.querySelector("#adjust-reason").focus()`);
+    for (const character of ["a", "b", "c"]) {
+      await cdp.send("Input.dispatchKeyEvent", { type: "char", text: character });
+    }
+    await delay(250);
+    const focusCheck = await evaluate(`(() => {
+      const field = document.querySelector("#adjust-reason");
+      return {
+        active: document.activeElement === field,
+        value: field ? field.value : "",
+      };
+    })()`);
+    check(
+      "fokus tetap di kolom alasan saat mengetik",
+      focusCheck.active && focusCheck.value.includes("abc"),
+      focusCheck.active ? `nilai: ${focusCheck.value}` : "fokus terlepas",
+    );
+    await clickText('[role="dialog"] button', "Batal");
+    await waitForText("Rekomendasi bantuan");
+
     await evaluate(
       `new Promise((resolve, reject) => {
         const started = Date.now();

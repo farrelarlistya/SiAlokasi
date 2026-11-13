@@ -15,6 +15,7 @@
 | `R1` | Revisi Hierarki & Fokus Section | ✅ Selesai — 2026-11-10 | `docs/bukti/hierarki-fokus/`, `docs/adr/0011-hierarki-fokus.md`, `docs/desain/design-rim.md` §3–§10 |
 | `R2` | Revisi Isi Laporan & Dasbor Pimpinan | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-2026-11-13.md`, `docs/adr/0013-kecamatan-otomatis-dan-isian-formulir.md` |
 | `R3` | Login Email + Kata Sandi | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-login-password.md`, `docs/adr/0014-login-email-password.md` |
+| `R3a` | Daftar Akun Demo Dihapus & Fokus Modal | ✅ Selesai — 2026-11-13 | `docs/bukti/revisi-login-password.md` (tambahan) |
 
 Legenda: ✅ selesai · 🚧 sedang dikerjakan · ⏳ belum dimulai · ⛔ terhambat
 
@@ -598,8 +599,8 @@ kata sandi) untuk ketiga akun yang sudah ada.
 - Seed/demo reset selalu mengembalikan kata sandi demo `Sialokasi#2026` untuk ketiga akun.
 - Pendaftaran petugas kini meminta kata sandi (minimal 8 karakter) dan tetap menunggu
   aktivasi Admin; pesan sukses menyebut masuk memakai email + kata sandi.
-- Halaman masuk menampilkan tiga akun contoh; memilih satu baris mengisi email dan
-  kata sandi sekaligus. Panel `/dev` ikut menyebut kata sandi demo.
+- Halaman masuk satu langkah (email + kata sandi); daftar tiga akun contoh dihapus atas
+  permintaan pemilik, kata sandi demo tercatat di README. Panel `/dev` menyebut kata sandi demo.
 - Uji: `verify:m1` 24/24 (termasuk hash kata sandi), `verify:m2` 50/50 (termasuk kata
   sandi salah ditolak), `verify:m3` 83/83, `verify:m4` 99/99, `verify:m5` 40/40,
   `npm test` 102/102, serta uji peramban.
@@ -612,3 +613,21 @@ kata sandi) untuk ketiga akun yang sudah ada.
 - [x] `npm run build`, `npm test`, dan `verify:m1`—`verify:m5` lulus.
 
 **Bukti:** `docs/bukti/revisi-login-password.md`. Keputusan teknis: ADR 0014.
+
+---
+
+## R3a — Daftar Akun Demo Dihapus & Fokus Modal (Selesai 2026-11-13)
+
+**Permintaan:** hapus tiga opsi akun demo di halaman masuk; perbaiki bug fokus kolom
+alasan pada modal penyesuaian bantuan yang terlepas setiap kali mengetik.
+
+**Hasil:**
+- Halaman masuk kini hanya berisi email + kata sandi. Blok tiga akun demo beserta
+  catatan kata sandinya dihapus; kredensial demo tetap tercatat di README dan `/dev`.
+- `Modal` menyimpan `onClose` di ref dan efeknya hanya bergantung pada `open`,
+  sehingga fokus input tidak lagi terlempar ke kolom pertama setiap render. Perbaikan
+  berlaku untuk semua modal (penyesuaian bantuan, batal, tolak, koreksi izin, konfirmasi).
+- Uji peramban menambah pemeriksaan: mengetik 3 karakter di kolom alasan → fokus tetap
+  di kolom itu dan nilainya bertambah (`capture-revisi.mjs` **15/15**).
+
+**Bukti:** `docs/bukti/revisi-login-password.md` bagian tambahan.

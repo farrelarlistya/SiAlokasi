@@ -13,7 +13,7 @@ Keputusan teknis lengkap: `docs/adr/0014-login-email-password.md`.
 | Kode demo | `123456` selalu diterima saat `DEMO_MODE=true` | dihapus dari kode, tabel, dan dokumen |
 | Penyimpanan | tabel `otp_codes` (hash kode, kedaluwarsa 10 menit) | kolom `users.passwordHash` (scrypt + garam acak) |
 | Pendaftaran petugas | nama, email, kecamatan | nama, email, **kata sandi (min. 8)**, kecamatan |
-| Halaman masuk | daftar akun mengisi email, kode diisikan otomatis | daftar akun mengisi email **dan** kata sandi |
+| Halaman masuk | daftar akun mengisi email, kode diisikan otomatis | form email + kata sandi; daftar akun contoh dihapus atas permintaan pemilik |
 | Panel `/dev` | "Kode masuk akun contoh selalu 123456" | "Kata sandi akun contoh: Sialokasi#2026" |
 
 ## Akun demo
@@ -59,3 +59,56 @@ Keputusan teknis lengkap: `docs/adr/0014-login-email-password.md`.
   sebelum dipakai nyata.
 - Kata sandi demo tampil di halaman masuk selama `DEMO_MODE=true`. Matikan mode itu
   dan ganti kata sandi sebelum pemakaian nyata.
+
+---
+
+## Tambahan (2026-11-13): daftar akun demo dihapus & fokus modal diperbaiki
+
+### 1. Halaman masuk tanpa daftar akun demo
+
+Atas permintaan pemilik, tiga opsi akun demo di halaman masuk dihapus beserta
+catatan kata sandi di bawahnya. Halaman masuk kini hanya berisi email + kata sandi.
+
+- Kode yang dibuang: `DEMO_ACCOUNTS`, `ROLE_LABEL`, `DEMO_PASSWORD`, dan kueri
+  `health` yang hanya dipakai untuk mendeteksi mode demo.
+- Kredensial demo tetap tercatat di `README.md` dan panel `/dev`.
+- Bukti otomatis: `capture-revisi.mjs` memeriksa halaman masuk tidak lagi memuat
+  teks "Akun demo" maupun alamat `@sialokasi.demo`.
+
+### 2. Bug fokus pada form penyesuaian bantuan (pimpinan)
+
+**Gejala:** di modal "Ubah jumlah bantuan", kolom **Alasan perubahan** kehilangan
+fokus setiap kali satu karakter diketik, sehingga harus diklik ulang.
+
+**Penyebab:** efek di `Modal` (fokus awal, kunci Tab, Escape) bergantung pada
+identitas `onClose`. Pemanggil mengirim fungsi baru setiap render
+(`closeAdjust` bukan `useCallback`), jadi setiap ketikan memicu:
+
+1. state berubah → halaman render ulang → `onClose` baru,
+2. `handleKeyDown` baru → efek dibersihkan dan dijalankan ulang,
+3. efek memanggil `[data-autofocus]` lagi — yaitu kolom **Jumlah final** —
+   sehingga fokus terlempar dari kolom alasan.
+
+**Perbaikan (`apps/web/src/components/Modal.tsx`):**
+
+- `onClose` disimpan di `useRef` dan diperbarui lewat efek kecil.
+- `handleKeyDown` dibuat stabil (dependensi kosong) dan memanggil
+  `onCloseRef.current`.
+- Efek fokus sekarang hanya bergantung pada `open`, jadi fokus awal hanya
+  dijalankan sekali saat dialog dibuka.
+
+Perbaikan ini berlaku untuk **semua** modal di aplikasi (batalkan laporan,
+tolak laporan, koreksi izin, konfirmasi setujui/selesai), bukan hanya modal
+penyesuaian.
+
+**Bukti otomatis:** `capture-revisi.mjs` membuka modal penyesuaian, memfokuskan
+kolom alasan, mengetik `a`, `b`, `c` lewat DevTools, lalu memastikan
+`document.activeElement` masih kolom alasan dan nilainya `abc`.
+
+### Hasil
+
+| Pemeriksaan | Hasil |
+| :-- | :-- |
+| `npm run build` | lulus |
+| `npm test` | 102/102 |
+| `node scripts/capture-revisi.mjs` | **15/15 lulus, 0 kesalahan konsol** |

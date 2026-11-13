@@ -28,8 +28,8 @@ merepotkan dan tidak seperti aplikasi pada umumnya.
 4. **Pendaftaran petugas:** formulir menambah kolom kata sandi (minimal 8
    karakter). Pendaftar tetap berstatus nonaktif sampai admin mengaktifkan.
 5. **Mode demo:** `DEMO_MODE=true` tidak lagi mengubah cara masuk. Halaman masuk
-   hanya menampilkan daftar tiga akun contoh; menekan satu baris mengisi email
-   **dan** kata sandi demo, dan kata sandinya juga dicetak di bawah daftar.
+   hanya berisi email + kata sandi; daftar tiga akun contoh **dihapus** atas
+   permintaan pemilik agar halaman tidak penuh. Kredensial demo tercatat di README.
 6. **Pesan gagal seragam:** salah email atau salah kata sandi sama-sama
    menghasilkan `401` dengan pesan "Email atau kata sandi belum cocok…" agar
    tidak membocorkan email mana yang terdaftar. Akun nonaktif tetap `403`
@@ -45,7 +45,7 @@ merepotkan dan tidak seperti aplikasi pada umumnya.
   pengiriman email sungguhan.
 - **Belum ada pembatasan percobaan masuk.** Untuk demo dianggap cukup; untuk
   produksi nyata perlu rate limit per email/IP.
-- Kata sandi demo diketahui publik (tertulis di layar saat mode demo). Matikan
-  `DEMO_MODE` dan ganti kata sandi sebelum pemakaian nyata.
+- Kata sandi demo diketahui publik (tercatat di README). Matikan `DEMO_MODE`
+  dan ganti kata sandi sebelum pemakaian nyata.
 - Migrasi `20261113170000_m7_password_login` menambah `users.passwordHash` dan
   membuang tabel `otp_codes`.

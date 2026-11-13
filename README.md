@@ -48,7 +48,7 @@ $env:PG_DIR = "D:\PostgreSQL\17"
    ```
 
    Sesuaikan `DATABASE_URL` bila nama pengguna atau kata sandi berbeda. Biarkan
-   `DEMO_MODE=true` agar tiga akun contoh tampil di halaman masuk dan panel `/dev` aktif.
+   `DEMO_MODE=true` agar panel `/dev` aktif; akun demo tetap ada dan kata sandinya tertulis di bawah.
 
 3. **Buat pengguna dan database** (sekali saja, dari `psql` sebagai superuser)
 
