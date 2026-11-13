@@ -42,11 +42,20 @@ export function Modal({
   const titleId = useId();
   const descriptionId = useId();
 
+  // `onClose` sering berupa fungsi baru setiap render (mis. panah inline di
+  // pemanggil). Menyimpannya di ref membuat handler tetap stabil sehingga efek
+  // di bawah tidak jalan ulang — kalau tidak, fokus input di dalam dialog
+  // terlempar kembali ke elemen pertama setiap kali pengguna mengetik.
+  const onCloseRef = useRef(onClose);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        onCloseRef.current();
         return;
       }
 
@@ -77,7 +86,7 @@ export function Modal({
         first.focus();
       }
     },
-    [onClose],
+    [],
   );
 
   useEffect(() => {
