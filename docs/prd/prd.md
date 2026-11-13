@@ -188,6 +188,7 @@ Pendaftaran mandiri hanya untuk peran **Petugas** dan harus diaktifkan Admin. Pi
 | `NFR-13` | Model deterministik & berversi; hasil bisa direproduksi | Jalankan 10× dengan input sama → identik |
 | `NFR-14` | Data pribadi minimal: Tamu tidak melihat kontak pelapor | Periksa respons API publik |
 | `NFR-15` | Semua warna dari token `@theme`; tidak ada hex lepas di halaman | Pencarian `#` di `apps/web/src` selain token = 0 |
+| `NFR-16` | Tanpa kalimat penggantung: `brief`/`hint` hanya untuk peringatan aksi, aturan isi, konsekuensi, atau pesan gagal — bukan tagline atau pengulang langkah | `verify:m1`: frasa terlarang & pola langkah pada `brief`/`hint` = 0 hasil |
 
 ---
 

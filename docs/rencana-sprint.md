@@ -576,6 +576,7 @@ menunggu, dan jalan masuk laporan yang sudah disetujui).
 - [x] 31 kecamatan tersedia dan deteksi titik diuji (termasuk Mulyorejo).
 - [x] Tidak ada kolom lama penanganan di formulir maupun API.
 - [x] Dasbor menampilkan bantuan menunggu per jenis dan daftar laporan menunggu distribusi.
+- [x] Sapuan teks: seluruh `brief`/`hint`/tagline penggantung dihapus dari semua halaman; aturannya dipatok di `AGENTS.md` §7 dan dipantau `verify:m1` (`NFR-16`).
 - [x] `npm run build`, `npm test`, `verify:m1`—`verify:m5` lulus; demo direset ke 0 transaksi.
 
 **Bukti:** `docs/bukti/revisi-2026-11-13.md`. Keputusan teknis: ADR 0013.
